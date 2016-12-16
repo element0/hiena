@@ -1,0 +1,4 @@
+*.swp
+out/bin/*
+out/lib/*
+out/mods/*
