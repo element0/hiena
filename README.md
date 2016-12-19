@@ -1,31 +1,22 @@
 Hiena	{#mainpage}
 =====
 
-## Synopsis ##
+![Travis CI Status](https://api.travis-ci.org/element0/hiena.svg?branch=master)
 
-	#include <hiena.h>
-
-	struct hiena_dcel;
-	struct hiena_dcel_io;
-
-	void *hiena ( struct hiena_dcel_io * );
 
 
 ## Description ##
 
-A library and architecture for mapping a hierarchy.  Suitable for creating file space addresses in arbitrary data stores.
+A library and architecture for mapping a hierarchy.  Suitable for creating file space addresses in arbitrary data files.
 
-The main *hiena* function
-
-## Hiena Init ##
-	
-	HIENA_MODLIB_T *himods = hiena_load_modules( HIENA_MODULES_LOCATION );
 
 ## Hiena Main Function ##
 
+`THIS IS A LITTLE OUT OF DATE`
+
 The main function of hiena is to "map a domain".
 
-You can then use the `hiena` function recursively in your own pathwalk or tree renderer to iterate over a hierarchy of domains.
+You can use the `hiena` function recursively in your own pathwalk or (tree renderer) to iterate over a hierarchy of domains.
 
 The domain is passed in the form of a "domain cell" or `dcel` which keeps internal mappings as well as info about its storage location and retrieval method.  It also has an optional internal 'filter' which can process the data from storage before sending it out to the mappers. (The actual "read" which the mappers should use, will be the "dcel source" module encapsulated within a `dcel_io` object.)
 
