@@ -1,4 +1,8 @@
 *.swp
+*.swo
 out/bin/*
 out/lib/*
 out/mods/*
+*.o
+*.oo
+*.so

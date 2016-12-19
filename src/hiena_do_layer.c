@@ -1,19 +1,34 @@
 #include <stdlib.h>
-
-void * dcel_io_clone( void * );
-int    dcel_io_clone_err( void * );
+#include "hiena_do_layer.h"
 
 
+int hiena_do_layer_err( void *er ) {
+	if( er == NULL ) {
+		fprintf(stderr, "error: hiena_do_layer: output was NULL.\n");
+		return 1;
+	}
+	switch(er->err) {
+		case 1:
+			fprintf(stderr, "error: hiena_do_layer: one or more inputs were null\n");
+		default:
+			fprintf(stderr, "error: hiena_do_layer: undefined error.");
+	}
+	return 1;
+}
 
-void *hiena( void *dcel_io, void *modlist ) {
 
-	void *er = NULL;
+HIENA_DO_LAYER_T hiena_do_layer( void *dcel_io, void *modlist ) {
+	HIENA_DO_LAYER_T er = malloc(sizeof(er));
+	if( dcel_io == NULL || modlist == NULL ) {
+		er->err = 1;
+	}
+
 
 	/*
 	 *  clone input dcel
 	 */
 
-	void * retcel_io = dcel_io_clone( dcel_io );
+	HIENA_DO_LAYER_T retcel_io = dcel_io_clone( dcel_io );
 	if ( dcel_io_clone_err( retcel_io ) ) {
 		return er = NULL;
 	}

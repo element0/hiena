@@ -1,0 +1,3 @@
+[submodule "dep/dcel"]
+	path = dep/dcel
+	url = https://github.com/element0/dcel-inode
