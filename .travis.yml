@@ -1,0 +1,8 @@
+language:
+- c
+- cpp
+compiler:
+- g++
+- clang
+- gcc
+script: make
