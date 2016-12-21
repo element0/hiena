@@ -3,6 +3,7 @@
 out/bin/*
 out/lib/*
 out/mods/*
+dep/*
 *.o
 *.oo
 *.so
