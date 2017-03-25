@@ -1,13 +1,18 @@
 Hiena	{#mainpage}
 =====
 
-![Travis CI Status](https://api.travis-ci.org/element0/hiena.svg?branch=master)
-
+![Travis CI Status](https://api.travis-ci.org/element0/hiena.svg?branch=iphdev)
 
 
 ## Description ##
 
-A library and architecture for mapping a hierarchy.  Suitable for creating file space addresses in arbitrary data files.
+The Hiena library maps contents of arbitrary files to an addressable file space.
+
+
+## DEVELOPMENT NEWS ##
+
+2017-03-25	`./util/stitch FILENAME	STARTBYTE ENDBYTE` extracts a byte range from a file.
+
 
 
 ## Hiena Main Function ##
