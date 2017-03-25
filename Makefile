@@ -1,6 +1,6 @@
 
 
-stitch-util:
+byterange-util:
 	gcc service.c service-file.c util/stitch.c -o util/stitch
 
 frag_test:  
