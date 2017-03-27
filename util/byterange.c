@@ -11,19 +11,17 @@
 int main( int argc, char *argv[] )
 {
 
-	struct hiena_svc_module *hsm = new_hiena_svc_module();
-	service_file_init( hsm );
-
-	struct hiena_svc_addr *addr = new_hiena_svc_addr();
+        struct hiena_svc_module *hsm = service_file_new( );
+       
+	struct hiena_svc_addr *addr = NULL;
 
 	void *fp  = NULL;
 	void *ptr = NULL;
 	long len  = 0;
 
-	if( argc == 4 )
+     if( argc == 4 )
 	{
-
-		addr->buf = argv[2];
+                addr = service_file_addr_new( argv[2] );
 
 		len = atoi(argv[3]) + 1;
 
@@ -39,11 +37,12 @@ int main( int argc, char *argv[] )
 		s[ len -1 ] = '\0';
 
 		printf("%s", s);
+
 		free(ptr);
+	        service_file_addr_cleanup( addr );
 	}
 
 	hiena_svc_module_cleanup( hsm );
-	hiena_svc_addr_cleanup( addr );
 
 	return 0;
 }
