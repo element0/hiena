@@ -41,17 +41,21 @@ int main( int argc, char *argv[] )
         struct hiena_mfrag *srcmf;
         struct hiena_svc_addr *srca;
 
+	f = new_frag( );
+
+	dstmf = new_mfrag( );
+	srcmf = new_mfrag( );
 
         filesvc = service_file_new( );
 
         srca = service_file_addr_new( argv[1] );
         dsta = service_file_addr_new( argv[1] );
 
-        service_addr_set_svc( srca, filesvc );
-        service_addr_set_svc( dsta, filesvc );
-        
-        mfrag_set_src( srcmf, src );
-	mfrag_set_src( dstmf, dst );
+        mfrag_set_addr( srcmf, srca );
+	mfrag_set_addr( dstmf, dsta );
+
+	mfrag_set_svc( srcmf, filesvc );
+	mfrag_set_svc( dstmf, filesvc );
 
         frag_set_media( f, dstmf );
 
@@ -61,6 +65,10 @@ int main( int argc, char *argv[] )
 	service_file_addr_cleanup( srca );
 	service_file_addr_cleanup( dsta );
 	service_file_cleanup( filesvc );
+
+	mfrag_cleanup( srcmf );
+	mfrag_cleanup( dstmf );
+	frag_cleanup( f );
 
         return 0;
 }
