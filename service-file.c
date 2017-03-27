@@ -12,7 +12,7 @@ struct hiena_svc_module *service_file_new()
 
 	hsm->write = (size_t (*)( const void *, size_t, size_t, void *))fwrite;
 
-	hsm->open  = (void * (*)( const char *, const char *))fopen;
+	hsm->open  = (void * (*)( void *, const char *))fopen;
 
 	hsm->close = (int    (*)( void * ))fclose;
 
