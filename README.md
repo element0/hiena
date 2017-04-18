@@ -6,12 +6,12 @@ Hiena	{#mainpage}
 
 ## Description ##
 
-The Hiena library maps contents of arbitrary files to an addressable file space.
+The Hiena library maps the content of an arbitrary file to file address space.
 
 
 ## DEVELOPMENT NEWS ##
 
-2017-03-25	`./util/stitch FILENAME	STARTBYTE ENDBYTE` extracts a byte range from a file.
+2017-03-25	`./util/byterange FILENAME STARTBYTE ENDBYTE` extracts a byte range from a file.
 
 
 

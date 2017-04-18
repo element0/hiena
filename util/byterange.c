@@ -13,17 +13,17 @@ int main( int argc, char *argv[] )
 
         struct hiena_svc_module *hsm = service_file_new( );
        
-	struct hiena_svc_addr *addr = NULL;
+        struct hiena_svc_addr *addr = NULL;
 
-	void *fp  = NULL;
-	void *ptr = NULL;
-	long len  = 0;
+        void *fp  = NULL;
+        void *ptr = NULL;
+        long len  = 0;
 
-     if( argc == 4 )
-	{
+        if( argc == 4 )
+	     {
                 addr = service_file_addr_new( argv[2] );
 
-		len = atoi(argv[3]) + 1;
+                len = atoi(argv[3]) + 1;
 
 		ptr = malloc(sizeof(char)*len);
 		fp = hsm->open( argv[1], "r" );

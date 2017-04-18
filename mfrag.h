@@ -43,7 +43,11 @@ void mfrag_cleanup( struct hiena_mfrag *mf );
 
 int mfrag_set_src( struct hiena_mfrag *mf, HIMFRAG_SOURCE_T src );
 
-int mfrag_set_bounds( struct hiena_frag *f, HIMFRAG_BOUND_T bh, HIMFRAG_BOUND_T bt );
+int mfrag_set_bounds( struct hiena_mfrag *mf, HIMFRAG_BOUND_T bh, HIMFRAG_BOUND_T bt );
+
+int mfrag_set_boundhead( struct hiena_mfrag *mf, HIMFRAG_BOUND_T );
+
+int mfrag_set_boundtail( struct hiena_mfrag *mf, HIMFRAG_BOUND_T );
 
 struct hiena_mfrag_io {
         struct hiena_mfrag *mf;

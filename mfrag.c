@@ -25,7 +25,7 @@ int mfrag_set_bounds( struct hiena_mfrag *f, HIMFRAG_BOUND_T bh, HIMFRAG_BOUND_T
         if( f == NULL )
                 return 1;
         if(( bh < HIMFRAG_BOUNDS_MIN ) || ( bh > HIMFRAG_BOUNDS_MAX ) ||
-( bt > HIMFRAG_BOUNDS_MIN ) ||
+( bt < HIMFRAG_BOUNDS_MIN ) ||
 ( bt > HIMFRAG_BOUNDS_MAX )) {
                 return HIERR( "frag_set_bounds: outside limits" );
         }
@@ -33,6 +33,34 @@ int mfrag_set_bounds( struct hiena_mfrag *f, HIMFRAG_BOUND_T bh, HIMFRAG_BOUND_T
         f->boundtail = bt;
         return 0;
 }
+
+int mfrag_set_boundhead( struct hiena_mfrag *f, HIMFRAG_BOUND_T bh )
+{
+        if( f == NULL )
+                return 1;
+        if(( bh < HIMFRAG_BOUNDS_MIN ) || ( bh > HIMFRAG_BOUNDS_MAX )) {
+                return HIERR( "frag_set_boundhead: outside limits" );
+        }
+        f->boundhead = bh;
+
+        return 0;
+}
+
+int mfrag_set_boundtail( struct hiena_mfrag *f, HIMFRAG_BOUND_T bt )
+{
+        if( f == NULL )
+                return 1;
+        if(
+( bt < HIMFRAG_BOUNDS_MIN ) ||
+( bt > HIMFRAG_BOUNDS_MAX )) {
+                return HIERR( "frag_set_boundtail: outside limits" );
+        }
+
+        f->boundtail = bt;
+        return 0;
+}
+
+
 
 int mfrag_set_src( struct hiena_mfrag *f, HIMFRAG_SRC_T src ) {
         if( f == NULL )

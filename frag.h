@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #define HIFRAG_ERR(es) fprintf( stderr, "%s\n", es ), 1
+#define HIFRAG_POS_T off_t
+#define HIFRAG_POS_TO_HIMFRAG_BOUND(pos) pos
 
 #include "mfrag.h"
 
@@ -29,5 +31,7 @@ int frag_set_next( struct hiena_frag *, struct hiena_frag *next  );
 int frag_set_prev( struct hiena_frag *, struct hiena_frag *prev  );
 
 int frag_set_userdata( struct hiena_frag *, struct hiena_frag *prev  );
+
+int frag_insert( struct hiena_frag *, struct hiena_frag *, HIFRAG_POS_T );
 
 #endif /* !_HIENA_FRAG_H_ */
