@@ -16,6 +16,9 @@
 /* 20170324 pos and off should match */
 #define HIMFRAG_POS_T off_t
 #define HIMFRAG_OFF_T off_t
+#define HIMFRAG_OFF_MIN 0
+#define HIMFRAG_OFF_MAX (2^31)
+
 
 
 #include <stdlib.h>
@@ -41,7 +44,7 @@ struct hiena_mfrag *new_mfrag();
 
 void mfrag_cleanup( struct hiena_mfrag *mf );
 
-int mfrag_set_src( struct hiena_mfrag *mf, HIMFRAG_SOURCE_T src );
+int mfrag_set_src( struct hiena_mfrag *mf, HIMFRAG_SRC_T src );
 
 int mfrag_set_bounds( struct hiena_mfrag *mf, HIMFRAG_BOUND_T bh, HIMFRAG_BOUND_T bt );
 

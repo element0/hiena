@@ -5,6 +5,7 @@
 
 
 #include <stdio.h>
+#include <sys/stat.h>
 #include "../frag.h"
 #include "../service-file.h"
 
@@ -30,7 +31,7 @@ int main( int argc, char *argv[] )
 {
         if( argc != 6 )
         {
-                print_usage(vargc[0] );
+                print_usage( argc[0] );
                 return -1;
         }
 
@@ -69,7 +70,7 @@ int main( int argc, char *argv[] )
         frag_set_media( f, dstmf );
         frag_set_media( f2, srcmf );
 
-        frag_insert( f, f2, atoi( argv[5] );
+        frag_insert( f, f2, atoi( argv[5] ));
 
         service_file_addr_cleanup( srca );
         service_file_addr_cleanup( dsta );

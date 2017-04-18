@@ -27,8 +27,8 @@ int frag_insert( struct hiena_frag *dstf, struct hiena_frag *srcf, HIFRAG_POS_T 
         }
 
         HIFRAG_POS_T        off, lenf;
-        struct hiena_frag  *f0, f1, f2, f3;
-        struct hiena_mfrag *m1, m2;
+        struct hiena_frag  *f0, *f1, *f2, *f3;
+        struct hiena_mfrag *m1, *m2;
         HIMFRAG_BOUND_T     mt, mh;
 
         off = pos;

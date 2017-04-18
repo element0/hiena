@@ -4,6 +4,9 @@
 #include <stdio.h>
 #define HIFRAG_ERR(es) fprintf( stderr, "%s\n", es ), 1
 #define HIFRAG_POS_T off_t
+#define HIFRAG_BOUND_T off_t
+#define HIFRAG_BOUNDS_MIN 0
+#define HIFRAG_BOUNDS_MAX (2^31)
 #define HIFRAG_POS_TO_HIMFRAG_BOUND(pos) pos
 
 #include "mfrag.h"
