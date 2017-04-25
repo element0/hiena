@@ -11,6 +11,7 @@
 #define HIMFRAG_BOUND_T off_t
 #define HIMFRAG_BOUNDS_MIN 0
 #define HIMFRAG_BOUNDS_MAX (2^31)
+#define HIMFRAG_BOUND_ERR 0
 
 #define HIMFRAG_BUFSIZE_T size_t
 /* 20170324 pos and off should match */
@@ -31,6 +32,8 @@
 
 struct hiena_mfrag {
         HIMFRAG_SRC_T   src;
+        struct hiena_svc_addr *svcaddr;
+        struct hiena_svc_module *svc;
         HIMFRAG_BOUND_T boundhead;
         HIMFRAG_BOUND_T boundtail;
         void *buf;
@@ -41,16 +44,21 @@ struct hiena_mfrag {
 };
 
 struct hiena_mfrag *new_mfrag();
+struct hiena_mfrag *mfrag_dup( struct hiena_mfrag * );
 
 void mfrag_cleanup( struct hiena_mfrag *mf );
 
 int mfrag_set_src( struct hiena_mfrag *mf, HIMFRAG_SRC_T src );
+int mfrag_set_svc( struct hiena_mfrag *f, struct hiena_svc_module *svc );
+int mfrag_set_addr( struct hiena_mfrag *mf, struct hiena_svc_addr *sa );
 
 int mfrag_set_bounds( struct hiena_mfrag *mf, HIMFRAG_BOUND_T bh, HIMFRAG_BOUND_T bt );
 
 int mfrag_set_boundhead( struct hiena_mfrag *mf, HIMFRAG_BOUND_T );
 
 int mfrag_set_boundtail( struct hiena_mfrag *mf, HIMFRAG_BOUND_T );
+
+HIMFRAG_BOUND_T mfrag_get_length( struct hiena_mfrag *mf );
 
 struct hiena_mfrag_io {
         struct hiena_mfrag *mf;

@@ -67,8 +67,8 @@ int main( int argc, char *argv[] )
         mfrag_set_bounds( dstmf, 0,
                 get_filesize( argv[4] ) );
 
-        frag_set_media( f, dstmf );
-        frag_set_media( f2, srcmf );
+        frag_set_mfrag( f, dstmf );
+        frag_set_mfrag( f2, srcmf );
 
         frag_insert( f, f2, atoi( argv[5] ));
 

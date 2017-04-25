@@ -9,13 +9,100 @@
 #include <stdlib.h>
 
 
-struct hiena_frag *frag_split( struct hiena_frag *f, HIFRAG_BOUND_T pos ) {
+struct hiena_frag *frag_get_first_content( struct hiena_frag *f )
+{
+        if( f == NULL )
+        {
+                return HIERR( "frag_get_first_content: frag is null." ), NULL;
+        }
+
+        struct hiena_frag *f1;
+        f1 = f->first_content;
+
+        if( f1 == NULL )
+        {
+                return HIERR( "frag_get_first_content: content is null." ), NULL;
+        }
+
+        return f1;
+}
+
+
+struct hiena_frag *frag_get_next( struct hiena_frag *f )
+{
+        if( f == NULL )
+        {
+                return HIERR( "frag_get_next: frag is null." ), NULL;
+        }
+
+        struct hiena_frag *f1;
+        f1 = f->next;
+
+        if( f1 == NULL )
+        {
+                return HIERR( "frag_get_next: content is null." ), NULL;
+        }
+
+        return f1;
+        
+}
+
+int frag_set_mfrag( struct hiena_frag *f, struct hiena_mfrag *mf )
+{
+        if( f == NULL )
+                return -1;
+        f->mfrag = mf;
+        return 0;
+}
+
+struct hiena_frag *frag_get_mfrag( struct hiena_frag *f )
+{
+        if( f == NULL )
+        {
+                return HIERR( "frag_get_mfrag: frag is null." ), NULL;
+        }
+        struct hiena_mfrag *mf;
+        mf = f->mfrag;
+
+        return mf;
+}
+
+
+struct hiena_frag *frag_split( struct hiena_frag *f, HIFRAG_POS_T pos ) {
         HIFRAG_BOUND_T b[4];
         struct hiena_frag *fc[2];
 
         // does content already have split?
 
         return NULL;
+}
+
+HIFRAG_POS_T frag_get_length( struct hiena_frag *f )
+{
+        if( f == NULL )
+        {
+                return HIERR( "frag_get_length: frag is null." );
+        }
+
+        HIFRAG_POS_T len;
+        struct hiena_frag *f0;
+        struct hiena_mfrag *m1;
+
+        m1 = frag_get_mfrag( f );
+        if( m1 == NULL )
+        {
+                f1 = frag_get_first_content( f );
+
+                len = frag_get_length( f1 );
+
+                while(( f1 = frag_get_next( f1 )) != NULL )
+                {
+                        len =+ frag_get_length( f1 );
+                }
+        } else {
+                len = mfrag_get_length( m1 );
+        }
+        return len;
 }
 
 
@@ -89,6 +176,7 @@ frag_insert_into_content:
 
 
         m2 = mfrag_dup( m1 );
+        //----------------
         mt = HIFRAG_POS_TO_HIMFRAG_BOUND( pos );
         mh = mt + 1;
         mfrag_set_boundtail( m1, mt );

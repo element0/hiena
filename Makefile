@@ -1,13 +1,13 @@
 
 
-all: insert-bytes-util
+all: util-insert-bytes
 
-byterange-util:
+util-byterange:
 	gcc service.c service-file.c util/byterange.c -o out/bin/byterange
 
 
-insert-bytes-util:
-	gcc mfrag.c frag.c util/insert-bytes.c -o out/bin/insert-bytes
+util-insert-bytes:
+	gcc mfrag.c frag.c service-file.c util/insert-bytes.c -o out/bin/insert-bytes
 
 
 test_main:  
