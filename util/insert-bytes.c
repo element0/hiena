@@ -31,7 +31,7 @@ int main( int argc, char *argv[] )
 {
         if( argc != 6 )
         {
-                print_usage( argc[0] );
+                print_usage( argv[0] );
                 return -1;
         }
 

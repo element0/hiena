@@ -39,7 +39,7 @@ int frag_set_prev( struct hiena_frag *, struct hiena_frag *prev  );
 
 int frag_set_mfrag( struct hiena_frag *f, struct hiena_mfrag *mf );
 
-struct hiena_frag *frag_get_mfrag( struct hiena_frag *f );
+struct hiena_mfrag *frag_get_mfrag( struct hiena_frag *f );
 
 int frag_set_userdata( struct hiena_frag *, struct hiena_frag *prev  );
 

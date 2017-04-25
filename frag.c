@@ -55,7 +55,7 @@ int frag_set_mfrag( struct hiena_frag *f, struct hiena_mfrag *mf )
         return 0;
 }
 
-struct hiena_frag *frag_get_mfrag( struct hiena_frag *f )
+struct hiena_mfrag *frag_get_mfrag( struct hiena_frag *f )
 {
         if( f == NULL )
         {
@@ -85,7 +85,7 @@ HIFRAG_POS_T frag_get_length( struct hiena_frag *f )
         }
 
         HIFRAG_POS_T len;
-        struct hiena_frag *f0;
+        struct hiena_frag *f1;
         struct hiena_mfrag *m1;
 
         m1 = frag_get_mfrag( f );
@@ -162,7 +162,7 @@ frag_insert_into_container:
                 goto frag_insert_action;
         }
 
-        if( lenf => off )
+        if( lenf >= off )
         {
                 f0 = f1;
 
@@ -176,7 +176,6 @@ frag_insert_into_content:
 
 
         m2 = mfrag_dup( m1 );
-        //----------------
         mt = HIFRAG_POS_TO_HIMFRAG_BOUND( pos );
         mh = mt + 1;
         mfrag_set_boundtail( m1, mt );
@@ -186,9 +185,10 @@ frag_insert_into_content:
         f3 = new_frag( );
         frag_set_mfrag( f1, m1);
         frag_set_mfrag( f3, m2);
+        frag_set_mfrag( f0, NULL);
             
-        frag_set_first_content( f, f1 );
-        frag_set_last_content( f, f3 );
+        frag_set_first_content( f0, f1 );
+        frag_set_last_content( f0, f3 );
 
         /* fall through */
 
