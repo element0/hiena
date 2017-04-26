@@ -1,6 +1,6 @@
 *.swp
 *.swo
-out/bin/*
+out/bin/[a-zA-Z]*
 out/lib/*
 out/mods/*
 *.o

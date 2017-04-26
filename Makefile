@@ -1,6 +1,9 @@
 
 
-all: util-insert-bytes
+all: out-dirs util-insert-bytes
+
+out-dirs:
+	mkdir -p out/bin
 
 util-byterange:
 	gcc service.c service-file.c util/byterange.c -o out/bin/byterange
