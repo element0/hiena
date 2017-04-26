@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #define HIMFRAG_BOUND_T off_t
 #define HIMFRAG_BOUNDS_MIN 0
-#define HIMFRAG_BOUNDS_MAX (2^31)
+#define HIMFRAG_BOUNDS_MAX 2147483648
 #define HIMFRAG_BOUND_ERR 0
 
 #define HIMFRAG_BUFSIZE_T size_t

@@ -9,6 +9,34 @@
 #include <stdlib.h>
 
 
+struct hiena_frag *new_frag()
+{
+        struct hiena_frag *f;
+        f = malloc(sizeof(*f));
+
+        return f;
+}
+
+int frag_cleanup ( struct hiena_frag *f )
+{
+        if( f == NULL )
+                return -1;
+
+        free( f );
+
+        return 0;
+}
+
+int frag_set_first_content( struct hiena_frag *f, struct hiena_frag *fc )
+{
+        if( f == NULL )
+                return -1;
+
+        f->first_content = fc;
+
+        return 0;
+}
+
 struct hiena_frag *frag_get_first_content( struct hiena_frag *f )
 {
         if( f == NULL )
@@ -25,6 +53,26 @@ struct hiena_frag *frag_get_first_content( struct hiena_frag *f )
         }
 
         return f1;
+}
+
+int frag_set_last_content( struct hiena_frag *f, struct hiena_frag *lc )
+{
+        if( f == NULL )
+                return -1;
+
+        f->last_content = lc;
+
+        return 0;
+}
+
+int frag_set_next( struct hiena_frag *f, struct hiena_frag *f2 )
+{
+        if( f == NULL )
+                return -1;
+
+        f->next = f2;
+
+        return 0;
 }
 
 
@@ -45,6 +93,16 @@ struct hiena_frag *frag_get_next( struct hiena_frag *f )
 
         return f1;
         
+}
+
+int frag_set_prev( struct hiena_frag *f, struct hiena_frag *f2 )
+{
+        if( f == NULL )
+                return -1;
+
+        f->prev = f2;
+
+        return 0;
 }
 
 int frag_set_mfrag( struct hiena_frag *f, struct hiena_mfrag *mf )

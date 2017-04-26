@@ -12,6 +12,9 @@
 
 struct hiena_svc_module *service_file_new();
 
+int service_file_cleanup(struct hiena_svc_module *);
+
+
 struct hiena_svc_addr *service_file_addr_new( MYSVC_ADDR_INIT_PARMS );
 
 void service_file_addr_cleanup( struct hiena_svc_addr  *hsa );

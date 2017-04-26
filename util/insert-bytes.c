@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include "../frag.h"
+#include "../service.h"
 #include "../service-file.h"
 
 

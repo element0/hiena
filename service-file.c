@@ -21,6 +21,16 @@ struct hiena_svc_module *service_file_new()
 	return hsm;
 }
 
+int service_file_cleanup(struct hiena_svc_module *hsm)
+{
+        if( hsm == NULL )
+                return-1;
+
+        hiena_svc_module_cleanup( hsm );
+
+        return 0;
+}
+
 struct hiena_svc_addr *service_file_addr_new( char *pathname )
 {
         if( pathname == NULL ) return NULL;

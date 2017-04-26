@@ -7,7 +7,7 @@ util-byterange:
 
 
 util-insert-bytes:
-	gcc mfrag.c frag.c service-file.c util/insert-bytes.c -o out/bin/insert-bytes
+	gcc mfrag.c frag.c service.c service-file.c util/insert-bytes.c -o out/bin/insert-bytes
 
 
 test_main:  

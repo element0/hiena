@@ -23,7 +23,7 @@ struct hiena_frag {
 
 struct hiena_frag *new_frag();
 
-void frag_cleanup( struct hiena_frag *f );
+int frag_cleanup( struct hiena_frag *f );
 
 int frag_set_first_content( struct hiena_frag *, struct hiena_frag *fc  );
 
