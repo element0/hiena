@@ -4,45 +4,34 @@
   uses hiena service modules
  */
 
-#include "../service.h"
-#include "../service-file.h"
+#include "../hiena_svc.h"
+#include "../file_svc.h"
 
 
 int main( int argc, char *argv[] )
 {
+        struct hiena_svc *hsm;
+        void *fp, ptr;
+        long len;
+        char *s;
 
-        struct hiena_svc_module *hsm = service_file_new( );
-       
-        struct hiena_svc_addr *addr = NULL;
+        if( argc != 4 )
+                return -1;
 
-        void *fp  = NULL;
-        void *ptr = NULL;
-        long len  = 0;
+        hsm = &file_svc_ops;
+        len = atoi(argv[3]) + 1;
+        ptr = malloc(sizeof(char)*len);
 
-        if( argc == 4 )
-	     {
-                addr = service_file_addr_new( argv[2] );
+        fp = hsm->open( argv[1], "r" );
+        hsm->seek( fp, atoi(argv[2]), SEEK_SET ); 
+        hsm->read( ptr, atoi(argv[3]), 1, fp );
+        hsm->close( fp );
 
-                len = atoi(argv[3]) + 1;
+        s = ptr;
+        s[ len -1 ] = '\0';
+        printf("%s", s);
 
-		ptr = malloc(sizeof(char)*len);
-		fp = hsm->open( argv[1], "r" );
+        free(ptr);
 
-		hsm->seek( fp, atoi(argv[2]), SEEK_SET ); 
-		hsm->read( ptr, atoi(argv[3]), 1, fp );
-		hsm->close( fp );
-
-
-		char *s = ptr;
-		s[ len -1 ] = '\0';
-
-		printf("%s", s);
-
-		free(ptr);
-	        service_file_addr_cleanup( addr );
-	}
-
-	hiena_svc_module_cleanup( hsm );
-
-	return 0;
+        return 0;
 }

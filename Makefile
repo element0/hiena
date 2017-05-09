@@ -1,12 +1,17 @@
 
 
-all: out-dirs util-insert-bytes
+all: out-dirs test-file-svc
+
+broken: util-byterange util-insert-bytes
 
 out-dirs:
-	mkdir -p out/bin
+	mkdir -p out/{bin,test-bin}
+
+test-file-svc:
+	gcc hiena_svc.c file_svc.c file_svc_test.c -o out/test-bin/test-file-svc
 
 util-byterange:
-	gcc service.c service-file.c util/byterange.c -o out/bin/byterange
+	gcc hiena_svc.c file_svc.c util/byterange.c -o out/bin/byterange
 
 
 util-insert-bytes:

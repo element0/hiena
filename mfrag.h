@@ -31,9 +31,8 @@
 #define HIMFRAG_IO_VERIFY(mfio) (mfio != NULL)
 
 struct hiena_mfrag {
-        HIMFRAG_SRC_T   src;
-        struct hiena_svc_addr *svcaddr;
-        struct hiena_svc_module *svc;
+        struct hiena_svc *svc;
+        void *addr;
         HIMFRAG_BOUND_T boundhead;
         HIMFRAG_BOUND_T boundtail;
         void *buf;
@@ -48,8 +47,10 @@ struct hiena_mfrag *mfrag_dup( struct hiena_mfrag * );
 
 void mfrag_cleanup( struct hiena_mfrag *mf );
 
-int mfrag_set_src( struct hiena_mfrag *mf, HIMFRAG_SRC_T src );
+int mfrag_set_src( struct hiena_mfrag *mf, struct hiena_svc *src );
+
 int mfrag_set_svc( struct hiena_mfrag *f, struct hiena_svc_module *svc );
+
 int mfrag_set_addr( struct hiena_mfrag *mf, struct hiena_svc_addr *sa );
 
 int mfrag_set_bounds( struct hiena_mfrag *mf, HIMFRAG_BOUND_T bh, HIMFRAG_BOUND_T bt );
@@ -63,7 +64,7 @@ HIMFRAG_BOUND_T mfrag_get_length( struct hiena_mfrag *mf );
 struct hiena_mfrag_io {
         struct hiena_mfrag *mf;
         HIMFRAG_POS_T pos;
-        HIMFRAG_SRC_IO_T sio;
+        HIMFRAG_SRC_IO_T src_io;
 };
 
 int mfrag_io_seek( struct hiena_mfrag_io *mfio, HIMFRAG_OFF_T off );

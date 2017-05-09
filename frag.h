@@ -9,6 +9,8 @@
 #define HIFRAG_BOUNDS_MAX (2^31)
 #define HIFRAG_POS_TO_HIMFRAG_BOUND(pos) pos
 
+#define frag_is_container( f ) f->mfrag == NULL
+
 #include "mfrag.h"
 
 

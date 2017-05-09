@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include "../frag.h"
-#include "../service.h"
 #include "../service-file.h"
+#include "../frag_fh.h"
 
 
 
@@ -45,6 +45,8 @@ int main( int argc, char *argv[] )
         struct hiena_mfrag *srcmf;
         struct hiena_svc_addr *srca;
 
+        char c;
+
         f = new_frag( );
         f2 = new_frag( );
 
@@ -72,6 +74,21 @@ int main( int argc, char *argv[] )
         frag_set_mfrag( f2, srcmf );
 
         frag_insert( f, f2, atoi( argv[5] ));
+
+        /*
+        struct hiena_fh *fh;
+        fh = frag_fh_open( f );
+
+        while(( c = fh->ops->getc( fh ) != EOF )
+                  //---------------------
+
+        {
+                fputc( c, stdout );
+        }
+        fputc('\n', stdout);
+
+        frag_fh_close( fh );
+        */
 
         service_file_addr_cleanup( srca );
         service_file_addr_cleanup( dsta );
