@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 struct hiena_svc
 {
 	void * (*open)( void *addr, const char *mode);
@@ -14,10 +13,6 @@ struct hiena_svc
 	size_t (*write)( const void *ptr, size_t size, size_t nmemb, void *fp );
         int (*getchar)( void * );
 };
-
-//---- deprec. ----
-struct hiena_svc *hiena_svc_new ();
-void   hiena_svc_cleanup( struct hiena_svc * );
 
 
 #endif /*!HIENA_SERVICE_H*/

@@ -7,8 +7,11 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include "../frag.h"
-#include "../service-file.h"
+#include "../mfrag.h"
+#include "../hiena_fh.h"
 #include "../frag_fh.h"
+#include "../file_svc.h"
+#include "../mfrag_svc.h"
 
 
 
@@ -36,14 +39,11 @@ int main( int argc, char *argv[] )
                 return -1;
         }
 
-        struct hiena_frag *f;
-        struct hiena_frag *f2;
+        struct hiena_frag *f, *f2;
         struct hiena_mfrag *dstmf;
-        struct hiena_svc_addr *dsta;
-        struct hiena_svc_module *filesvc;
-
         struct hiena_mfrag *srcmf;
-        struct hiena_svc_addr *srca;
+        void *dsta, *srca;
+        struct hiena_svc *filesvc;
 
         char c;
 
@@ -53,10 +53,10 @@ int main( int argc, char *argv[] )
         dstmf = new_mfrag( );
         srcmf = new_mfrag( );
 
-        filesvc = service_file_new( );
+        filesvc = &file_svc_ops;
 
-        srca = service_file_addr_new( argv[1] );
-        dsta = service_file_addr_new( argv[4] );
+        srca = argv[1];
+        dsta = argv[4];
 
         mfrag_set_addr( srcmf, srca );
         mfrag_set_addr( dstmf, dsta );
@@ -79,7 +79,7 @@ int main( int argc, char *argv[] )
         struct hiena_fh *fh;
         fh = frag_fh_open( f );
 
-        while(( c = fh->ops->getc( fh ) != EOF )
+        while(( c = fh->ops->getc( fh )) != EOF )
                   //---------------------
 
         {
@@ -90,9 +90,6 @@ int main( int argc, char *argv[] )
         frag_fh_close( fh );
         */
 
-        service_file_addr_cleanup( srca );
-        service_file_addr_cleanup( dsta );
-        service_file_cleanup( filesvc );
         mfrag_cleanup( srcmf );
         mfrag_cleanup( dstmf );
         frag_cleanup( f );

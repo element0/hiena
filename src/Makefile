@@ -8,7 +8,7 @@ out-dirs:
 	mkdir -p out/bin
 	mkdir -p out/test-bin
 
-tests: test-file-svc test-frag test-mfrag test-hiena-fa
+tests: test-file-svc test-frag test-mfrag test-hiena-fh
 
 test-file-svc:
 	gcc hiena_svc.c file_svc_test.c -o out/test-bin/file_svc_test

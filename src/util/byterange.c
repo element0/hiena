@@ -11,7 +11,7 @@
 int main( int argc, char *argv[] )
 {
         struct hiena_svc *hsm;
-        void *fp, ptr;
+        void *fp, *ptr;
         long len;
         char *s;
 

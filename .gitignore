@@ -3,6 +3,9 @@
 out/bin/[a-zA-Z]*
 out/lib/*
 out/mods/*
+src/out/bin/[a-zA-Z]*
+src/out/lib/*
+src/out/mods/*
 *.o
 *.oo
 *.so

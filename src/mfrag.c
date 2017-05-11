@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct hiena_mfrag *new_mfrag()
+struct hiena_mfrag *mfrag_new()
 {
         struct hiena_mfrag *mf = malloc(sizeof( *mf ));
         return mf;
@@ -48,8 +48,6 @@ struct hiena_mfrag *mfrag_dup( struct hiena_mfrag *mf )
 
         return m2;
 
-abort_badsrc:
-        
 abort_badbuf:
         free( m2 );
         return NULL;
@@ -104,18 +102,7 @@ int mfrag_set_boundtail( struct hiena_mfrag *f, HIMFRAG_BOUND_T bt )
 }
 
 
-int mfrag_set_src( struct hiena_mfrag *f, HIMFRAG_SRC_T src ) {
-        if( f == NULL )
-                return 1;
-        if( HIMFRAG_SRC_VERIFY( src ) ){
-                return HIERR( "mfrag_set_src can't verify src" );
-        } 
-        f->src = src;
-        return 0;
-}
-
-
-int mfrag_set_svc( struct hiena_mfrag *f, struct hiena_svc_module *svc )
+int mfrag_set_svc( struct hiena_mfrag *f, struct hiena_svc *svc )
 {
         if( f == NULL )
                 return -1;
@@ -125,12 +112,12 @@ int mfrag_set_svc( struct hiena_mfrag *f, struct hiena_svc_module *svc )
 }
 
 
-int mfrag_set_addr( struct hiena_mfrag *mf, struct hiena_svc_addr *sa )
+int mfrag_set_addr( struct hiena_mfrag *mf, void *sa )
 {
         if( mf == NULL )
                 return -1;
 
-        mf->svcaddr = sa;
+        mf->addr = sa;
         return 0;
 }
 
@@ -149,50 +136,4 @@ HIMFRAG_BOUND_T mfrag_get_length( struct hiena_mfrag *mf )
         }
         return len;
 }
-
-int mfrag_io_seek( struct hiena_mfrag_io *mfio, HIMFRAG_OFF_T off )
-{
-        if( ! HIMFRAG_IO_VERIFY( mfio ) )
-        {
-                return HIERR( "mfrag_io_seek: bad mfrag io object" );
-        }
-        if( off > HIMFRAG_OFF_MAX || off < HIMFRAG_OFF_MIN )
-        {
-                return HIERR( "mfrag_io_seek: outside limits" );
-        }
-
-        /* 20170324 pos and off types should match */
-        mfio->pos += off;
-
-        return 0;
-}
-
-HIMFRAG_BUFSIZE_T mfrag_io_read( struct hiena_mfrag_io *mfio, void *dst, HIMFRAG_BUFSIZE_T size )
-{
-        if( ! HIMFRAG_IO_VERIFY( mfio ) )
-        {
-                return HIERR( "mfrag_io_read: bad mfrag io object" );
-        }
-        if( dst == NULL )
-        {
-                return HIERR( "mfrag_io_read: bad dest buffer" );
-        }
-        if( ! HIMFRAG_SRC_VERIFY( mfio ) )
-        {
-                return HIERR( "mfrag_io_read: bad src" );
-        }
-        return 0;
-}
-
-HIMFRAG_BUFSIZE_T mfrag_io_write( struct hiena_mfrag_io *mfio, HIMFRAG_BUFSIZE_T size );
-
-HIMFRAG_BUFSIZE_T mfrag_io_append( struct hiena_mfrag_io *mfio, void *buf, HIMFRAG_BUFSIZE_T len );
-
-HIMFRAG_BUFSIZE_T mfrag_io_overwrite( struct hiena_mfrag_io *mfio, void *buf, HIMFRAG_BUFSIZE_T len );
-
-HIMFRAG_OFF_T mfrag_io_trim_tail( struct hiena_mfrag_io *mfio, HIMFRAG_OFF_T off );
-
-HIMFRAG_OFF_T mfrag_io_trim_head( struct hiena_mfrag_io *mfio, HIMFRAG_OFF_T off );
-
-int mfrag_io_flush( struct hiena_mfrag_io *mfio );
 
