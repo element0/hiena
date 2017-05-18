@@ -17,6 +17,15 @@ struct hiena_frag *new_frag()
         return f;
 }
 
+struct hiena_frag *frag_new()
+{
+        struct hiena_frag *f;
+        f = malloc(sizeof(*f));
+
+        return f;
+}
+
+
 int frag_cleanup ( struct hiena_frag *f )
 {
         if( f == NULL )

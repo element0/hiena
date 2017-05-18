@@ -28,8 +28,8 @@
 
 
 struct hiena_mfrag {
-        struct hiena_svc *svc;
         void *addr;
+        struct hiena_svc *svc;
         HIMFRAG_BOUND_T boundhead;
         HIMFRAG_BOUND_T boundtail;
         void *buf;

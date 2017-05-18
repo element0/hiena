@@ -1,41 +1,41 @@
-#include "mfrag.h"
-#include "hiena_svc.h"
 #include <stdlib.h>
 #include <string.h>
+#include "mfrag.h"
+#include "mfrag_fh.h"
+#include "mfrag_svc.h"
+#include "hiena_fh.h"
+#include "hiena_svc.h"
+#include "hierr.h"
 
 
-static size_t mfrag_read( void *buf, size_t len, size_t n, struct hiena_fh *fh )
+struct hiena_svc mfrag_svc_ops = {
+        .open  = mfrag_svc_open,
+        .close = mfrag_svc_close,
+        .seek  = mfrag_svc_seek,
+        .read  = mfrag_svc_read,
+        .write = mfrag_svc_write,
+        .getchar = mfrag_svc_getc,
+};
+
+
+
+int mfrag_svc_getc( void *fhp )
 {
-        return 0;
-}
+        struct mfrag_fh *fh;
 
-static size_t mfrag_write( const void *tbd, size_t tbd2, size_t tbd3, struct hiena_fh *fh )
-{
-        return 0;
-}
+        fh = (struct mfrag_fh *)fhp;
 
-struct hiena_fh *mfrag_open( void *p, const char *s )
-{
-        return NULL;
-}
-
-static int mfrag_close( struct hiena_fh *fh )
-{
-        return 0;
-}
-
-static int mfrag_seek( struct hiena_fh *fh, long len, int w)
-{
-        return -1;
-}
-
-static int mfrag_getc( struct hiena_fh *fh )
-{
         if( fh == NULL )
                 return EOF;
 
         if( fh->is_eof == 1 )
                 return EOF;
+
+        int c;
+        struct hiena_fh *srcfh;
+        struct hiena_mfrag *mf;
+
+        mf = fh->mfrag;
 
         if( fh->pos > mf->boundtail
         || fh->pos < mf->boundhead )
@@ -44,73 +44,115 @@ static int mfrag_getc( struct hiena_fh *fh )
                 return EOF;
         }
 
-        int c;
-        void *srcfh;
-        struct hiena_mfrag *mf;
-
-        mf = (struct hiena_mfrag *)fh->addr;
-        srcfh = fh->fh;
+        srcfh = fh->src_fh;
  
-        c = mf->svc->getc( srcfh );
+        c = srcfh->ops->getchar( srcfh );
         fh->pos++;
 
         return c;
 }
 
-int mfrag_io_seek( struct hiena_mfrag_io *mfio, off_t off )
+int mfrag_svc_seek( void *fhp, long off, int whence )
 {
-        if( ! HIMFRAG_IO_VERIFY( mfio ) )
+        struct mfrag_fh *fh;
+
+        fh = (struct mfrag_fh *)fhp;
+
+        if( fh == NULL )
         {
-                return HIERR( "mfrag_io_seek: bad mfrag io object" );
+                return HIERR( "mfrag_svc_seek: bad mfrag fh object" );
         }
         if( off > HIMFRAG_OFF_MAX || off < HIMFRAG_OFF_MIN )
         {
-                return HIERR( "mfrag_io_seek: outside limits" );
+                return HIERR( "mfrag_svc_seek: outside limits" );
         }
 
         /* 2017-03-24 pos and off types should match */
-        mfio->pos += off;
+        fh->pos += off;
 
         return 0;
 }
 
-size_t mfrag_io_read( struct hiena_mfrag_io *mfio, void *dst, size_t size )
+size_t mfrag_svc_read( void *dst, size_t size, size_t n, void *fhp )
 {
-        if( ! HIMFRAG_IO_VERIFY( mfio ) )
+        struct mfrag_fh *fh;
+
+        fh = (struct mfrag_fh *)fhp;
+
+        if( fh == NULL )
         {
-                return HIERR( "mfrag_io_read: bad mfrag io object" );
+                return HIERR( "mfrag_fh_read: bad mfrag fh object" );
         }
         if( dst == NULL )
         {
-                return HIERR( "mfrag_io_read: bad dest buffer" );
+                return HIERR( "mfrag_fh_read: bad dest buffer" );
         }
-        if( ! HIMFRAG_SRC_VERIFY( mfio ) )
+        if( ! HIMFRAG_SRC_VERIFY( fh ) )
         {
                 return HIERR( "mfrag_io_read: bad src" );
         }
         return 0;
 }
 
-size_t mfrag_io_write( struct hiena_mfrag_io *mfio, size_t size );
-
-size_t mfrag_io_append( struct hiena_mfrag_io *mfio, void *buf, size_t len );
-
-size_t mfrag_io_overwrite( struct hiena_mfrag_io *mfio, void *buf, size_t len );
-
-off_t mfrag_io_trim_tail( struct hiena_mfrag_io *mfio, off_t off );
-
-off_t mfrag_io_trim_head( struct hiena_mfrag_io *mfio, off_t off );
-
-int mfrag_io_flush( struct hiena_mfrag_io *mfio );
+size_t mfrag_svc_write( void *buf, size_t size, size_t n, void *fh )
+{
+        return 0;
+}
 
 
+int mfrag_svc_flush( void *mfh );
+
+void *mfrag_svc_open( void *mfp, const char *mode )
+{
+        struct hiena_mfrag *mf;
+        struct mfrag_fh *fh;
+        struct hiena_fh *srcfh;
+
+        mf = (struct hiena_mfrag *)mfp;
+
+        if( mf == NULL )
+                return NULL;
+
+        fh    = mfrag_fh_new();
+        srcfh = malloc(sizeof(*srcfh));
+
+        srcfh->addr = mf->addr;
+        srcfh->ops = mf->svc;
+        srcfh->fh = srcfh->ops->open( srcfh->addr, mode );
+
+        fh->mfrag = mf;
+        fh->src_fh = srcfh;
+        fh->pos = 0;
+        fh->is_eof = 0;
+
+        return fh;
+}
+
+int mfrag_svc_close( void *fhp )
+{
+        if( fhp == NULL )
+                return 0;
+
+        struct mfrag_fh *fh;
+        struct hiena_fh *srcfh;
+
+        fh = (struct mfrag_fh *)fhp;
+        srcfh = fh->src_fh;
+        srcfh->ops->close( srcfh->fh );
+
+        free( srcfh );
+        mfrag_fh_cleanup( fh );
+
+        return 0;
+}
 
 
-struct hiena_svc mfrag_svc_ops = {
-        .read  = mfrag_read,
-        .write = mfrag_write,
-        .open  = mfrag_open,
-        .close = mfrag_close,
-        .seek  = mfrag_seek,
-        .getc  = mfrag_getc
-};
+size_t mfrag_svc_append( struct mfrag_fh *fh, void *buf, size_t len );
+
+size_t mfrag_svc_overwrite( struct mfrag_fh *fh, void *buf, size_t len );
+
+off_t mfrag_svc_trim_tail( struct mfrag_fh *fh, off_t off );
+
+off_t mfrag_svc_trim_head( struct mfrag_fh *fh, off_t off );
+
+

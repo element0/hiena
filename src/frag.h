@@ -24,6 +24,7 @@ struct hiena_frag {
 };
 
 struct hiena_frag *new_frag();
+struct hiena_frag *frag_new();
 
 int frag_cleanup( struct hiena_frag *f );
 

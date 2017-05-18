@@ -8,10 +8,16 @@
 
 #include "mfrag.h"
 #include "hiena_fh.h"
-#include "mfrag_svc.h"
 
-/* don't need a 'struct mfrag_fh'.
-   it can be implemented with a
-   hiena_fh, mfrag_fh.c, mfrag_svc */
+struct mfrag_fh {
+        struct hiena_mfrag *mfrag;
+        struct hiena_fh *src_fh;
+        off_t pos;
+        int is_eof;
+};
+
+struct mfrag_fh *mfrag_fh_new();
+int mfrag_fh_cleanup( struct mfrag_fh * );
+
 
 #endif /*! HIENA_MFRAG_FH_H */
