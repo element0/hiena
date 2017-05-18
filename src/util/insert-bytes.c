@@ -6,13 +6,15 @@
 
 #include <stdio.h>
 #include <sys/stat.h>
-#include "../frag.h"
-#include "../mfrag.h"
 #include "../hiena_fh.h"
-#include "../frag_fh.h"
+#include "../hiena_svc.h"
 #include "../file_svc.h"
+#include "../mfrag.h"
+#include "../mfrag_fh.h"
 #include "../mfrag_svc.h"
-
+#include "../frag.h"
+#include "../frag_fh.h"
+#include "../frag_svc.h"
 
 
 static void print_usage ( char *s )
@@ -44,19 +46,19 @@ int main( int argc, char *argv[] )
         struct hiena_mfrag *srcmf;
         void *dsta, *srca;
         struct hiena_svc *filesvc;
-
+        void *fh;
         char c;
 
         f = new_frag( );
         f2 = new_frag( );
 
-        dstmf = new_mfrag( );
-        srcmf = new_mfrag( );
+        dstmf = mfrag_new( );
+        srcmf = mfrag_new( );
 
         filesvc = &file_svc_ops;
 
-        srca = argv[1];
-        dsta = argv[4];
+        srca = (void *)argv[1];
+        dsta = (void *)argv[4];
 
         mfrag_set_addr( srcmf, srca );
         mfrag_set_addr( dstmf, dsta );
@@ -75,20 +77,17 @@ int main( int argc, char *argv[] )
 
         frag_insert( f, f2, atoi( argv[5] ));
 
-        /*
-        struct hiena_fh *fh;
-        fh = frag_fh_open( f );
 
-        while(( c = fh->ops->getc( fh )) != EOF )
-                  //---------------------
+        fh = frag_svc_open( f, NULL );
 
+        while(( c = frag_svc_ops.getchar(fh)) != EOF )
         {
                 fputc( c, stdout );
         }
         fputc('\n', stdout);
 
-        frag_fh_close( fh );
-        */
+        frag_svc_close( fh );
+
 
         mfrag_cleanup( srcmf );
         mfrag_cleanup( dstmf );

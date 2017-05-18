@@ -50,7 +50,7 @@ util-byterange:
 
 
 util-insert-bytes:
-	gcc mfrag.c frag.c service.c service-file.c util/insert-bytes.c -o $(out-bin)/insert-bytes
+	gcc mfrag.c mfrag_fh.c mfrag_svc.c frag.c frag_fh.c frag_svc.c file_svc.c util/insert-bytes.c -o $(out-bin)/insert-bytes
 
 
 test_main:  

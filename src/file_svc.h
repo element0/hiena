@@ -14,7 +14,7 @@
 
 struct hiena_svc file_svc_ops = {
         .read = (size_t (*)( void *, size_t, size_t, void *))fread,
-        .write = (size_t (*)( const void *, size_t, size_t, void *))fwrite,
+        .write = (size_t (*)( void *, size_t, size_t, void *))fwrite,
         .open  = (void * (*)( void *, const char *))fopen,
         .close = (int    (*)( void * ))fclose,
         .seek  = (int    (*)( void *, long, int ))fseek,

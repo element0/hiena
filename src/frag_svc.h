@@ -28,4 +28,7 @@ int frag_svc_seek( void *fh, long len, int w);
 int frag_svc_getc( void *fh );
 
 
+struct hiena_svc frag_svc_ops;
+
+
 #endif /*! HIENA_SERVICE_FRAG_H */
