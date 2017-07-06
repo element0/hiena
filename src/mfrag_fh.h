@@ -12,6 +12,7 @@
 struct mfrag_fh {
         struct hiena_mfrag *mfrag;
         struct hiena_fh *src_fh;
+        void *srcfh;
         off_t pos;
         int is_eof;
 };

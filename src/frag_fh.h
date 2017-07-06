@@ -14,6 +14,9 @@ struct frag_fh {
     struct frag_fh *inner_fh;
     struct frag_fh *outer_fh;
     struct mfrag_fh *mfrag_fh;
+    const char *mode;
+    size_t off;
+    int is_eof;
 };
 
 struct frag_fh *frag_fh_new();

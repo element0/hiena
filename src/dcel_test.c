@@ -7,7 +7,8 @@
 int dcel_test() {
 
     hiena_dcel *dc =  NULL;
-    if(( dc = new_dcel() )== NULL ) {
+    if(( dc = new_dcel() )== NULL )
+    {
         DCEL_ERR( "err new_dcel()" );
         goto cleanup;
     }

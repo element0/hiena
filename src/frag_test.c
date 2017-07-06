@@ -7,10 +7,12 @@ int main() {
         int ret = 0;
         struct hiena_frag *f = NULL;
 
+        f = frag_new();
 
-
-        if(( f = new_frag() ) == NULL ) {
-                ret = HIFRAG_ERR( "err new_frag, abort tests" );
+        if( f == NULL )
+        {
+                ret = -1;
+                HIERR("err new_frag, abort tests");
                 goto end;
         }
 

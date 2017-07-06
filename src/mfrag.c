@@ -30,7 +30,7 @@ struct hiena_mfrag *mfrag_dup( struct hiena_mfrag *mf )
         if( m2 == NULL )
                 return NULL;
 
-        m2 = memcpy( mf, m2, sizeof(*mf) );
+        m2 = memcpy( m2, mf, sizeof(*mf) );
 
         if( mf->buf != NULL )
         {

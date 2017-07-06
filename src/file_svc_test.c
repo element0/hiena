@@ -23,6 +23,8 @@ int main( int argc, char *argv[] )
         void *h;
 
         char c;
+        char buf[32];
+        size_t nread;
         int er;
         int erno;
         int ret;
@@ -37,12 +39,18 @@ int main( int argc, char *argv[] )
                 return -1;
         }
 
-        c = svc->getchar( h );
+        while(( c = svc->getchar( h ), c) != EOF )
+        {
+                fputc(c, stdout);
+        }
+        fputc('\n',stdout);
 
         if( c == EOF )
         {
                 fprintf(stderr, "file_svc_test: EOF: getc() from %s\n", addr );
         }
+
+        
 
         er = svc->close( h );
         erno = errno;

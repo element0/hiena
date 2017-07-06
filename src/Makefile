@@ -10,8 +10,11 @@ out-dirs:
 	mkdir -p $(out-test-bin)
 
 
-tests: test-file-svc test-hiena-fh test-mfrag test-mfrag-fh test-mfrag-svc test-frag test-frag-fh test-frag-svc
+tests: test-btrees test-file-svc test-hiena-fh test-mapcel test-mfrag test-mfrag-fh test-mfrag-svc test-frag test-frag-fh test-frag-svc
 
+
+test-btrees:
+	gcc btree.c btrees.c btrees_test.c -o $(out-test-bin)/btrees_test
 
 test-file-svc:
 	gcc hiena_svc.c file_svc_test.c -o $(out-test-bin)/file_svc_test
@@ -22,16 +25,18 @@ test-hiena-fh:
 
 
 test-frag:  
-	gcc mfrag.c frag.c frag_test.c -o $(out-test-bin)/frag_test
+	gcc btree.c btrees.c mfrag.c frag.c frag_test.c -o $(out-test-bin)/frag_test
 
 
 test-frag-fh:  
-	gcc mfrag.c frag.c frag_fh.c frag_fh_test.c -o $(out-test-bin)/frag_fh_test
+	gcc btree.c btrees.c mfrag.c frag.c frag_fh.c frag_fh_test.c -o $(out-test-bin)/frag_fh_test
 
 
 test-frag-svc:
-	gcc mfrag.c mfrag_fh.c mfrag_svc.c frag.c frag_fh.c frag_svc.c frag_svc_test.c -o $(out-test-bin)/frag_svc_test
+	gcc btree.c btrees.c mfrag.c mfrag_fh.c mfrag_svc.c frag.c frag_fh.c frag_svc.c frag_svc_test.c -o $(out-test-bin)/frag_svc_test
 
+test-mapcel:
+	gcc btrees.c mapcel.c mapcel_test.c -o $(out-test-bin)/mapcel_test
 
 test-mfrag:
 	gcc mfrag.c mfrag_test.c -o $(out-test-bin)/mfrag_test
@@ -43,6 +48,8 @@ test-mfrag-fh:
 
 test-mfrag-svc:
 	gcc mfrag_fh.c mfrag_svc.c mfrag_svc_test.c -o $(out-test-bin)/mfrag_svc_test
+
+
 
 
 util-byterange:

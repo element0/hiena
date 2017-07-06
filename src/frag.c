@@ -2,11 +2,11 @@
 
 
 
-
+#include <stdlib.h>
 
 #include "frag.h"
 #include "hierr.h"
-#include <stdlib.h>
+#include "btrees.h"
 
 
 struct hiena_frag *new_frag()
@@ -35,6 +35,10 @@ int frag_cleanup ( struct hiena_frag *f )
 
         return 0;
 }
+
+
+
+// ---- old ----
 
 int frag_set_first_content( struct hiena_frag *f, struct hiena_frag *fc )
 {
@@ -114,6 +118,8 @@ int frag_set_prev( struct hiena_frag *f, struct hiena_frag *f2 )
         return 0;
 }
 
+//---- mfrag ----
+
 int frag_set_mfrag( struct hiena_frag *f, struct hiena_mfrag *mf )
 {
         if( f == NULL )
@@ -135,6 +141,8 @@ struct hiena_mfrag *frag_get_mfrag( struct hiena_frag *f )
 }
 
 
+//---- mapping ----
+
 struct hiena_frag *frag_split( struct hiena_frag *f, HIFRAG_POS_T pos ) {
         HIFRAG_BOUND_T b[4];
         struct hiena_frag *fc[2];
@@ -143,6 +151,8 @@ struct hiena_frag *frag_split( struct hiena_frag *f, HIFRAG_POS_T pos ) {
 
         return NULL;
 }
+
+//---- meta ----
 
 HIFRAG_POS_T frag_get_length( struct hiena_frag *f )
 {
@@ -173,18 +183,23 @@ HIFRAG_POS_T frag_get_length( struct hiena_frag *f )
 }
 
 
+//---- mapping ----
+
 int frag_insert( struct hiena_frag *dstf, struct hiena_frag *srcf, HIFRAG_POS_T pos )
 {
-        if( dstf == NULL || srcf == NULL )
+        HIFRAG_POS_T  off, lenf;
+        HIMFRAG_BOUND_T  mt, mh;
+        struct hiena_frag  *f0, *f1, *f2, *f3;
+        struct hiena_mfrag *m1, *m2;
+
+
+        if( dstf == NULL
+         || srcf == NULL )
         {
                 return HIERR( "frag_insert: dest frag or fragment to be inserted is null." );
         }
 
-        HIFRAG_POS_T        off, lenf;
-        struct hiena_frag  *f0, *f1, *f2, *f3;
-        struct hiena_mfrag *m1, *m2;
-        HIMFRAG_BOUND_T     mt, mh;
-
+        
         off = pos;
         f0 = dstf;
         f1 = NULL;
@@ -206,7 +221,9 @@ frag_insert_start:
                 goto frag_insert_into_content;
         }
 
+
 frag_insert_into_container:
+
 
         lenf = frag_get_length( f1 );
  
@@ -243,6 +260,7 @@ frag_insert_into_content:
 
 
         m2 = mfrag_dup( m1 );
+
         mt = HIFRAG_POS_TO_HIMFRAG_BOUND( pos );
         mh = mt + 1;
         mfrag_set_boundtail( m1, mt );
@@ -266,4 +284,39 @@ frag_insert_action:
         frag_set_prev( f2, f1 );
 
         return 0;
+}
+
+
+int frag_put_anchor( struct hiena_frag *f, size_t pos, struct map_anchor *ma )
+{
+        if( f == NULL )
+        {
+                HIERR("frag_get_anchor: err: f NULL");
+                return -1;
+        }
+
+        btree_t *b;
+        void *er;
+
+        b = f->anchors;
+        er = btree_put( b, (void *)pos, (void *)ma );
+
+        return 0;
+}
+
+
+struct map_anchor *frag_get_anchor( struct hiena_frag *f, size_t pos )
+{
+        if( f == NULL )
+        {
+                HIERR("frag_get_anchor: err: f NULL");
+                return NULL;
+        }
+        btree_t *b;
+        struct map_anchor *ma;
+
+        b = f->anchors;
+        ma = (struct map_anchor *)btree_get(b,(void *)pos);
+
+        return ma;
 }
