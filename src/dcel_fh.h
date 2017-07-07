@@ -3,32 +3,40 @@
 
 
 
+
+
+
+
+
+
+
+
+struct dcel_fh;
+
+#include "hiena_svc.h"
 #include "dcel.h"
-#include "dcel_svc.h"
 #include "dcel_mapsvc.h"
 #include "frag.h"
-#include "fragcurse.h"
+#include "frag_curs.h"
 #include "mapcel.h"
 #include "map_anchor.h"
-#include "hiena_svc.h"
-
-
-
 
 
 struct dcel_fh {
         struct hiena_dcel *dcel;
+
         struct hiena_frag *frag;
         void *frag_fh;
+        struct frag_curs *fcurs;
 
-        struct fragcurs *fcurs;
-        struct map_anchor *ma;
-        size_t fpos;
-        size_t fragpos;
         struct hiena_mapcel *mc;
+        struct map_anchor *ma;
 
-        struct dcel_mapsvc_ops *mapops;
+        size_t pos;
+        size_t fragpos;
+
         struct hiena_svc *ops;
+        struct dcel_mapsvc_ops *mapops;
 
 };
 

@@ -1,12 +1,16 @@
 
+#include <stdlib.h>
 #include "hierr.h"
+#include "mapcel.h"
+#include "map_anchor.h"
+#include "frag.h"
+#include "frag_fh.h"
+#include "frag_svc.h"
+#include "frag_curs.h"
 #include "dcel.h"
 #include "dcel_fh.h"
 #include "dcel_svc.h"
-#include "frag.h"
-#include "frag_svc.h"
 #include "dcel_mapsvc.h"
-
 
 
 
@@ -22,41 +26,34 @@ void *dcel_svc_open( void *p, const char *mode )
 
         struct hiena_dcel *dc;
         struct dcel_fh *dfh;
+
         struct hiena_frag *cur_f;
-        struct frag_fh *ffh, mapffh;
+        struct frag_fh *ffh;
+        struct frag_curs *fcurs;
+
         struct hiena_mapcel *cur_mc;
         struct map_anchor *cur_ma;
-        struct frag_curs *fcurs;
+
 
         dc = (struct hiena_dcel *)p;
         dfh = malloc(sizeof(*dfh));
+
         cur_f = dc->frag;
-        ffh = frag_svc_open( (void *)cur_f, mode );
-        mapffh = frag_mapsvc_open( (void *)cur_f, mode );
-        cur_f = mapffh->frag;
-        cur_ma = cur_f->head_anchor;
-        fcurs = frag_curs_new( cur_f );
+        ffh = (struct frag_fh *)frag_svc_open( (void *)cur_f, mode );
+        /* fcurs = frag_curs_new( cur_f ); */
 
-        if(mapffh->frag != ffh->frag)
-        {
-                HIERR("dcel_svc_open: warning: mapffh->frag != ffh->frag");
-        }
-
-        if( cur_ma == NULL )
-        {
-                cur_ma = malloc(sizeof(*cur_ma));
-                cur_f->head_anchor = cur_ma;
-        }
-
+        cur_mc = NULL;
+        cur_ma = NULL;
+        
         dcel_retain( dc );
 
         dfh->dcel = dc;
         dfh->frag_fh = ffh;
-        dfh->mapffh = mapffh;
+        dfh->mc = cur_mc;
         dfh->ma = cur_ma;
-        dfh->fpos = 0;
-        dfh->mapops = &dcel_mapsvc_ops;
+        dfh->pos = 0;
         dfh->ops = &dcel_svc_ops;
+        dfh->mapops = &dcel_mapsvc;
         
         return (void *)dfh;
 }
@@ -72,12 +69,21 @@ int dcel_svc_close( void *p )
 
         struct dcel_fh *dfh;
         struct hiena_dcel *dc;
+
+        struct hiena_frag *frag;
         void *ffh;
+        struct frag_curs *fcurs;
+
+        struct hiena_mapcel *mc;
+        struct map_anchor *ma;
+
 
         dfh = (struct dcel_fh *)p;
+        dc  = dfh->dcel;
         ffh = dfh->frag_fh;
 
         frag_svc_close( ffh );
+        /* frag_curs_cleanup( fcurs ); */
 
         dcel_release( dc );
 
@@ -98,9 +104,8 @@ int dcel_svc_getc( void *p )
         char c;
 
         dfh = (struct dcel_fh *)p;
-        ffh = dfh->frag_fh;
 
-        c = frag_svc_ops.getchar( ffh );
+        c = frag_svc_ops.getchar( dfh->frag_fh );
 
         return c;
 }

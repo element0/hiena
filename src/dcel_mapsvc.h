@@ -2,6 +2,7 @@
 #define HIENA_DCEL_MAPSVC_H
 
 
+#include "dcel_fh.h"
 #include "mapcel.h"
 #include "dcel.h"
 

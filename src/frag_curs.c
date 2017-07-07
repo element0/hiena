@@ -13,7 +13,7 @@ static struct frag_fh *frag_curs_node_new( struct hiena_frag *f )
         ffh = frag_fh_new();
         ffh->frag = f;
         ffh->off  = 0;
-        ffh->mfrag = NULL;
+        ffh->mfrag_fh = NULL;
 }
 
 static void frag_curs_node_cleanup( struct frag_fh *ffh )
@@ -26,17 +26,16 @@ static void frag_curs_node_cleanup( struct frag_fh *ffh )
 struct frag_curs *frag_curs_new( struct hiena_frag *f )
 {
         struct frag_curs *fc;
-        struct frag_fh *ffh;
+        struct frag_fh *root;
 
-        ffh = frag_curs_node_new(f);
-        ffh->outer_fh = ffh;
+        root = frag_curs_node_new(f);
+        root->outer_fh = root;
 
 
         fc = malloc(sizeof(*fc));
         memset(fc, 0, sizeof(*fc));
-        fc->f = f;
-        fc->root = ffh;
-        fc->cur = ffh;
+        fc->root = root;
+        fc->cur = root;
 
         return fc;
 }
@@ -62,6 +61,27 @@ int frag_curs_step_inward( struct frag_curs *fc )
                  return -1;
         }
 
+        struct frag_fh *cur;
+        struct frag_fh *cursav;
+
+        cursav = fc->cur;
+
+find_child:
+
+        cf = (struct hiena_frag *) bnode_value_at_key_or_nearest_lesser(f->children, off, &new_off);
+
+        if(frag_has_room( cf, len ))
+        {
+                
+frag_curs_step_into( fcurse, cf, new_off );
+                f = cf;
+                off = new_off;
+                goto find_child;
+        }
+
+//----------
+
+
         if( f == NULL )
         {
                 HIERR("frag_curs_step_into: err: f NULL");
@@ -69,10 +89,6 @@ int frag_curs_step_inward( struct frag_curs *fc )
         }
 
 
-        struct frag_fh *cur;
-        struct frag_fh *cursav;
-
-        cursav = fc->cur;
 
         cur = frag_curs_node_new(f);
         cur->outer_fh = cursav;
