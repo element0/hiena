@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../dcel.h"
 #include "../dcel_fh.h"
 #include "../dcel_svc.h"
@@ -19,12 +20,13 @@ int mapalnum( struct hiena_dcel *dc )
 
         struct dcel_fh *dfh;
         char c;
-        int si;
+        int si, i;
         int stak[6];
         size_t pos[6], len[6];
+        size_t matchlen;
         struct hiena_mapcel *val[4];
         struct map_anchor *ma, *ma2;
-        const int num_rule = 22;
+        const int num_rule = 21;
 
         enum {
 INITOK,
@@ -47,7 +49,7 @@ _new2_addchild12_endparse,
         };
 
 
-        char rule[num_rule][8]={
+        char rule[]={
 0,0,0,0,0,0,0,_beginparse,
 ATOK,0,0,ATOK,0,0,1,_growlen1,
 NTOK,0,0,NTOK,0,0,1,_growlen1,
@@ -75,13 +77,13 @@ ANTOK,NTOK,ENDTOK,ANTOK,ENDTOK,0,3, _new2_addchild12_endparse,
         };
 
         
-        dfh = (dcel_fh *)dcel_svc_ops.open( (void *)dc );
+        dfh = (struct dcel_fh *)dcel_svc_ops.open( (void *)dc, "r" );
 
         stak[0] = 0;
         stak[1] = 0;
         stak[3] = 0;
         si = 0;
-        pos = memset(&pos, 0, sizeof(pos));
+        memset(&pos, 0, sizeof(pos));
 
 parse_loop:
 
@@ -102,7 +104,7 @@ parse_loop:
 
         matchlen++;
 
-        for(i=0; i<num_rules; i++)
+        for(i=0; i<num_rule; i++)
         {
 
         if((stak[0] == rule[i][0])
