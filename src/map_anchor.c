@@ -12,7 +12,7 @@ struct map_anchor *map_anchor_new()
 {
         struct map_anchor *ma;
 
-        ma = malloc(sizeof(ma*));
+        ma = malloc(sizeof(*ma));
 
         return ma;
 }

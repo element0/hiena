@@ -40,7 +40,7 @@ void *dcel_svc_open( void *p, const char *mode )
 
         cur_f = dc->frag;
         ffh = (struct frag_fh *)frag_svc_open( (void *)cur_f, mode );
-        /* fcurs = frag_curs_new( cur_f ); */
+        fcurs = frag_curs_new( cur_f );
 
         cur_mc = NULL;
         cur_ma = NULL;
@@ -83,7 +83,7 @@ int dcel_svc_close( void *p )
         ffh = dfh->frag_fh;
 
         frag_svc_close( ffh );
-        /* frag_curs_cleanup( fcurs ); */
+        frag_curs_cleanup( fcurs );
 
         dcel_release( dc );
 

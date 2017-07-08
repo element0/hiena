@@ -16,6 +16,9 @@ btrees:
 	gcc -c btree.c -o $(out-o)/btree.o
 	gcc -c btrees.c -o $(out-o)/btrees.o
 
+map-anchor:
+	gcc -c map_anchor.c -o $(out-o)/map_anchor.o
+
 mfrag:
 	gcc -c mfrag.c -o $(out-o)/mfrag.o
 
@@ -31,7 +34,7 @@ frag:
 frag-fh:
 	gcc -c frag_fh.c -o $(out-o)/frag_fh.o
 
-frag-curs: frag-fh
+frag-curs: frag-fh frag-svc
 	gcc -c frag_curs.c -o $(out-o)/frag_curs.o
 
 frag-svc:
@@ -40,11 +43,14 @@ frag-svc:
 dcel-svc:
 	gcc -c dcel_svc.c -o $(out-o)/dcel_svc.o
 
+
+hiena-obs: btrees map-anchor mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs frag-svc dcel-svc
+
 tests: out-dirs test-btrees test-dcel-svc test-file-svc test-hiena-fh test-mapcel test-mfrag test-mfrag-fh test-mfrag-svc test-frag test-frag-fh test-frag-svc
 
 
-test-dcel-svc: btrees mfrag mfrag-fh mfrag-svc frag frag-fh frag-svc dcel-svc
-	gcc $(out-o)/{btree.o,btrees.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_svc.o,dcel_svc.o} dcel_svc_test.c -o $(out-test-bin)/dcel_svc_test
+test-dcel-svc: btrees map-anchor mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs frag-svc dcel-svc
+	gcc $(out-o)/{btree.o,btrees.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o} dcel_svc_test.c -o $(out-test-bin)/dcel_svc_test
 
 
 test-btrees: btrees
@@ -65,8 +71,9 @@ test-frag:
 test-frag-fh:  
 	gcc btree.c btrees.c mfrag.c frag.c frag_fh.c frag_fh_test.c -o $(out-test-bin)/frag_fh_test
 
-test-frag-curs:  
-	gcc btree.c btrees.c mfrag.c frag.c frag_curs.c -o $(out-test-bin)/frag_curs_test
+
+test-frag-curs:  btrees mfrag mfrag-fh mfrag-svc map-anchor frag frag-fh frag-svc frag-curs
+	gcc $(out-o)/{btree.o,btrees.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_svc.o,frag_curs.o} frag_curs_test.c -o $(out-test-bin)/frag_curs_test
 
 
 test-frag-svc:
@@ -86,6 +93,11 @@ test-mfrag-fh:
 test-mfrag-svc:
 	gcc mfrag_fh.c mfrag_svc.c mfrag_svc_test.c -o $(out-test-bin)/mfrag_svc_test
 
+
+
+
+util-mapalnum: hiena-obs
+	gcc $(out-o)/{btree.o,btrees.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o} util/{mapalnum_func.c,mapalnum_util.c} -o $(out-bin)/mapalnum
 
 
 

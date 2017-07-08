@@ -64,6 +64,9 @@ void btree_print(btree_t *);
 int btree_cleanup( btree_t * );
 
 
+void
+*bnode_value_at_key_or_nearest_lesser( bnode_t *n, bkey_t k, bkey_t *kres );
+
 
 
 #endif /*! HIENA_BTREES_H */

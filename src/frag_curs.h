@@ -14,11 +14,12 @@ struct frag_curs
 {
         struct frag_fh *root;
         struct frag_fh *cur;
+        size_t pos;
 };
 
 
 
-struct frag_curs *fragcurse_new( struct hiena_frag * );
+struct frag_curs *frag_curs_new( struct hiena_frag * );
 
 int frag_curs_cleanup( struct frag_curs * );
 
@@ -33,11 +34,11 @@ struct hiena_frag *frag_curs_find_deepest( struct frag_curs * );
 struct hiena_frag *frag_curs_find_deepest_has_room( struct frag_curs *, size_t len );
 
 
-int frag_curs_seek( struct frag_curs *, long len, int whence);
+int frag_curs_seek( struct frag_curs *, size_t len, int whence);
 
 int frag_curs_seek_into( struct frag_curs *, struct hiena_frag *, size_t off);
 
-struct map_anchor *frag_curs_get_anchor( struct frag_curs *, size_t pos );
+struct map_anchor *frag_curs_get_anchor( struct frag_curs * );
 
 
 
