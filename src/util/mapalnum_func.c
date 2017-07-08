@@ -49,7 +49,7 @@ _new2_addchild12_endparse,
         };
 
 
-        char rule[]={
+        char rule[][8]={
 0,0,0,0,0,0,0,_beginparse,
 ATOK,0,0,ATOK,0,0,1,_growlen1,
 NTOK,0,0,NTOK,0,0,1,_growlen1,

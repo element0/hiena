@@ -1,3 +1,5 @@
+SHELL = /bin/bash
+
 out-o = ../out/o
 out-bin = ../out/bin
 out-test-bin = ../out/test-bin
