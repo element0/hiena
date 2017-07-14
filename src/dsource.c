@@ -56,6 +56,9 @@ struct hiena_dcel *dsource( struct context_frame *cx, int argc, void **argv)
 
         frag_set_mfrag( f, mf );
 
+	dc = malloc(sizeof(*dc));
+	memset(dc, 0, sizeof(*dc));
+
         dc->frag = f;
 
         return dc;
