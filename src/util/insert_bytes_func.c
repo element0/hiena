@@ -5,7 +5,7 @@
 
 
 #include <stdio.h>
-#include <sys/stat.h>
+
 #include "../hiena_fh.h"
 #include "../hiena_svc.h"
 #include "../file_svc.h"
@@ -21,14 +21,6 @@ static void print_usage ( char *s )
 {
         printf("%s SRCFILE STARTBYTE ENDBYTE DSTFILE AT_BYTE\n", s );
         printf("example: %s insertthis.txt 100 300 intothisat.txt 15", s );
-}
-
-
-static off_t get_filesize( char *n )
-{
-        struct stat sb;
-        stat( n, &sb );
-        return sb.st_size;
 }
 
 

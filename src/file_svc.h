@@ -21,4 +21,6 @@ struct hiena_svc file_svc_ops = {
         .getchar  = (int    (*)( void * ))fgetc,
 };
 
+off_t get_filesize( char * );
+
 #endif /*! HIENA_FILE_SVC_H */

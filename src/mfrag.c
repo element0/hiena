@@ -67,7 +67,7 @@ int mfrag_set_bounds( struct hiena_mfrag *f, HIMFRAG_BOUND_T bh, HIMFRAG_BOUND_T
         if(( bh < HIMFRAG_BOUNDS_MIN ) || ( bh > HIMFRAG_BOUNDS_MAX ) ||
 ( bt < HIMFRAG_BOUNDS_MIN ) ||
 ( bt > HIMFRAG_BOUNDS_MAX )) {
-                return HIERR( "frag_set_bounds: outside limits" );
+                return HIERR( "mfrag_set_bounds: outside limits" );
         }
         f->boundhead = bh;
         f->boundtail = bt;

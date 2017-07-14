@@ -16,4 +16,6 @@ struct hiena_dcel {
         int retain;
 };
 
+int dcel_cleanup( struct hiena_dcel * );
+
 #endif /*! _HIENA_DCEL_H_ */
