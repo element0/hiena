@@ -1,0 +1,175 @@
+
+/*== DESCRIPTION: sslib.[ch] ==*/
+/*
+   BRIEF:
+   ======
+   This is the main interface into the world of scanners.
+   
+   This file provides all the interfaces needed to load and use scanners.
+
+   There is going to be a cache daemon, cosmosd, keeping the scannerserver 
+   cache if there are multiple cosmofs FUSE mountpoints running.
+   But that will be invisible to the user of this API.
+
+
+   OBJECTS:
+   ========
+   The API serves these objects.
+
+   	. scanner library
+	. scanner bank
+	. scanner object
+
+   The scanner library holds all scanners from load time to cleanup.
+   There really only needs to be a single scanner library per host.
+   We can delegate this to the daemon.
+
+   The scanner bank is a organized hierarchy of scanners that can be
+   restructured at any access path in the file tree.  Scanner banks are owned
+   by access paths.  In scanner banks we implement context hierarchy and
+   scanner cascading.
+
+
+   
+   The scanner object is the primary scannerserver unit.  It begins as an HNF i
+   file.  The HNF is compiled by hiena -- possibly at run time -- into a shared object (SO) 
+   file.  The SO primarily consists of a set of compiled, grammar rule, finite
+   state machines (FSM's) and a compiled token id table.
+
+
+   The compiled grammar rules are compiled in such a way, that they can be hot-swapped
+   with another version of the rule -- required for cascading -- and such that they
+   can be compared bit for bit with another compiled rule to determine whether
+   the rules are logically equivilant, even though their rulenames might differ.
+   (Logical equivalence may help economize the cache, and it will enable us to
+   generate a GUID for each rule.)
+   
+
+   The token id table is written in such a way, that it has empty fields
+   which will be populated upon load-time with GUID's.  The GUID is what will
+   be mapped into the parse packet's object map by the Hiena parse engine.
+   Scanners can take advantage of previously mapped areas if their rule matches
+   a previously mapped GUID.
+
+   Therefor, there are a few more significant internal objects:
+
+   	. compiled rule
+	. token table
+	. rule cache tree
+
+
+   USES API's:
+   ===========
+   This API delegates to the following:
+
+   	. hiena
+	. cosmosd
+
+   Hiena compiles HNF files into SO files.
+
+   Cosmosd stores loaded SO contents in the Scanner Library.
+
+
+
+   SCANNER LIBRARY:
+   ================
+
+
+   The scanner object is cached, key'd by filepath.  If a load-request filepath
+   matches a cached filepath then a checksum compares request-relative HNF to the
+   request-relative SO.  If matches, the checksum is compared
+   to the cached SO.  If it matches, the scanner is assumed to already be loaded.
+
+   If the HNF doesn't match the SO, we recompile and reload the SO.
+
+   Rule caching:
+   In order to streamline logical comparison, we could use content addressable
+   memory for rule lookup and comparison.  Therefore, comparison naturally
+   results in the determination of a GUID.  CAM lookup is performed upon loading
+   a compiled scanner.
+
+   
+   SCANNERS: BANKS, HIERARCHY, CASCADING
+   =====================================
+   Scanner context hiearchy is where one scanner is subjectively available within
+   the context of another scanner, but invisible outside of it.
+
+     BANK
+   	srA/
+	  srA1/
+	srB/
+	  srB1/
+   
+   In the above example, BANK holds four scanners, srA, srA1, srB, srB1.
+   srA1 is not available in the context of srB, nor is srB1 available in the 
+   context of srA.
+
+   Given a data domain A.  The following derivatives would be valid:
+
+      A.srA
+      A.srA.srA1
+      A.srB
+      A.srB.srB1
+
+
+   Scanner cascading is where one bank inherits from another, and scanners are free
+   to define new grammar rules which over-ride their anscestor.
+
+   Given a domain rooted in A:
+
+      A/
+        .BANK:={srA/srA1,srB/srB1}
+        B/
+	  .BANK:={srA/srA2,srB/!srB1} -[inheritance result]-> {srA/{srA1,srA2},srB}
+	  C/
+	    .BANK:={srC}              -[inheritance result]-> {srA/{srA1,srA2},srB,srC}
+   };
+
+
+   WORK IN PROGRESS, TODO:
+   =======================
+
+   scanner HNF format		working example: "cosmosfs-args.hnf"
+   HNF compiler
+   compiled rules
+   compiled token table
+   scanner cache tree
+   rule lookup (CAM)
+   rule cache tree
+
+
+
+
+   The API:
+   ========
+
+   load_scanners();
+
+   The scanner system loads one or more scanners from a pathname string and places
+   their shared object bits into the scanner cache tree.  It creates GUID's for all
+   compiled rules and scanners and caches the compiled rules into the compiled rule
+   tree.
+
+
+   get_scanner();
+   get_scanner_by_name();
+   load_scanner();
+
+   a set of functions which lookup a particular scanner and returns a scanner object.
+   load scanner both loads the scanner into the cache tree and returns a scanner ob.
+
+
+   load_scanner_bank();
+
+   By far the most useful function, loads all scanners rooted at a particular path,
+   organizes them, applying small cascading overrides and adds them to the scanner cache. 
+
+
+   make_scanner_cascade();
+
+   returns a scanner bank based on the cascading the inputs of two others.
+
+
+*/
+/*--------*/
+

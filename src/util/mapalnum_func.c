@@ -50,30 +50,31 @@ _new2_addchild12_endparse,
 
 
         char rule[][8]={
+ENDTOK,0,0,ENDTOK,0,0,3,_endparse,
 0,0,0,0,0,0,0,_beginparse,
 ATOK,0,0,ATOK,0,0,1,_growlen1,
 NTOK,0,0,NTOK,0,0,1,_growlen1,
-ENDTOK,0,0,ENDTOK,0,0,3,_endparse,
 
+ATOK,NTOK,ENDTOK,ANTOK,ENDTOK,0,3, _new2_new4_parent412_endparse,
 ATOK,ATOK,0,ATOK,0,0,1, _growlen1,
 ATOK,NTOK,0,ATOK,NTOK,0,2, _new1_growlen2,
 ATOK,NTOK,NTOK,ATOK,NTOK,0,2, _growlen2,
 ATOK,NTOK,ATOK,ANTOK,ATOK,0,2, _new2_new4_parent412,
-ATOK,NTOK,ENDTOK,ANTOK,ENDTOK,0,3, _new2_new4_parent412_endparse,
 
+NTOK,ATOK,ENDTOK,ANTOK,ENDTOK,0,3, _new2_new4_parent412_endparse,
 NTOK,NTOK,0,NTOK,0,0,1, _growlen1,
 NTOK,ATOK,0,NTOK,ATOK,0,2, _new1_growlen2,
 NTOK,ATOK,ATOK,NTOK,ATOK,0,2, _growlen2,
 NTOK,ATOK,NTOK,ANTOK,NTOK,0,2, _new2_new4_parent412,
-NTOK,ATOK,ENDTOK,ANTOK,ENDTOK,0,3, _new2_new4_parent412_endparse,
 
+
+ANTOK,ATOK,ENDTOK,ANTOK,ENDTOK,0,3, _new2_addchild12_endparse,
+ANTOK,NTOK,ENDTOK,ANTOK,ENDTOK,0,3, _new2_addchild12_endparse,
 ANTOK,ENDTOK,0,ANTOK,ENDTOK,0,3, _endparse,
 ANTOK,ATOK,ATOK,ANTOK,ATOK,0,2, _growlen2,
 ANTOK,NTOK,NTOK,ANTOK,NTOK,0,2, _growlen2,
 ANTOK,ATOK,NTOK,ANTOK,ATOK,0,2, _new2_addchild12,
 ANTOK,NTOK,NTOK,ANTOK,NTOK,0,2, _new2_addchild12,
-ANTOK,ATOK,ENDTOK,ANTOK,ENDTOK,0,3, _new2_addchild12_endparse,
-ANTOK,NTOK,ENDTOK,ANTOK,ENDTOK,0,3, _new2_addchild12_endparse,
         };
 
         
