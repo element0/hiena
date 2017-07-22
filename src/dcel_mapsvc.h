@@ -25,11 +25,11 @@ struct dcel_mapsvc_ops {
 
         struct hiena_mapcel *(*newterm)(struct dcel_fh *, int ruleid, size_t pos, size_t len);
 
-        struct hiena_mapcel *(*new)(struct dcel_fh *, int ruleid, size_t pos, size_t len);
+        struct hiena_mapcel *(*new)(int ruleid);
 
-        int (*add)(struct dcel_fh *, struct hiena_mapcel *parent, struct hiena_mapcel *child);
+        int (*add)( struct hiena_mapcel *parent, struct hiena_mapcel *child);
 
-        int (*add_dirent)(struct dcel_fh *, struct hiena_mapcel *parent, struct hiena_mapcel *child);
+        int (*add_dirent)(struct hiena_mapcel *parent, struct hiena_mapcel *child);
 
 };
 

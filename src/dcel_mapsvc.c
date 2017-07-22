@@ -17,7 +17,10 @@
 int dcel_mapsvc_idcmp( void *, void * );
 
 
-struct hiena_mapcel *dcel_mapsvc_new(struct dcel_fh *dfh, int ruleid, size_t pos, size_t len)
+struct hiena_mapcel *dcel_mapsvc_new(int ruleid);
+
+
+struct hiena_mapcel *dcel_mapsvc_newterm(struct dcel_fh *dfh, int ruleid, size_t pos, size_t len)
 {
         if( dfh == NULL )
         {
@@ -97,6 +100,8 @@ int dcel_mapsvc_grow(void *p, size_t len)
 }
 
 int dcel_mapsvc_add(struct dcel_fh *dfh, struct hiena_mapcel *par, struct hiena_mapcel *chi);
+
+int dcel_mapsvc_add_dirent(struct dcel_fh *dfh, struct hiena_mapcel *par, struct hiena_mapcel *chi);
 
 struct dcel_mapsvc_ops dcel_mapsvc_ops = {
         .new = dcel_mapsvc_new,

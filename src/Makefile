@@ -51,6 +51,11 @@ frag-svc:
 	gcc $(dbugopts) -c frag_svc.c -o $(out-o)/frag_svc.o
 
 
+hpat:
+	gcc $(dbugopts) -c hpat.c -o $(out-o)/hpat.o
+
+
+
 map-anchor:
 	gcc $(dbugopts) -c map_anchor.c -o $(out-o)/map_anchor.o
 
@@ -65,6 +70,33 @@ mfrag-svc:
 	gcc $(dbugopts) -c mfrag_svc.c -o $(out-o)/mfrag_svc.o
 
 
+ox-so:
+	bison -Wnone -d scanners/ox/ox.y -o scanners/os/ox.tab.c
+	flex -o scanners/ox/ox.yy.c scanners/ox/ox.l
+	gcc -c -fPIC scanners/ox/ox.tab.c scanners/ox/ox.yy.c
+	gcc -shared -o $(out-o)/ox.so $(out-o)/ox.tab.o $(out-o)/ox.yy.o
+#../../src/libhiena.o
+
+ox:
+	bison -d scanners/ox.y
+	flex -o scanners/ox.yy.c scanners/ox.l
+	gcc -o $(out-bin)/ox scanners/ox.tab.c scanners/ox.yy.c
+
+ox-tester:
+	gcc -rdynamic -o ox-tester ox-tester.c -ldl
+
+
+scanner:
+	gcc $(dbugopts) -c scanner.c -o $(out-o)/scanner.o
+
+scanner_hdl:
+	gcc $(dbugopts) -c scanner_hdl.c -o $(out-o)/scanner_hdl.o
+
+scanner_svc:
+	gcc $(dbugopts) -c scanner_svc.c -o $(out-o)/scanner_svc.o
+
+slib:
+	gcc $(dbugopts) -c slib.c -o $(out-o)/slib.o
 
 
 
