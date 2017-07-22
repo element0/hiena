@@ -22,7 +22,7 @@ static util_print_dir( struct hiena_dcel *dc )
         d = dcel_dirsvc->opendir(dc);
         if(d == NULL)
         {
-                HIERR("hiena_ls_util/util_print_dir: d NULL.);
+                HIERR("hiena_ls_util/util_print_dir: d NULL.");
                 return -1;
         }
 
@@ -61,7 +61,7 @@ int main( int argc, char *argv[] )
 
         dc = dsource(NULL, 1, &fn);
 
-        hsp = hsp_init( dc );
+        hsp = hsp_init_src_scanner_slib( dc, hs, slib );
 
         hs->op->parse( hsp );
         //--------

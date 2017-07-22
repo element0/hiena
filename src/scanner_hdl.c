@@ -186,7 +186,7 @@ Hspops *hsp_ops_init() {
 /*
     ops->putob  = hiena_map_putob;
     ops->gettok = NULL;
-    ops->fopen  = ppak_fopen;
+    ops->fopen  = dcel_svc->open;
 */
     /* ...RETIRING */
 
@@ -270,7 +270,7 @@ static Hsp *verify_hsp(Hsp *h)
        IF NOT cleanup 'h' and return NULL.
      */
     if(
-	    h->fp	   == NULL ||
+	    h->dfh	   == NULL ||
 	    h->op          == NULL ||
 	    h->rq          == NULL ||
 	    h->src_ref     == NULL ||
@@ -394,11 +394,11 @@ int hsp_set_scanner(Hsp *hsp, scannerserver *s)
     /* this SEEMS TO DUPLICATE EFFORTS of 'hsp_init_...' */
     /* also, does not contrain Hsp to NON-NULL 'fp' */
     /* need to ADD A VERIFICATION routine */
-    if(hsp->fp == NULL)
+    if(hsp->dfh == NULL)
     {
 	if(hsp->src_ref != NULL)
 	{
-	    hsp->fp = ppak_fopen(hsp->src_ref, "r"); 
+	    hsp->dfh = dcel_svc->open(hsp->src_ref, "r"); 
 	}else{
 	    fprintf(stderr, "hiena:hsp.hsp_set_scanner: FILE fp and source are NULL, abort routine.\n");
 	    return -5;
@@ -407,10 +407,10 @@ int hsp_set_scanner(Hsp *hsp, scannerserver *s)
     printf("setting yyset_in...\n");
     if(s->op->yyset_in != NULL && s->op->yyget_in != NULL)
     {
-	s->op->yyset_in(hsp->fp, hsp->lexer);
-	FILE *fpcheck = s->op->yyget_in(hsp->lexer);
+	s->op->yyset_in(hsp->dfh, hsp->lexer);
+	struct dcel_fh *fpcheck = s->op->yyget_in(hsp->lexer);
 
-	if(hsp->fp != fpcheck)
+	if(hsp->dfh != fpcheck)
 	{
 	    fprintf(stderr, "hsp_set_scanner: setting lexer input stream failed, abort routine.\n");
 	    return -6;
@@ -435,20 +435,22 @@ Hsp *hsp_init_src_scanner_slib( Ppak *src_ref, scannerserver *s, scanlib *slib )
         return NULL;
     }
 
+/*
     h->parseroot = new_ppak(NULL);
-
-    h->op = hsp_ops_init();
     h->rq = new_rq();
     rq_set_hsp(h->rq,h);
+*/
+
+    h->svc = dcel_svc;
+    h->mapsvc = dcel_mapsvc;
+
 
     h->src_ref = src_ref;
 
     if(src_ref != NULL)
     {
-        // h->fp = ppak_fopen(src_ref, "r");
+        h->dfh = dcel_svc->open(src_ref, "r");
     }
-    /* TBD check error codes... */
-    /* how necessary are error codes in this situation, really? */
     hsp_set_scanner(h,s);
     hsp_set_scanlib(h,slib);
 
