@@ -29,7 +29,7 @@ int main( int argc, char *argv[])
 
         dc = dsource( cx, 1, args );
 
-        // mapalnum( dc );
+        mapalnum( dc );
 
         dcel_cleanup( dc );
         context_frame_cleanup( cx );
