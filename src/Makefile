@@ -6,14 +6,17 @@ out-test-bin = ../out/test-bin
 
 dbugopts = -g
 
-all: out-dirs tests utils
-
-utils: util-byterange util-insert-bytes
 
 out-dirs:
 	mkdir -p $(out-o)
 	mkdir -p $(out-bin)
 	mkdir -p $(out-test-bin)
+
+
+all: out-dirs tests utils
+
+
+
 
 
 btrees:
@@ -70,6 +73,8 @@ mfrag-svc:
 	gcc $(dbugopts) -c mfrag_svc.c -o $(out-o)/mfrag_svc.o
 
 
+
+
 ox-so:
 	bison -Wnone -d scanners/ox/ox.y -o scanners/os/ox.tab.c
 	flex -o scanners/ox/ox.yy.c scanners/ox/ox.l
@@ -85,14 +90,16 @@ ox:
 ox-tester:
 	gcc -rdynamic -o ox-tester ox-tester.c -ldl
 
+scanners: ox-so
+
 
 scanner:
 	gcc $(dbugopts) -c scanner.c -o $(out-o)/scanner.o
 
-scanner_hdl:
+scanner-hdl:
 	gcc $(dbugopts) -c scanner_hdl.c -o $(out-o)/scanner_hdl.o
 
-scanner_svc:
+scanner-svc:
 	gcc $(dbugopts) -c scanner_svc.c -o $(out-o)/scanner_svc.o
 
 slib:
@@ -153,6 +160,14 @@ test-mfrag-svc:
 	gcc $(dbugopts) mfrag_fh.c mfrag_svc.c mfrag_svc_test.c -o $(out-test-bin)/mfrag_svc_test
 
 
+test_main:  
+	gcc $(dbugopts) frag.c frag_test.c test_main.c -o $(out-bin)/test_main
+
+
+
+
+util-hiena-ls: hiena-obs svc-obs slib scanner-hdl
+	gcc $(dbugopts) $(out-o)/{slib.o, dsource.o, scanner_hdl.o, dcel.o} util/hiena_ls_util.c -o $(out-bin)/hiena-ls
 
 
 util-mapalnum: hiena-obs svc-obs
@@ -168,7 +183,7 @@ util-insert-bytes:
 	gcc $(dbugopts) mfrag.c mfrag_fh.c mfrag_svc.c frag.c frag_fh.c frag_svc.c file_svc.c util/insert-bytes.c -o $(out-bin)/insert-bytes
 
 
-test_main:  
-	gcc $(dbugopts) frag.c frag_test.c test_main.c -o $(out-bin)/test_main
+
+utils: util-byterange util-insert-bytes util-hiena-ls
 
 

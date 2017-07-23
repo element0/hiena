@@ -74,6 +74,8 @@ struct scanner_hdl
     struct dcel_fh *dfh;
 
     Hspops *op;		/*:= !NULL */
+    struct hiena_svc *svc;
+    struct dcel_mapsvc_ops *mapsvc; 
 
     rq *rq;		/*:= !NULL */			
 

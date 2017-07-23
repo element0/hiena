@@ -25,7 +25,7 @@ struct dcel_dirsvc_ops {
 
 };
 
-struct dcel_mapsvc_ops dcel_dirsvc;
+struct dcel_dirsvc_ops dcel_dirsvc;
 
 
 

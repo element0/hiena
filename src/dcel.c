@@ -2,6 +2,10 @@
 #include "hierr.h"
 #include "frag.h"
 
+struct hiena_dcel *dcel_new( struct hiena_dcel *dcgarbage )
+{
+	return NULL;
+}
 
 
 int dcel_cleanup( struct hiena_dcel *dc )

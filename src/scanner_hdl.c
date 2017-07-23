@@ -9,42 +9,10 @@
 #include "dcel_svc.h"
 #include "hpat.h"
 #include "hierr.h"
-#include "rql.h"
+// #include "rql.h"
 #include "scanner_hdl.h"
 
 
-static Hpat *validate_rqfunc_args (Hsp *h, const char *s)
-{
-    if(h != NULL && s != NULL)
-    {
-	Hpat *pat = new_hpat_from_string(s);
-	if(pat==NULL)
-	{
-	    HIERR("scanner_hdl:validate_rqfunc_args: hpat is NULL, abort routine.\n");
-	    return NULL;
-	}
-
-	if(h->rq == NULL)
-	{
-	    h->rq = new_rq();
-	    if(h->rq == NULL)
-	    {
-		HIERR("scanner_hdl:validate_rqfunc_args: can't create h->rq, abort routine.\n");
-
-		hpat_cleanup(pat);
-
-		return NULL;
-	    }
-	}
-
-	return pat;
-
-    }else{
-
-	HIERR("scanner_hdl:validate_rqfunc_args: h or s are NULL, abort routine.\n");
-        return NULL;
-    }
-}
 
 
 char *hsp_getenv(const char *envarname)
@@ -53,162 +21,7 @@ char *hsp_getenv(const char *envarname)
 }
 
 
-void set_rqtarg (Hsp *h, const char *s)
-{
-    Hpat *pat = validate_rqfunc_args(h,s);
 
-    if(pat==NULL)
-    {
-	fprintf(stderr, "sshsp:set_rqtarg: pat is NULL, abort routine.\n");
-	return;
-    }
-    set_targ(h->rq, pat);
-
-    return;
-}
-
-
-void set_rqdest (Hsp *h, const char *s)
-{
-    Hpat *pat = validate_rqfunc_args(h,s);
-
-    if(pat==NULL)
-    {
-	fprintf(stderr, "sshsp:set_rqdest: pat is NULL, abort routine.\n");
-	return;
-    }
-
-    set_dest(h->rq, pat);
-    return;
-}
-
-
-void set_rqsrc (Hsp *h, Ppak *s)
-{
-    if(h == NULL || s == NULL)
-    {
-	fprintf(stderr, "sshsp:setrqsrc: h or s is NULL, abort routine.\n");
-	return;
-    }
-    set_src(h->rq, s);
-    return;
-}
-
-
-void set_rqmap (Hsp *h, int i)
-{
-    if(h == NULL)
-    {
-	fprintf(stderr, "sshsp:setrqmap: h is NULL, abort routine.\n");
-	return;
-    }
-    if(h->rq == NULL)
-    {
-	h->rq = new_rq();
-	if(h->rq == NULL)
-	{
-	    fprintf(stderr, "sshsp:setrqmap: can't init h->rq, abort routine.\n");
-	    return;
-	}
-    }
-    set_map(h->rq, i);
-    return;
-}
-
-
-void set_rqop (Hsp *h, int i)
-{
-    if(h == NULL)
-    {
-	fprintf(stderr, "sshsp:set_rqop: h is NULL, abort routine.\n");
-	return;
-    }
-    if(h->rq == NULL)
-    {
-	h->rq = new_rq();
-	if(h->rq == NULL)
-	{
-	    fprintf(stderr, "sshsp:set_rqop: can't init h->rq, abort routine.\n");
-	    return;
-	}
-    }
-    set_op(h->rq, i);
-    return;
-}
-
-
-
-
-void hsp_rq_init (Hsp *h, Ppak *p){
-    if(h == NULL)
-    {
-	fprintf(stderr, "set_rqres: h is NULL, abort.\n");
-	return;
-    }
-    if(h->rq == NULL)
-    {
-	h->rq = new_rq();
-	if(h->rq == NULL)
-	{
-	    fprintf(stderr, "set_rqres: can't init h->rq, abort.\n");
-	    return;
-	}
-    }
-    set_res(h->rq, p);	
-    rq_set_hsp(h->rq, h);
-}
-
-
-
-
-
-Hspops *hsp_ops_create() {
-    Hspops *ops = malloc(sizeof(Hspops));
-    memset(ops,0,sizeof(Hspops));
-
-    return ops;
-}
-
-Hspops *hsp_ops_init() {
-    Hspops *ops = hsp_ops_create();
-
-/*
-    ops->make_ob    = ppak_make_ob;
-    ops->set_bounds = ppak_set_bounds;
-    ops->set_buf    = ppak_set_map_buf;
-
-    ops->add_prop   = ppak_add_prop_hsp;
-    ops->add_child  = ppak_add_child_hsp;
-*/
-
-
-    /* RETIRING... */
-/*
-    ops->putob  = hiena_map_putob;
-    ops->gettok = NULL;
-    ops->fopen  = dcel_svc->open;
-*/
-    /* ...RETIRING */
-
-    /* CONTEXT FUNCTIONS */
-    ops->getenv = hsp_getenv;
-
-
-    /* REQUEST BUILDER FUNCTIONS */
-    ops->set_rqtarg = set_rqtarg;
-    ops->set_rqdest = set_rqdest;
-    ops->set_rqsrc  = set_rqsrc;
-    ops->set_rqmap  = set_rqmap;
-    ops->set_rqop   = set_rqop;
-
-    return ops;
-}
-
-int hsp_ops_cleanup(Hspops *ho)
-{
-    free(ho);
-    return 0;
-}
 
 
 /*== OBJECT IMPLEMENTATION: hiena scanner payload == */
@@ -235,10 +48,12 @@ hiena_parse_packet_take_out_the_garbage(hsp->parseroot);
     */
 
     /* RQL lookup workspace */
+    /*
     if(hsp->rq != NULL)
     {
         rq_cleanup(hsp->rq);
     }
+    */
 
     if(hsp->lexer != NULL)
     {
@@ -247,7 +62,7 @@ hiena_parse_packet_take_out_the_garbage(hsp->parseroot);
     
     if(hsp->dfh != NULL)
     {
-	dcel_svc->close(hsp->dfh);
+	dcel_svc_ops.close(hsp->dfh);
 	hsp->dfh = NULL;
     }
 
@@ -269,10 +84,12 @@ static Hsp *verify_hsp(Hsp *h)
        as notated in the comments of "hsp.h"
        IF NOT cleanup 'h' and return NULL.
      */
+	/*
+	    h->rq          == NULL ||
+	*/
     if(
 	    h->dfh	   == NULL ||
 	    h->op          == NULL ||
-	    h->rq          == NULL ||
 	    h->src_ref     == NULL ||
 	    h->scanner_ref == NULL ||
 	    h->slib_ref    == NULL  )
@@ -304,11 +121,11 @@ Hsp *hsp_init(Ppak *data)
 
     if(data != NULL)
     {
-        hsp->dfh = (struct  dcel *)dcel_svc->open((void *)data, "r");
+        hsp->dfh = (struct dcel_fh *)dcel_svc_ops.open((void *)data, "r");
     }
     
     hsp->mapsvc = dcel_mapsvc;
-    hap->svc = dcel_svc;
+    hsp->svc = dcel_svc_ops;
     //----------
 
     return hsp;
@@ -398,7 +215,7 @@ int hsp_set_scanner(Hsp *hsp, scannerserver *s)
     {
 	if(hsp->src_ref != NULL)
 	{
-	    hsp->dfh = dcel_svc->open(hsp->src_ref, "r"); 
+	    hsp->dfh = dcel_svc_ops.open(hsp->src_ref, "r"); 
 	}else{
 	    fprintf(stderr, "hiena:hsp.hsp_set_scanner: FILE fp and source are NULL, abort routine.\n");
 	    return -5;
@@ -441,15 +258,15 @@ Hsp *hsp_init_src_scanner_slib( Ppak *src_ref, scannerserver *s, scanlib *slib )
     rq_set_hsp(h->rq,h);
 */
 
-    h->svc = dcel_svc;
-    h->mapsvc = dcel_mapsvc;
+    h->svc = &dcel_svc_ops;
+    h->mapsvc = &dcel_mapsvc;
 
 
     h->src_ref = src_ref;
 
     if(src_ref != NULL)
     {
-        h->dfh = dcel_svc->open(src_ref, "r");
+        h->dfh = dcel_svc_ops.open(src_ref, "r");
     }
     hsp_set_scanner(h,s);
     hsp_set_scanlib(h,slib);
