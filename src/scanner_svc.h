@@ -16,8 +16,8 @@ struct scanner_svc_ops {
     int (*yyparse)(yyscan_t *, Hsp *);
     int (*yylex_init_extra)(Hsp *, yyscan_t *);
     int (*yylex_destroy)(yyscan_t *);
-    void (*yyset_in)(FILE *, yyscan_t *);
-    FILE *(*yyget_in)(yyscan_t *);
+    void (*yyset_in)(struct dcel_fh *, yyscan_t *);
+    struct dcel_fh *(*yyget_in)(yyscan_t *);
 };
 
 struct scanner_svc_ops scanner_svc;

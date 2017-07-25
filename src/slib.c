@@ -172,85 +172,63 @@ void *wrap_dlsym(void *dl, const char *symbol, int *errc)
 scanlib *
 slib_load_dir(char *fpath, scanlib *scanlib)
 {
-    /* MALLOC REPORT
-       slib_create()
-       // persists after return
+    void *dl;
+    char *dlerr, *newstring;
+    char *chop_point;
+    int dlerrcount, n;
+    int strlen1, strlen2;
+    int *compiler_version_ptr;
+    struct dirent **namelist;
+    int *name_str_dim_ptr;
+    scannerserver *newscanner;
 
-       scandir() -> namelist
-       // free'd locally 
-       namelist[n]
-       // free'd locally
-       newstring = malloc()
-       // free'd locally
-       scanlib_new_scanner()
-       // persists after return	
-                 ->op
-       newscanner->name
-       // persists after return
+    if(scanlib == NULL)
+	     scanlib = slib_create();
 
-       dlopen()
-       // 4 allocs, persists after return
-       */
-
-
-    /* create new scanlib
-       if necessary*/
-
-    if(scanlib==NULL)
-	scanlib = slib_create();
-
-    /* placeholder
-       for shared object */
-
-    void *dl=NULL;
-
-    /* error codes */
-    char *dlerr = NULL;
-    int   dlerrcount = 0;
+    dl = NULL;
+    dlerr = NULL;
+    dlerrcount = 0;
 
     /* look in fpath
        for SCANNER_SO_SUFFIX
        shared object files */
 
-    int strlen1 = strlen(fpath);
-    int strlen2 = 0;
-    char *newstring = NULL;
-    struct dirent **namelist = NULL;
-
-    int n;
+    strlen1 = strlen(fpath);
+    strlen2 = 0;
+    newstring = NULL;
+    namelist = NULL;
 
     n = scandir(fpath, &namelist, slib_scandir_filter, alphasort);
 
     if (n < 0)
-	perror("scandir");
+        perror("scandir");
 
     else {
-	char *chop_point = NULL;
-	int  *compiler_version_ptr = NULL;
+        chop_point = NULL;
+        compiler_version_ptr = NULL;
 
-	int  *name_str_dim_ptr;
-
-	while (n--)
-   {
+        while (n--)
+        {
 	    /* got a match... */
-	    /* prepare the filename of the shared object file */
+	    /* prepare the filename of 
+          the shared object file */
 
-	    strlen2   = strlen(namelist[n]->d_name);
+            strlen2 = strlen(namelist[n]->d_name);
 
-	    newstring = malloc(sizeof(char)*(strlen1+strlen2+2));
+            newstring = malloc(sizeof(char)*(strlen1+strlen2+2));
 
-	    strncpy(newstring, fpath, strlen1);
+            strncpy(newstring, fpath, strlen1);
 
 	    /* strncpy() may not add a null byte... */
 
-	    newstring[strlen1]='\0';
+	    newstring[strlen1] = '\0';
 
 	    strncat(newstring,"/",1);
 	    strncat(newstring, namelist[n]->d_name, strlen2);
 	    
 	    /* get a new scannerserver holding object */
 
-	    scannerserver *newscanner = slib_new_scanner(scanlib);
+	    newscanner = slib_new_scanner(scanlib);
 	    
 	    /* INIT SCANNER VARS */
 
@@ -288,16 +266,24 @@ slib_load_dir(char *fpath, scanlib *scanlib)
 
 
 	    /* INITIALIZE FUNCTION POINTERS */
+
 	    /* load it's symbols into our scannerserver holding object */
 
 	    /*clear dlerror*/
 	    //dlerror();
+
 	    compiler_version_ptr = (int *)dlsym(dl,"compiler_version"); 
+
 	    //dlerr=dlerror();
 
-	    if(compiler_version_ptr==NULL){
-		/* older compiled scanners during development
-		   did not have a "compiler_version" symbol */
+	    if(compiler_version_ptr==NULL)
+{
+
+		/* older compiled scanners 
+          during development
+		   did not have a 
+        "compiler_version" symbol */
+
 		newscanner->compiler_version = 0;
 	    }else{
 	        newscanner->compiler_version = *compiler_version_ptr;
@@ -306,13 +292,16 @@ slib_load_dir(char *fpath, scanlib *scanlib)
 
 	    /* MULTIPLE COMPILER VERSIONS SUPPORTED */
 	    /* ==================================== */
+
 	    /* It's simple to leave the original development version
 	       of scannerserver .so files in play because we've added
 	       a check for compiler_version.
 	       (version ascends in whole numbers from 1) */
+
 	    dlerrcount=0;
 
-	    switch(newscanner->compiler_version){
+	    switch(newscanner->compiler_version)
+        {
 		case 0:
 
 		    /* NOTE:  at one point during development
@@ -325,9 +314,12 @@ slib_load_dir(char *fpath, scanlib *scanlib)
 		    /* TBD: This symbol name is evolving... */
 		    /* hiena_scannerop_parse may be renamed */
 
+
 		    newscanner->op->parse
 			= (int (*)(Hsp *))wrap_dlsym(dl, "hiena_scannerop_parse",
 				&dlerrcount);
+
+//----------
 
 		    dlerror();
 		    newscanner->op->show_allowed_child_scanners
@@ -356,32 +348,39 @@ slib_load_dir(char *fpath, scanlib *scanlib)
 
 		    dlerror();
 		    newscanner->op->yyset_in
-			= (void (*)(FILE *, yyscan_t *))wrap_dlsym(dl, "yyset_in",
+			= (void (*)(struct dcel_fh *, yyscan_t *))wrap_dlsym(dl, "yyset_in",
 				&dlerrcount);
 
 		    dlerror();
 		    newscanner->op->yyget_in
-			= (FILE *(*)(yyscan_t *))wrap_dlsym(dl, "yyget_in",
+			= (struct dcel_fh *(*)(yyscan_t *))wrap_dlsym(dl, "yyget_in",
 				&dlerrcount);
 
 
 		    /* if error count is equal to the number of symbols
 		       in hiena_scannerserver_ops, then none have loaded. */
-		    if(dlerrcount == HIENA_SCANNER_SVC_OPS_COUNT){
+
+		    if(dlerrcount == HIENA_SCANNER_SVC_OPS_COUNT)
+        {
 			/* three strikes */
+
 			dlerror();
+
 			if(dlclose(dl)!=0)
 			    dlerr=dlerror();
 			    fprintf(stderr,"dlclose err %s\n",dlerr);
 			goto abort;
 		    }
+
 		    break;
 
 		/*COMPILER VERSION 1: LOAD SCANNER*/
 		case 1:
 		    //dlerror();
 		    name_str_dim_ptr = (int *)dlsym(dl, "name_str_dim");
+
 		    //dlerr=dlerror();
+
 		    if(name_str_dim_ptr==NULL){
 			dlerrcount++;
 			newscanner->name_str_dim=0;
@@ -391,6 +390,7 @@ slib_load_dir(char *fpath, scanlib *scanlib)
 		    }
 
 		    //dlerror();
+
 		    newscanner->name_str
 			= (char **)dlsym(dl,"name_str");
 		    //dlerr=dlerror();
@@ -442,7 +442,7 @@ slib_load_dir(char *fpath, scanlib *scanlib)
 	    /* skipping abort */
 abort:
 	    fprintf(stderr,"hiena scanners subsystem failed: %s\n", newscanner->name);
-	    scanlib_rm_scanner(scanlib,newscanner);
+	    slib_rm_scanner(scanlib,newscanner);
 
 cleanup:
             free(newstring);
@@ -506,10 +506,10 @@ slib_load_path(const char *SCANNERPATH) {
 	strncat(newstring,"/",1);
 	strncat(newstring,SCAN_LIB_DIR_NAME,strlen2);
 
-	
+slin mm	
 	// test for existance
 	if ( stat(newstring, &sbuf) != -1 ) {
-	    load_scanlib_from_dir(newstring, slib_scanners);
+	    slib_load_dir(newstring, slib_scanners);
 	}
 	// cleanup
 	free(newstring);
@@ -517,7 +517,7 @@ slib_load_path(const char *SCANNERPATH) {
 	// test for existance
 	
 	if ( stat(current_path, &sbuf) != -1 ) {
-	    load_scanlib_from_dir(current_path, slib_scanners);
+	    slib_load_dir(current_path, slib_scanners);
 	}
 
     }

@@ -7,6 +7,12 @@
 #define YY_USER_ACTION yyextra->cur_location = yyextra->bytes_read;\
     yyextra->bytes_read += yyleng;
 
+#define YY_INPUT(buf,result,max_size) \
+    { \
+    int c = yyextra->svc->getchar(yyextra->dfh); \
+    result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+    }
+
 static int get_indent_len(char *indent, int tabwidth) {
     int count = 0;
     char c;
@@ -23,6 +29,7 @@ static int get_indent_len(char *indent, int tabwidth) {
 
 
 %}
+
 %option reentrant stack bison-bridge noyywrap
 %option bison-locations
 %option extra-type="Hsp *"

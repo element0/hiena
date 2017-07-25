@@ -5,17 +5,17 @@ SHELL = /bin/sh
 ox.so:
 	bison -Wnone -d ox.y
 	flex -o ox.yy.c ox.l
-	gcc -c -fPIC ox.tab.c ox.yy.c
-	gcc -shared -o ox.so ox.tab.o ox.yy.o
+	gcc -g -c -fPIC ox.tab.c ox.yy.c
+	gcc -g -shared -o ox.so ox.tab.o ox.yy.o
 #../../src/libhiena.o
 
 ox:	ox.l ox.y
 	bison -d ox.y
 	flex -o ox.yy.c ox.l
-	gcc -o ox ox.tab.c ox.yy.c
+	gcc -g -o ox ox.tab.c ox.yy.c
 
 ox-tester:    ox-tester.c ox.so ../../src/libhiena.c
-	gcc -rdynamic -o ox-tester ox-tester.c -ldl
+	gcc -g -rdynamic -o ox-tester ox-tester.c -ldl
 
 .PHONY:	clean install
 clean:

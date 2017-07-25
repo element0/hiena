@@ -23,7 +23,7 @@ struct hiena_slib *slib_load_dir( char *dirpath, struct hiena_slib *optional );
 
 void slib_cleanup( struct hiena_slib * );
 
-struct hiena_scanner *get_scanner(char *, struct hiena_slib *);
+struct hiena_scanner *slib_get_scanner(char *, struct hiena_slib *);
 
 
 

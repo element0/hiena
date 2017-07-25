@@ -81,6 +81,7 @@ int dcel_svc_close( void *p )
         dfh = (struct dcel_fh *)p;
         dc  = dfh->dcel;
         ffh = dfh->frag_fh;
+        fcurs = dfh->fcurs;
 
         frag_svc_close( ffh );
         frag_curs_cleanup( fcurs );

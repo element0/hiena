@@ -166,8 +166,8 @@ test_main:
 
 
 
-util-hiena-ls: hiena-obs svc-obs slib scanner-hdl
-	gcc $(dbugopts) $(out-o)/{slib.o, dsource.o, scanner_hdl.o, dcel.o} util/hiena_ls_util.c -o $(out-bin)/hiena-ls
+util-hiena-ls: hiena-obs svc-obs slib scanner scanner-hdl
+	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,context_frame.o,dcel.o,file_svc.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,dsource.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o,slib.o,scanner.o,scanner_hdl.o} util/hiena_ls_util.c -o $(out-bin)/hiena-ls -ldl
 
 
 util-mapalnum: hiena-obs svc-obs

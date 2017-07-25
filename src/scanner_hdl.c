@@ -27,7 +27,7 @@ char *hsp_getenv(const char *envarname)
 /*== OBJECT IMPLEMENTATION: hiena scanner payload == */
 
 Hsp *
-hiena_scanner_payload_create() {
+hsp_new() {
     Hsp *hsp = malloc(sizeof(*hsp));
     memset(hsp,0,sizeof(*hsp));
 
@@ -85,11 +85,14 @@ static Hsp *verify_hsp(Hsp *h)
        IF NOT cleanup 'h' and return NULL.
      */
 	/*
-	    h->rq          == NULL ||
+
 	*/
     if(
 	    h->dfh	   == NULL ||
-	    h->op          == NULL ||
+	    // h->rq          == NULL ||
+	    // h->op          == NULL ||
+       h->svc         == NULL ||
+       h->mapsvc         == NULL ||
 	    h->src_ref     == NULL ||
 	    h->scanner_ref == NULL ||
 	    h->slib_ref    == NULL  )
@@ -104,8 +107,7 @@ static Hsp *verify_hsp(Hsp *h)
 Hsp *hsp_init(Ppak *data)
 {
 
-    Hsp *hsp = hiena_scanner_payload_create();
-
+    Hsp *hsp = hsp_new();
     if(hsp == NULL)
     {
         HIERR("hsp_init: can't create hsp, abort routine.\n");
@@ -123,9 +125,9 @@ Hsp *hsp_init(Ppak *data)
     {
         hsp->dfh = (struct dcel_fh *)dcel_svc_ops.open((void *)data, "r");
     }
-    
-    hsp->mapsvc = dcel_mapsvc;
-    hsp->svc = dcel_svc_ops;
+    hsp->op = &dcel_mapsvc;
+    hsp->mapsvc = &dcel_mapsvc;
+    hsp->svc = &dcel_svc_ops;
     //----------
 
     return hsp;
@@ -187,7 +189,7 @@ int hsp_set_scanner(Hsp *hsp, scannerserver *s)
     {
 	if(s->op->yylex_destroy != NULL)
 	{
-	    err = s->op->yylex_destroy(hsp->lexer);
+	    int err = s->op->yylex_destroy(hsp->lexer);
 	    if(err != 0)
 	    {
 		fprintf(stderr, "hiena:hsp.hsp_set_scanner: trouble destroying previous lexer, abort routine.\n");
@@ -215,16 +217,20 @@ int hsp_set_scanner(Hsp *hsp, scannerserver *s)
     {
 	if(hsp->src_ref != NULL)
 	{
-	    hsp->dfh = dcel_svc_ops.open(hsp->src_ref, "r"); 
+	    hsp->dfh = (struct dcel_fh *)dcel_svc_ops.open(hsp->src_ref, "r"); 
 	}else{
-	    fprintf(stderr, "hiena:hsp.hsp_set_scanner: FILE fp and source are NULL, abort routine.\n");
+	    HIERR("hsp_set_scanner: dfh and source are NULL, abort routine.");
 	    return -5;
 	}
     }
-    printf("setting yyset_in...\n");
+
+    HIERR("hsp_set_scanner: setting yyset_in...");
     if(s->op->yyset_in != NULL && s->op->yyget_in != NULL)
     {
-	s->op->yyset_in(hsp->dfh, hsp->lexer);
+	s->op->yyset_in(NULL, hsp->lexer);
+        //----------
+
+/*
 	struct dcel_fh *fpcheck = s->op->yyget_in(hsp->lexer);
 
 	if(hsp->dfh != fpcheck)
@@ -232,6 +238,7 @@ int hsp_set_scanner(Hsp *hsp, scannerserver *s)
 	    fprintf(stderr, "hsp_set_scanner: setting lexer input stream failed, abort routine.\n");
 	    return -6;
 	}
+*/
     }else{
 	fprintf(stderr,"hsp_set_scanner:yyset_in or yyget_in are NULL\n");
     }
@@ -243,31 +250,34 @@ int hsp_set_scanner(Hsp *hsp, scannerserver *s)
 
 Hsp *hsp_init_src_scanner_slib( Ppak *src_ref, scannerserver *s, scanlib *slib )
 {
-    Hsp *h
+    Hsp *h;
 
-    h = new_hsp();
+    h = hsp_new();
+
     if(h == NULL)
     {
-        fprintf( stderr, "hsp_init_src_scanner_slib: can't create hsp, abort.\n");
+        HIERR("hsp_init_src_scanner_slib: can't create hsp, abort.");
+
         return NULL;
     }
 
+    h->parseroot = dcel_new(NULL);
+
 /*
-    h->parseroot = new_ppak(NULL);
     h->rq = new_rq();
     rq_set_hsp(h->rq,h);
 */
 
     h->svc = &dcel_svc_ops;
     h->mapsvc = &dcel_mapsvc;
-
-
+    h->op = &dcel_mapsvc;
     h->src_ref = src_ref;
 
     if(src_ref != NULL)
     {
         h->dfh = dcel_svc_ops.open(src_ref, "r");
     }
+
     hsp_set_scanner(h,s);
     hsp_set_scanlib(h,slib);
 

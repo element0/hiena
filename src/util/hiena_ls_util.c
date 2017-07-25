@@ -49,6 +49,7 @@ int main( int argc, char *argv[] )
         if( argc < 4 )
         {
                 printf("usage: %s SCANNERLIBDIR SCANNERNAME FILE\n", argv[0]);
+                return -1;
         }
 
         char *hp, *sn, *fn;
@@ -63,17 +64,22 @@ int main( int argc, char *argv[] )
 
         slib = slib_load_dir( hp, NULL );
 
-        hs = get_scanner(sn,slib);
+        hs = slib_get_scanner(sn,slib);
+
 
         dc = dsource(NULL, 1, (void **)&fn);
 
+
         hsp = hsp_init_src_scanner_slib( dc, hs, slib );
+
+
 
         hs->op->parse( hsp );
         //--------
 
+/*
         util_print_dir( dc );
-
+*/
         hsp_cleanup( hsp );
         dcel_cleanup( dc );
         slib_cleanup( slib );
