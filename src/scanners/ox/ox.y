@@ -13,7 +13,7 @@ typedef void* yyscan_t;
 %define lr.type ielr
 %define api.pure //full
 %locations
-%parse-param {yyscan_t scanner}
+%param {yyscan_t scanner}
 %parse-param {Hsp *hsp}
 
 /* get token name via yytname[i] */
