@@ -13,7 +13,7 @@ typedef void* yyscan_t;
 %define lr.type ielr
 %define api.pure //full
 %locations
-%parse-param {yyscan_t *scanner}
+%parse-param {yyscan_t scanner}
 %parse-param {Hsp *hsp}
 
 /* get token name via yytname[i] */
@@ -199,7 +199,7 @@ int hiena_scannerop_parse(Hsp *hsp)
     yyscan_t scanner;
     yylex_init_extra( hsp, &scanner );
 
-    yyset_in( hsp->dfh, scanner );
+    yyset_in( NULL, scanner );
     
     yyparse(scanner, hsp);
 

@@ -1,5 +1,7 @@
 *.swp
 *.swo
+*.tab.[ch]
+*.yy.[ch]
 out/bin/[a-zA-Z]*
 out/lib/*
 out/mods/*

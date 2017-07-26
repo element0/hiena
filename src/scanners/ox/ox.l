@@ -7,6 +7,8 @@
 #define YY_USER_ACTION yyextra->cur_location = yyextra->bytes_read;\
     yyextra->bytes_read += yyleng;
 
+// #define YY_NO_INPUT
+
 #define YY_INPUT(buf,result,max_size) \
     { \
     int c = yyextra->svc->getchar(yyextra->dfh); \
