@@ -32,6 +32,9 @@ dcel:
 dcel-svc:
 	gcc $(dbugopts) -c dcel_svc.c -o $(out-o)/dcel_svc.o
 
+dcel-mapsvc:
+	gcc $(dbugopts) -c dcel_mapsvc.c -o $(out-o)/dcel_mapsvc.o
+
 
 dsource:
 	gcc $(dbugopts) -c dsource.c -o $(out-o)/dsource.o
@@ -61,6 +64,10 @@ hpat:
 
 map-anchor:
 	gcc $(dbugopts) -c map_anchor.c -o $(out-o)/map_anchor.o
+
+
+mapcel:
+	gcc $(dbugopts) -c mapcel.c -o $(out-o)/mapcel.o
 
 
 mfrag:
@@ -108,7 +115,7 @@ slib:
 
 
 
-hiena-obs: btrees dcel dsource context-frame map-anchor mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs frag-svc dcel-svc 
+hiena-obs: btrees dcel dsource context-frame map-anchor mapcel mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs frag-svc dcel-svc dcel-mapsvc
 
 svc-obs: file-svc
 
@@ -167,11 +174,11 @@ test_main:
 
 
 util-hiena-ls: hiena-obs svc-obs slib scanner scanner-hdl
-	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,context_frame.o,dcel.o,file_svc.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,dsource.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o,slib.o,scanner.o,scanner_hdl.o} util/hiena_ls_util.c -o $(out-bin)/hiena-ls -ldl
+	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,context_frame.o,dcel.o,file_svc.o,map_anchor.o,mapcel.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,dsource.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o,dcel_mapsvc.o,slib.o,scanner.o,scanner_hdl.o} util/hiena_ls_util.c -o $(out-bin)/hiena-ls -ldl
 
 
 util-mapalnum: hiena-obs svc-obs
-	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,context_frame.o,dcel.o,file_svc.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,dsource.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o} util/{mapalnum_func.c,mapalnum_util.c} -o $(out-bin)/mapalnum
+	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,context_frame.o,dcel.o,file_svc.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,dsource.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o,dcel_mapsvc.o} util/{mapalnum_func.c,mapalnum_util.c} -o $(out-bin)/mapalnum
 
 
 

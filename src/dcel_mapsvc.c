@@ -17,10 +17,25 @@
 int dcel_mapsvc_idcmp( void *, void * );
 
 
-struct hiena_mapcel *dcel_mapsvc_new(int ruleid);
+struct hiena_mapcel *dcel_mapsvc_new(int ruleid)
+{
+        size_t len;
+        struct hiena_mapcel *mc;
+
+        len = 0;
+
+        mc = mapcel_new( ruleid, len);
+
+        if( mc == NULL )
+        {
+                HIERR("dcel_mapsvc_put: err: can't make new mapcel");
+                return NULL;
+        }
+        return mc;
+}
 
 
-struct hiena_mapcel *dcel_mapsvc_newterm(struct dcel_fh *dfh, int ruleid, size_t pos, size_t len)
+struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, int ruleid, size_t pos, size_t len)
 {
         if( dfh == NULL )
         {
@@ -35,21 +50,19 @@ struct hiena_mapcel *dcel_mapsvc_newterm(struct dcel_fh *dfh, int ruleid, size_t
 
 
         fc = dfh->fcurs;
-        //----------
         if( fc == NULL )
         {
                 HIERR("dcel_mapsvc_put: err: dcel file handle's map cursor is NULL");
                 return NULL;
         }
 
-        if( frag_curs_step_deepest_has_room( fc, len ) != 0 )
+        if( frag_curs_find_deepest_has_room( fc, len ) != 0 )
         {
                 HIERR("dcel_mapsvc_put: err: mapping out of bounds for dcel");
                 return NULL;
         }
 
-
-        mc = mapcel_new((int)rule_id, len);
+        mc = mapcel_new( ruleid, len);
 
         if( mc == NULL )
         {
@@ -99,11 +112,26 @@ int dcel_mapsvc_grow(void *p, size_t len)
         return 0;
 }
 
-int dcel_mapsvc_add(struct dcel_fh *dfh, struct hiena_mapcel *par, struct hiena_mapcel *chi);
+int dcel_mapsvc_add( struct hiena_mapcel *par, struct hiena_mapcel *chi )
+{
+        return 0;
+}
 
-int dcel_mapsvc_add_dirent(struct dcel_fh *dfh, struct hiena_mapcel *par, struct hiena_mapcel *chi);
+int dcel_mapsvc_add_dirent( struct hiena_mapcel *par, struct hiena_mapcel *chi )
+{
+        return 0;
+}
 
-struct dcel_mapsvc_ops dcel_mapsvc_ops = {
+struct dcel_mapsvc_ops dcel_mapsvc = {
         .new = dcel_mapsvc_new,
+        .newterm = dcel_mapsvc_newterm,
         .add = dcel_mapsvc_add,
+        .add_dirent = dcel_mapsvc_add_dirent,
 };
+
+
+
+
+
+
+

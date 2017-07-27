@@ -11,7 +11,25 @@ The Hiena library maps the content of an arbitrary file to file address space.
 
 ## DEVELOPMENT NEWS ##
 
+2017-05-25      `./out/bin/insert_bytes FILE1 START END FILE2 AT` extracts a byte range from FILE1 and inserts into content from FILE2 at AT and prints to stdout.
 2017-03-25	`./util/byterange FILENAME STARTBYTE ENDBYTE` extracts a byte range from a file.
+
+
+## API's OVERVIEW ##
+
+	struct snafu_fh *snafu_fuse_open( struct access_frame *, char * );
+
+	struct hiena_map *hiena_map_parse( struct mapperlib *, struct hiena_dcel * );
+
+	int dcel_set_map( struct hiena_dcel *, struct hiena_map * ); 
+
+	void *dcel_svc_open( struct hiena_dcel * );
+        int dcel_svc_getchar( void * );
+
+	void *dcel_svc_opendir( struct hiena_dcel * );
+	struct dirent *dcel_svc_readdir( void * );
+
+
 
 
 

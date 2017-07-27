@@ -7,7 +7,7 @@
 #define YY_USER_ACTION yyextra->cur_location = yyextra->bytes_read;\
     yyextra->bytes_read += yyleng;
 
-#define YY_NO_INPUT
+/*  #define YY_NO_INPUT  */
 
 #define YY_INPUT(buf,result,max_size) \
     { \
@@ -69,7 +69,10 @@ void *b;  /* bounds */
 
 ^[^ \t\n][^\n]*[\n]		{
 
+
     yylval->ob = yyextra->op->newterm(yyextra->dfh, LINE, yyextra->cur_location, yyleng);
+
+    printf("LINE\n");
 
     return LINE;
 				}

@@ -13,7 +13,8 @@ typedef void* yyscan_t;
 %define lr.type ielr
 %define api.pure //full
 %locations
-%param {yyscan_t scanner}
+%lex-param {yyscan_t scanner}
+%parse-param {yyscan_t scanner}
 %parse-param {Hsp *hsp}
 
 /* get token name via yytname[i] */
@@ -57,6 +58,9 @@ ox_good			: ox
 
 ox	: dir_of_outline_blocks
 	  END
+    {
+       printf("ox\n");
+    }
 
 	| dir_of_outline_blocks
 	  blank_or_indented_lines
@@ -76,10 +80,12 @@ ox	: dir_of_outline_blocks
 dir_of_outline_blocks
 	: outline_block
 	{
+/*
 		$$ = hsp->op->new(dir_of_outline_blocks_t);
 
 		hsp->op->add_dirent($$, $1);
-
+*/
+       printf("dir_of_outline_blocks\n");
 	}
 
 	| dir_of_outline_blocks
@@ -96,8 +102,11 @@ dir_of_outline_blocks
 outline_block	
 	: outline
 	{
+/*
 		$$ = hsp->op->new(outline_block_t);
 		hsp->op->add_dirent($$, $1);
+*/
+       printf("outline_block\n");
 	}
 
 	| outline_block
@@ -115,6 +124,7 @@ outline
 	{
 		$$ = hsp->op->new(outline_t);
 		hsp->op->add_dirent($$, $1);
+       printf("outline/n");
 	}
 
 	| LINE
