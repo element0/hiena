@@ -31,6 +31,7 @@ struct hiena_mapcel *dcel_mapsvc_new(int ruleid)
                 HIERR("dcel_mapsvc_put: err: can't make new mapcel");
                 return NULL;
         }
+
         return mc;
 }
 
@@ -114,6 +115,15 @@ int dcel_mapsvc_grow(void *p, size_t len)
 
 int dcel_mapsvc_add( struct hiena_mapcel *par, struct hiena_mapcel *chi )
 {
+        if( par == NULL
+         || chi == NULL )
+        {
+                HIERR("dcel_mapsvc_add: err: par or chi NULL");
+                return -1;
+        }
+
+        
+
         return 0;
 }
 
