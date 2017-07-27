@@ -16,3 +16,13 @@ struct map_anchor *map_anchor_new()
 
         return ma;
 }
+
+int map_anchor_cleanup( struct map_anchor *ma )
+{
+        if( ma == NULL )
+		return -1;
+
+	free( ma );
+
+	return 0;
+}

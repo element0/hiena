@@ -91,9 +91,8 @@ struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, int ruleid, size_
                 goto abort_mapcel;
         }
 
-        mapcel_set_head_anchor( mc, mh );
-
-        mapcel_set_tail_anchor( mc, mt );
+        mc->head_anchor = mh;
+	mc->tail_anchor = mt;
 
         return mc;
 
