@@ -7,7 +7,8 @@ ox.so:
 	flex -o ox.yy.c ox.l
 	gcc -g -c -fPIC ox.tab.c ox.yy.c
 	gcc -g -shared -o ox.so ox.tab.o ox.yy.o
-#../../src/libhiena.o
+	-rm ox.yy.[co] ox.tab.[cho]
+	mv ox.so ../../../out/lib/scanners/.
 
 ox:	ox.l ox.y
 	bison -d ox.y

@@ -83,11 +83,7 @@ mfrag-svc:
 
 
 ox-so:
-	bison -Wnone -d scanners/ox/ox.y -o scanners/os/ox.tab.c
-	flex -o scanners/ox/ox.yy.c scanners/ox/ox.l
-	gcc -c -fPIC scanners/ox/ox.tab.c scanners/ox/ox.yy.c
-	gcc -shared -o $(out-o)/ox.so $(out-o)/ox.tab.o $(out-o)/ox.yy.o
-#../../src/libhiena.o
+	$(MAKE) -C scanners/ox/
 
 ox:
 	bison -d scanners/ox.y
