@@ -73,7 +73,6 @@ struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, int ruleid, size_
 
 
         mh = frag_curs_get_anchor( fc );
-        //----------
         if( mh == NULL )
         {
                 HIERR("dcel_mapsvc_put: err: can't get head anchor");
@@ -81,7 +80,6 @@ struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, int ruleid, size_
         }
 
         frag_curs_seek( fc, len, SEEK_CUR );
-        //----------
         mt = frag_curs_get_anchor( fc );
 
         if( mt == NULL )
@@ -121,7 +119,7 @@ int dcel_mapsvc_add( struct hiena_mapcel *par, struct hiena_mapcel *chi )
                 return -1;
         }
 
-        
+        mapcel_add( par, chi );
 
         return 0;
 }
