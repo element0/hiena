@@ -13,6 +13,7 @@
 
 struct dcel_fh;
 
+#include "btrees.h"
 #include "hiena_svc.h"
 #include "dcel.h"
 #include "dcel_mapsvc.h"
@@ -27,6 +28,7 @@ struct dcel_fh {
 
         struct hiena_frag *frag;
         void *frag_fh;
+
         struct frag_curs *fcurs;
 
         struct hiena_mapcel *mc;

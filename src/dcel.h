@@ -14,6 +14,7 @@
 struct hiena_dcel {
         struct hiena_frag *frag;
         int retain;
+        btree_t *dircache;
 };
 
 struct hiena_dcel *dcel_new( struct hiena_dcel * );

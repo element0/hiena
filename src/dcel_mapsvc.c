@@ -90,7 +90,7 @@ struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, int ruleid, size_
         }
 
         mc->head_anchor = mh;
-	mc->tail_anchor = mt;
+        mc->tail_anchor = mt;
 
         return mc;
 
@@ -119,13 +119,43 @@ int dcel_mapsvc_add( struct hiena_mapcel *par, struct hiena_mapcel *chi )
                 return -1;
         }
 
-        mapcel_add( par, chi );
+btree_t *cn;
+        void *key;
+        void *val;
+        struct map_anchor *ha;
+
+        cn = par->children;
+
+        if( cn == NULL )
+                cn = btree_new();
+
+        ha = chi->head_anchor;
+
+        key = (void *)ha;
+        val = (void *)chi;
+
+        btree_put( cn, key, val );
+        if( par->head_anchor == NULL )
+                par->head_anchor = ha;
+        par->tail_anchor = chi->tail_anchor;
 
         return 0;
 }
 
 int dcel_mapsvc_add_dirent( struct hiena_mapcel *par, struct hiena_mapcel *chi )
 {
+        struct map_anchor *ha;
+        struct btree_t *cn;
+        size_t len;
+
+        dcel_mapsvc_add( par, chi );
+
+        ha = chi->head_anchor;
+        cn = ha->children;
+        len = chi->len;
+
+        btree_put( cn, (void *)len, (void *)chi );
+        
         return 0;
 }
 

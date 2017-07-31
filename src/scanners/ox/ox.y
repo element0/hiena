@@ -142,16 +142,16 @@ indented_line_recursive_area
 	  INDENTED_LINE
 	{
 		$$ = hsp->op->new(indented_line_recursive_area_t);
-		hsp->op->add($$, $1);
-		hsp->op->add($$, $2);
+		hsp->op->add(hsp, $$, $1);
+		hsp->op->add(hsp, $$, $2);
 	}
 
 	| indented_line_recursive_area
 	  INDENT
 	  INDENTED_LINE
 	{
-		hsp->op->add($$, $2);
-		hsp->op->add($$, $3);
+		hsp->op->add(hsp, $$, $2);
+		hsp->op->add(hsp, $$, $3);
 	}
 	;
 

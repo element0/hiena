@@ -19,9 +19,11 @@ struct map_anchor
 {
         btree_t *id_head;
         btree_t *id_tail;
+        btree_t *children;
         struct map_anchor *next;
         size_t next_off;
         struct hiena_frag *frag;
+
 };
 
 struct map_anchor *map_anchor_new();

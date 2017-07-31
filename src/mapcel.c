@@ -62,6 +62,9 @@ int mapcel_add ( struct hiena_mapcel *par, struct hiena_mapcel *chi )
         val = (void *)chi;
 
         btree_put( cn, key, val );
+        if( par->head_anchor == NULL )
+                par->head_anchor = ha;
+        par->tail_anchor = chi->tail_anchor;
 
         return 0;
 }

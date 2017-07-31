@@ -17,6 +17,7 @@ struct hiena_mapcel {
         struct map_anchor *head_anchor;
         struct map_anchor *tail_anchor;
         struct hiena_frag *frag;
+        btree_t *children;
 };
 
 struct hiena_mapcel *mapcel_new(int, size_t);

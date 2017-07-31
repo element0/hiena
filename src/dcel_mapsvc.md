@@ -1,15 +1,41 @@
+
+
+
+
+
+
+
+
+
+
 Domain Cell Map Service
 =======================
 
 
 
 
+adding children to a domain cell's child list
+-----------------------
 
+dcel child list is an evaluated result of query on the frag map
 
+child records are stored in map anchors
 
+inputs:
+- dcel file handle
+- child mapcel
+- child length
+- child starting offset
 
+outputs:
+- updated dcel via file handle:
+  child record stored in map anchor
 
-
+procedure:
+- calculate length remaining from starting offset to end of dcel
+- make sure child fits remaining length
+- get map anchor at starting offset
+- add child to map anchor, keyed by child length
 
 
 
