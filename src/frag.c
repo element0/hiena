@@ -154,6 +154,11 @@ struct hiena_frag *frag_split( struct hiena_frag *f, HIFRAG_POS_T pos ) {
 
 //---- meta ----
 
+/* TODO: frag_get_length
+   Have the scanner system journal the length into the frag.
+   Otherwise, this re-traces the entire domain. - rh
+ */
+
 HIFRAG_POS_T frag_get_length( struct hiena_frag *f )
 {
         if( f == NULL )
