@@ -13,22 +13,38 @@
 #include "hierr.h"
 #include "btrees.h"
 
+#include "hash.h"
+#define HASHFUNC(x) hash_sdbm(x)
 
-int dcel_mapsvc_idcmp( void *, void * );
+
+int dcel_mapsvc_ptrcmp( void *p1, void *p2 )
+{
+        return 0;
+}
+
+int dcel_mapsvc_idcmp( void *id1, void *id2 )
+{
+        return 0;
+}
 
 
-struct hiena_mapcel *dcel_mapsvc_new(int ruleid)
+struct hiena_mapcel *dcel_mapsvc_new(void *p)
 {
         size_t len;
+        char *s;
+        unsigned long ruleid;
         struct hiena_mapcel *mc;
 
         len = 0;
 
-        mc = mapcel_new( ruleid, len);
+        s = (char *)p;
+        ruleid = HASHFUNC( s );
+
+        mc = mapcel_new( (void *)ruleid, len);
 
         if( mc == NULL )
         {
-                HIERR("dcel_mapsvc_put: err: can't make new mapcel");
+                HIERR("dcel_mapsvc_new: err: can't make new mapcel");
                 return NULL;
         }
 
@@ -36,11 +52,11 @@ struct hiena_mapcel *dcel_mapsvc_new(int ruleid)
 }
 
 
-struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, int ruleid, size_t pos, size_t len)
+struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, void *p, size_t pos, size_t len)
 {
         if( dfh == NULL )
         {
-                HIERR("dcel_mapsvc_put: err: dfh is NULL");
+                HIERR("dcel_mapsvc_newterm: err: dfh is NULL");
                 return NULL;
         }
 
@@ -48,26 +64,30 @@ struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, int ruleid, size_
         struct hiena_mapcel *mc;
         struct map_anchor *mh;
         struct map_anchor *mt;
+        char *s;
+        unsigned long ruleid;
 
 
         fc = dfh->fcurs;
         if( fc == NULL )
         {
-                HIERR("dcel_mapsvc_put: err: dcel file handle's map cursor is NULL");
+                HIERR("dcel_mapsvc_newterm: err: dcel file handle's frag cursor is NULL");
                 return NULL;
         }
 
         if( frag_curs_find_deepest_has_room( fc, len ) != 0 )
         {
-                HIERR("dcel_mapsvc_put: err: mapping out of bounds for dcel");
+                HIERR("dcel_mapsvc_newterm: err: mapping out of bounds for dcel");
                 return NULL;
         }
 
-        mc = mapcel_new( ruleid, len);
+        s = (char *)p;
+        ruleid = HASHFUNC( s );
+        mc = mapcel_new((void *)ruleid,len);
 
         if( mc == NULL )
         {
-                HIERR("dcel_mapsvc_put: err: can't make new mapcel");
+                HIERR("dcel_mapsvc_newterm: err: can't make new mapcel");
                 return NULL;
         }
 
@@ -75,7 +95,7 @@ struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, int ruleid, size_
         mh = frag_curs_get_anchor( fc );
         if( mh == NULL )
         {
-                HIERR("dcel_mapsvc_put: err: can't get head anchor");
+                HIERR("dcel_mapsvc_newterm: err: can't get head anchor");
                 goto abort_mapcel;
         }
 
@@ -84,7 +104,7 @@ struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, int ruleid, size_
 
         if( mt == NULL )
         {
-                HIERR("dcel_mapsvc_put: err: can't get tail anchor");
+                HIERR("dcel_mapsvc_newterm: err: can't get tail anchor");
                 map_anchor_cleanup( mh );
                 goto abort_mapcel;
         }
@@ -119,22 +139,41 @@ int dcel_mapsvc_add( struct hiena_mapcel *par, struct hiena_mapcel *chi )
                 return -1;
         }
 
-btree_t *cn;
+        btree_t *cn, *cn_id;
         void *key;
         void *val;
         struct map_anchor *ha;
+        void *id;
 
         cn = par->children;
+        cn_id = par->child_ids;
 
         if( cn == NULL )
                 cn = btree_new();
 
+        if( cn_id == NULL )
+                cn_id = btree_new();
+
         ha = chi->head_anchor;
+        id = chi->ruleid;
+
+        if( ha == NULL )
+        {
+                HIERR("dcel_mapsvc_add: err: ha NULL");
+                return -1;
+        }
 
         key = (void *)ha;
         val = (void *)chi;
 
         btree_put( cn, key, val );
+
+        key = (void *)id;
+        val = (void *)chi;
+
+        btree_put( cn_id, key, val );
+
+
         if( par->head_anchor == NULL )
                 par->head_anchor = ha;
         par->tail_anchor = chi->tail_anchor;
@@ -145,7 +184,7 @@ btree_t *cn;
 int dcel_mapsvc_add_dirent( struct hiena_mapcel *par, struct hiena_mapcel *chi )
 {
         struct map_anchor *ha;
-        struct btree_t *cn;
+        btree_t *cn;
         size_t len;
 
         dcel_mapsvc_add( par, chi );

@@ -23,9 +23,9 @@ int dcel_mapsvc_idcmp( void *, void * );
 
 struct dcel_mapsvc_ops {
 
-        struct hiena_mapcel *(*newterm)(struct dcel_fh *, int ruleid, size_t pos, size_t len);
+        struct hiena_mapcel *(*newterm)(struct dcel_fh *, void *ruleid, size_t pos, size_t len);
 
-        struct hiena_mapcel *(*new)(int ruleid);
+        struct hiena_mapcel *(*new)(void *ruleid);
 
         int (*add)( struct hiena_mapcel *parent, struct hiena_mapcel *child);
 

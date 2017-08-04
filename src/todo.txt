@@ -1,0 +1,13 @@
+2017-8-3
+
+add hash function internal to mapsvc to hash strings into rule ids.
+
+pass mapsvc a string typecast as void *
+
+keep ruleid void * compatible
+
+working in:
+  btree
+  mapsvc
+  .l .y
+  mapcel

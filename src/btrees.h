@@ -55,6 +55,7 @@ struct hiena_btree
 
 btree_t *btree_new();
 
+
 void *btree_get(btree_t *, void *key);
 
 void *btree_put(btree_t *, void *key, void *val );
@@ -67,6 +68,19 @@ int btree_cleanup( btree_t * );
 void
 *bnode_value_at_key_or_nearest_lesser( bnode_t *n, bkey_t k, bkey_t *kres );
 
+typedef struct hiena_btree_curs btree_curs_t;
+struct hiena_btree_curs
+{
+        bnode_t bnode;
+        void *key;
+        void *val;
+};
+
+btree_curs_t
+*btree_curs_at_key_or_nearest_lesser( bnode_t *n, bkey_t k, bkey_t *kres );
+
+btree_curs_t
+*btree_curs_seek_key_or_nearest_lesser( btree_curs_t *, bkey_t k );
 
 
 #endif /*! HIENA_BTREES_H */

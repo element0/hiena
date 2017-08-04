@@ -48,10 +48,13 @@ void *dcel_svc_open( void *p, const char *mode )
         dcel_retain( dc );
 
         dfh->dcel = dc;
+        dfh->frag = cur_f;
         dfh->frag_fh = ffh;
+        dfh->fcurs = fcurs;
         dfh->mc = cur_mc;
         dfh->ma = cur_ma;
         dfh->pos = 0;
+        dfh->fragpos = 0;
         dfh->ops = &dcel_svc_ops;
         dfh->mapops = &dcel_mapsvc;
         

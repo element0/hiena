@@ -15,6 +15,8 @@
 #include "../scanner_hdl.h"
 #include "../dcel.h"
 #include "../dcel_fh.h"
+#include "../dcel_dirent.h" 
+#include "../dcel_dirh.h" 
 #include "../dcel_dirsvc.h"
 #include "../dsource.h"
 #include "../hierr.h"
@@ -22,8 +24,8 @@
 
 static util_print_dir( struct hiena_dcel *dc )
 {
-	struct dcel_fh *d;
-	struct dirent *e;
+        struct dcel_dirh *d;
+        struct dcel_dirent *e;
 
         d = dcel_dirsvc.opendir(dc);
         if(d == NULL)

@@ -60,6 +60,8 @@ frag-svc:
 hpat:
 	gcc $(dbugopts) -c hpat.c -o $(out-o)/hpat.o
 
+hash:
+	gcc $(dbugopts) -c hash.c -o $(out-o)/hash.o
 
 
 map-anchor:
@@ -111,7 +113,7 @@ slib:
 
 
 
-hiena-obs: btrees dcel dsource context-frame map-anchor mapcel mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs frag-svc dcel-svc dcel-mapsvc
+hiena-obs: btrees dcel dsource context-frame hash map-anchor mapcel mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs frag-svc dcel-svc dcel-mapsvc
 
 svc-obs: file-svc
 
@@ -170,7 +172,7 @@ test_main:
 
 
 util-hiena-ls: hiena-obs svc-obs slib scanner scanner-hdl
-	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,context_frame.o,dcel.o,file_svc.o,map_anchor.o,mapcel.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,dsource.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o,dcel_mapsvc.o,slib.o,scanner.o,scanner_hdl.o} util/hiena_ls_util.c -o $(out-bin)/hiena-ls -ldl
+	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,context_frame.o,dcel.o,file_svc.o,hash.o,map_anchor.o,mapcel.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,dsource.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o,dcel_mapsvc.o,slib.o,scanner.o,scanner_hdl.o} util/hiena_ls_util.c -o $(out-bin)/hiena-ls -ldl
 
 
 util-mapalnum: hiena-obs svc-obs

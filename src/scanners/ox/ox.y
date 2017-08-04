@@ -42,6 +42,7 @@ typedef void* yyscan_t;
 %{
     int num_ox = 0;
     int prev_indent = 0;
+    void *ruleid;
 %}
 
 %%
@@ -80,12 +81,10 @@ ox	: dir_of_outline_blocks
 dir_of_outline_blocks
 	: outline_block
 	{
-/*
-		$$ = hsp->op->new(dir_of_outline_blocks_t);
+       ruleid = (void *)"dir_of_outline_blocks";
+		$$ = hsp->op->new(ruleid);
 
 		hsp->op->add_dirent($$, $1);
-*/
-       printf("dir_of_outline_blocks\n");
 	}
 
 	| dir_of_outline_blocks
@@ -102,11 +101,9 @@ dir_of_outline_blocks
 outline_block	
 	: outline
 	{
-/*
-		$$ = hsp->op->new(outline_block_t);
+       ruleid = (void *)"outline_block";
+		$$ = hsp->op->new(ruleid);
 		hsp->op->add_dirent($$, $1);
-*/
-       printf("outline_block\n");
 	}
 
 	| outline_block
@@ -122,15 +119,16 @@ outline_block
 outline
 	: LINE
 	{
-		$$ = hsp->op->new(outline_t);
+       ruleid = (void *)"outline";
+		$$ = hsp->op->new(ruleid);
 		hsp->op->add_dirent($$, $1);
-       printf("outline/n");
 	}
 
 	| LINE
      indented_line_recursive_area
    {
-		$$ = hsp->op->new(outline_t);
+       ruleid = (void *)"outline";
+		$$ = hsp->op->new(ruleid);
 		hsp->op->add_dirent($$, $1);
 		hsp->op->add_dirent($$, $2);
 	}
@@ -141,17 +139,18 @@ indented_line_recursive_area
 	: INDENT
 	  INDENTED_LINE
 	{
-		$$ = hsp->op->new(indented_line_recursive_area_t);
-		hsp->op->add(hsp, $$, $1);
-		hsp->op->add(hsp, $$, $2);
+        ruleid = (void *)"outline";
+        $$ = hsp->op->new(ruleid);
+        hsp->op->add($$, $1);
+        hsp->op->add($$, $2);
 	}
 
 	| indented_line_recursive_area
 	  INDENT
 	  INDENTED_LINE
 	{
-		hsp->op->add(hsp, $$, $2);
-		hsp->op->add(hsp, $$, $3);
+		hsp->op->add($$, $2);
+		hsp->op->add($$, $3);
 	}
 	;
 

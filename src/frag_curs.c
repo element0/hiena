@@ -31,6 +31,7 @@ struct frag_curs *frag_curs_new( struct hiena_frag *f )
 
         root = frag_curs_node_new(f);
         root->outer_fh = root;
+        root->inner_fh = NULL;
 
 
         fc = malloc(sizeof(*fc));

@@ -69,10 +69,7 @@ void *b;  /* bounds */
 
 ^[^ \t\n][^\n]*[\n]		{
 
-
-    yylval->ob = yyextra->op->newterm(yyextra->dfh, LINE, yyextra->cur_location, yyleng);
-
-    printf("LINE\n");
+    yylval->ob = yyextra->op->newterm(yyextra->dfh, (void *)"LINE", yyextra->cur_location, yyleng);
 
     return LINE;
 				}
@@ -80,21 +77,21 @@ void *b;  /* bounds */
 
 ^[ \t]+				{
 
-    yylval->ob = yyextra->op->newterm( yyextra->dfh, INDENT, yyextra->cur_location, yyleng );
+    yylval->ob = yyextra->op->newterm( yyextra->dfh, (void *)"INDENT", yyextra->cur_location, yyleng );
 
     return INDENT;
     				}
 
 [^ \t\n][^\n]*[\n]		{
 
-    yylval->ob = yyextra->op->newterm( yyextra->dfh, INDENTED_LINE, yyextra->cur_location, yyleng );
+    yylval->ob = yyextra->op->newterm( yyextra->dfh, (void *)"INDENTED_LINE", yyextra->cur_location, yyleng );
 
     return INDENTED_LINE;
 				}
 
 ^([ \t]{-}[\n])*[\n]		{
 
-    yylval->ob = yyextra->op->newterm( yyextra->dfh, BLANKLINE, yyextra->cur_location, yyleng );
+    yylval->ob = yyextra->op->newterm( yyextra->dfh, (void *)"BLANKLINE", yyextra->cur_location, yyleng );
 
     return BLANKLINE;
 				}

@@ -151,12 +151,15 @@ void *frag_svc_open( void *fp, const char *mode )
 {
         if( fp == NULL
          || mode == NULL )
+        {
+                HIERR("frag_svc_open: err: fp or mode NULL");
                 return NULL;
+        }
 
         struct hiena_frag *f;
+        struct hiena_frag *f1, *f2;
         struct frag_fh *fh;
         struct frag_fh *fh1, *fh2;
-        struct hiena_frag *f1, *f2;
         struct hiena_mfrag *mf;
         struct mfrag_fh *mfh;
 
@@ -166,6 +169,11 @@ void *frag_svc_open( void *fp, const char *mode )
         /* root fh outer refs self
          */
         fh = frag_fh_new();
+        if( fh == NULL )
+        {
+                HIERR("frag_svc_open: err: fh NULL");
+                return NULL;
+        }
         fh->frag = f1;
         fh->outer_fh = fh;
         fh->inner_fh = NULL;
@@ -180,6 +188,7 @@ ffh_open_loop:
                 f2 = frag_get_first_content( f1 );
                 if( f2 == NULL ) {
                         HIERR("frag_svc_open: f2 NULL");
+                        frag_fh_cleanup( fh );
                         return NULL;
                 }
                 fh2 = frag_fh_new();
@@ -204,6 +213,11 @@ ffh_open_loop:
                   return NULL;
         }
         mfh = mfrag_svc_open( mf, mode );
+        if( mfh == NULL )
+        {
+                HIERR("frag_svc_open: mfh NULL");
+                  return NULL;
+        }
 
         fh1->mfrag_fh = mfh;
         fh1->frag = f1;

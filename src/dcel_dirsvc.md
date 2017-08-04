@@ -16,6 +16,7 @@ contents
 - opendir algorithm
 - readdir algorithm
 - closedir algorithm
+- d_name generating
 
 
 
@@ -59,19 +60,25 @@ outputs:
 
 
 procedure:
-- if dcel's dir cache is not stale
+
+if dcel's dir cache is not stale
     - get dirent from cache loc
     - advance cache location
     - return dirent
+
 -else-
-- get map anchor at dir handle's pos
-- for each in anchor's child list where length is less than "length remaining plus one":
+
+get map anchor at dir handle's pos.
+for each in anchor's child list where length is less than "length remaining plus one":
     - create dirent from child
     - add dirent to dcel's dir cache
     - return dirent
 
 internal vars:
 - child list cursor
+
+for btree list
+
 
 
 
@@ -84,3 +91,19 @@ inputs:
 
 outputs:
 - errno
+
+
+
+d_name generating
+-----------------
+
+a scanner is in charge of naming it's dirent cels.
+
+a scanner must add a "name" sub-cel to a directory mapcel.
+
+    mapcel (dirent role)
+        mapcel (d_name role)
+
+if there is no "name" sub-cel present, we generate a unique name.
+
+
