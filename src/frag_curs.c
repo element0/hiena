@@ -150,6 +150,9 @@ struct hiena_frag *frag_curs_find_deepest_has_room( struct frag_curs *fcurs, siz
 
 find_child:
 
+        if( f->children == NULL )
+                return f;
+
         cf = (struct hiena_frag *) bnode_value_at_key_or_nearest_lesser(f->children->root, (bkey_t)off, (void **)&new_off);
 
         if(frag_has_room( cf, off, len ))
