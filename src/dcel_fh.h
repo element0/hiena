@@ -28,12 +28,18 @@ struct dcel_fh {
         struct hiena_frag *frag;
         void *frag_fh;
         struct frag_curs *fcurs;
-        struct hiena_mapcel *mc;
-        struct map_anchor *ma;
+
+        btree_t *tmpdir;
+
         size_t pos;
         size_t fragpos;
         struct hiena_svc *ops;
         struct dcel_mapsvc_ops *mapops;
+
+/* depricate? */
+
+        struct hiena_mapcel *mc;
+        struct map_anchor *ma;
 
 };
 

@@ -56,22 +56,27 @@ struct hiena_scanner_payload_callback_ops
 struct scanner_hdl
 {
     /* result or garbage col */
+
     Ppak *parseroot;
 
+
     /* scanner state */
+
     yyscan_t       lexer;
     unsigned long int bytes_read;
+
     off_t cur_location;
     char *cur_tok_name;
     int   cur_tok_id;
     off_t cur_tok_start;
     off_t cur_tok_len;
     char *cur_tok_text;
+
     Ppak *last_added;
     Ppak *last_read;
-    FILE *fp;		/*:= !NULL */
 
     struct dcel_fh *dfh;
+    FILE *fp;		/*:= !NULL */
 
     Hspops *op;		/*:= !NULL */
     struct hiena_svc *svc;
@@ -89,6 +94,7 @@ struct scanner_hdl
     void *token_table;
 
     int    (*lex)   (void *,void *, Hsp *);
+
      /* void usu YYSTYPE, YYLTYPE 
      included from bison types */
 

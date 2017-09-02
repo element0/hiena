@@ -26,19 +26,22 @@ typedef void* yyscan_t;
     struct hiena_mapcel *ob;
 }
 
+
 %token <ob> INDENT
-%token <ob> LINE INDENTED_LINE
-%token BLANKLINE NEWLINE
+%token <ob> LINE
+%token <ob> BLANKLINE
+%token <ob> FLOATING_LINE
+%token BEGIN_OXFILE
 %token END
-%token OL_BODY_START
-%token OL_BODY_END
+%token START_BODY
+%token END_BODY
+%token START_ELEMENT
 
-%type <ob> dir_of_outline_blocks indented_line_recursive_area outline outline_block 
+%type <ob> outline outline_block
+%type <ob> outline_body
+%type <ob> ox_file_body
 
-%token indented_line_recursive_area_t outline_t outline_block_t dir_of_outline_blocks_t
-
-
-%destructor { free ($$); } <str>
+%destructor { free($$); } <str>
 %destructor { mapcel_cleanup($$); } <ob>
 
 %{
@@ -49,56 +52,61 @@ typedef void* yyscan_t;
 
 %%
 
-ox_good			: ox
-			  {
-			      printf("\n");
-			      printf("ox good.\n"); return;
-			  }
-			;
-
-
-/* HIERARCHY LEVEL */
-
-ox	: dir_of_outline_blocks
-	  END
+ox_good
+   : ox_file
     {
-       printf("ox\n");
+        printf("\n");
+        printf("ox good.\n");
+        return;
     }
+   ;
 
-	| dir_of_outline_blocks
-	  blank_or_indented_lines
-	  END
+ox_file
+   : ox_file_head
+     ox_file_body
+     ox_file_tail
+    {
+        printf("ox_file\n");
+    }
+   ;
 
-	| blank_or_indented_lines
-	  dir_of_outline_blocks
-	  END
+ox_file_head
+   : BEGIN_OXFILE
+   | BEGIN_OXFILE
+     blank_or_indented_lines
+   ;
 
-	| blank_or_indented_lines
-	  dir_of_outline_blocks
-	  blank_or_indented_lines
-	  END
 
-	;
+ox_file_tail
+   : blank_or_indented_lines
+     END
+   | END
+   ;
 
-dir_of_outline_blocks
+
+ox_file_body
 	: outline_block
 	{
-       ruleid = (void *)"dir_of_outline_blocks";
+/*
+       ruleid = (void *) "ox_file_body";
 
 		$$ = hsp->op->new(ruleid);
 
-		hsp->op->add($$, $1);
-       hsp->op->new_dirent(hsp->dfh, $1);
+        hsp->op->add($$, $1);
+        hsp->op->new_dirent(hsp->dfh, $1);
 
-       hsp->op->new_dir(hsp->dfh, $$);
+        hsp->op->new_dir(hsp->dfh, $$);
+*/
 	}
 
-	| dir_of_outline_blocks
+	| ox_file_body
 	  blank_or_indented_lines
 	  outline_block
 	{
+/*
 		hsp->op->add($$, $1);
        hsp->op->new_dirent(hsp->dfh, $3);
+*/
 	}
    ;
 
@@ -107,16 +115,20 @@ outline_block
 	: outline
 	{
        ruleid = (void *)"outline_block";
+/*
 		$$ = hsp->op->new(ruleid);
 		hsp->op->add($$,$1);
 		hsp->op->new_dirent(hsp->dfh, $1);
+*/
 	}
 
 	| outline_block
 	  outline
 	{
+/*
 		hsp->op->add($$,$2);
 		hsp->op->new_dirent(hsp->dfh, $2);
+*/
 	}
 	;
 
@@ -125,65 +137,56 @@ outline
 	: LINE
 	{
        ruleid = (void *)"outline";
+/*
 		$$ = hsp->op->new(ruleid);
        hsp->op->add($$, $1);
+*/
 	}
 
-	| LINE
-     indented_line_recursive_area
+   | LINE
+     START_BODY
+     outline_body
+     END_BODY
    {
        ruleid = (void *)"outline";
+/*
 		$$ = hsp->op->new(ruleid);
        hsp->op->add($$, $1);
-       hsp->op->add($$, $2);
+       hsp->op->add($$, $3);
 		hsp->op->new_dirent(hsp->dfh, $$);
-	}
-	;
-
-
-indented_line_recursive_area
-	: INDENT
-	  INDENTED_LINE
-	{
-        ruleid = (void *)"indented_line_recursive_area";
-        $$ = hsp->op->new(ruleid);
-        hsp->op->add($$, $1);
-        hsp->op->add($$, $2);
-	}
-
-	| indented_line_recursive_area
-	  INDENT
-	  INDENTED_LINE
-	{
-		hsp->op->add($$, $2);
-		hsp->op->add($$, $3);
+*/
 	}
 	;
 
 
 
-/* NON MAPPING */
+outline_body
+   : START_ELEMENT outline
+   {
+       ruleid = (void *)"outline_body";
+		// $$ = hsp->op->new(ruleid);
+       // hsp->op->add($$, $2);
+   }
+
+   | outline_body
+     START_ELEMENT outline
+   {
+       // hsp->op->add($$, $3);
+   }
+   ;
+
 
 blank_or_indented_lines
-	: BLANKLINE
+   : BLANKLINE
 
-	| BLANKLINE
-	  blank_or_indented_lines2
-	;
+   | FLOATING_LINE
 
+   | blank_or_indented_lines
+     BLANKLINE
 
-blank_or_indented_lines2
-	: BLANKLINE
-
-	| INDENT
-	  INDENTED_LINE
-
-	| blank_or_indented_lines2
-	  BLANKLINE
-
-	| blank_or_indented_lines2
-	  INDENT INDENTED_LINE
-	;
+   | blank_or_indented_lines
+     FLOATING_LINE
+   ;
 
 
 
@@ -202,10 +205,12 @@ const char *get_tok_name(int tokid) {
 }
 
 
+
 /* leave return type blank
-   - bison caveat
-*/
-yyerror(char const *s) {
+ *  - bison caveat
+ */
+yyerror(char const *s)
+{
     fprintf(stderr, "ox.ss err: %s\n", s);
 }
 

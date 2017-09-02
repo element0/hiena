@@ -29,7 +29,11 @@ struct dcel_mapsvc_ops {
 
         int (*add)( struct hiena_mapcel *parent, struct hiena_mapcel *child);
 
-        int (*add_dirent)(struct hiena_mapcel *parent, struct hiena_mapcel *child);
+        int (*new_dirent)(struct dcel_fh *, struct hiena_mapcel *direntcel);
+
+        int (*new_dir)(struct dcel_fh *, struct hiena_mapcel *dircel);
+
+        char *(*getenv)(const char *);
 
 };
 

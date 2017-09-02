@@ -13,11 +13,55 @@ dcel_dirsvc
 
 contents
 --------
+- directories and dcels
+- directories within map structure
 - opendir algorithm
 - readdir algorithm
 - closedir algorithm
 - d_name generating
 
+
+directories and dcels
+---------------------
+a dcel has a top level mapcel.
+if the top mapcel is a dir, the dcel is a dir.  opendir and readdir will access the directory of the top mapcell.
+
+
+
+directories within map structure
+--------------------------------
+a mapcel hierarchy can represent a directory hierarchy
+
+an example:
+
+  larder:{ sour:{ grapes, apples }, sweet:{ potatoes, onions } }
+
+  dir
+  :=
+  head body
+       :=
+       dirent fill dirent
+        :=
+  head body
+       :=
+       dirent fill dirent
+
+  head := d_name 
+  body := colon obrac ws? dirent ws? comma ws? dirent
+
+access path:
+
+  dir/dirent
+
+
+directory object:
+
+  mapcel->directory->mapcel(by_pos)
+
+
+dirent properties:
+
+  mapcel->children->mapcel(by_id)
 
 
 opendir algorithm

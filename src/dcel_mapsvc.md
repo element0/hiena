@@ -12,6 +12,33 @@ Domain Cell Map Service
 =======================
 
 
+contents
+--------
+- adding dirents and dirs
+- generating a rule id
+- adding children to a domain cell's child list
+- mapping nested cels efficiently
+- put new map cell
+- create new mapcel from rule id and length
+
+
+adding dirents and dirs
+-----------------------
+a directory is held in a mapcel.
+
+there may be one or more layers of grammar rulespace separation between a directory and its dirents.
+
+a dirent may be created by the parser before its directory is created.
+
+    dcel_mapsvc_new_dirent( ... )
+
+the dcel_mapsvc_new_dirent() function creates a dirent and holds it on a directory builder stack in the dcel file handle.
+
+when the parser creates a directory mapcel, it consumes the directory builder stack and incorporates the dirents.
+
+    dcel_mapsvc_new_dircel( ... )
+
+
 
 generating a rule id
 --------------------
@@ -126,6 +153,10 @@ implementation:
     dcel_mapsvc_add
         use first child anchor
 
+
+
+
+
 ## put new map cell ##
 
 inputs:
@@ -162,8 +193,13 @@ procedure:
 - store new mapcel at anchors by rule id
 
 
+
+
 ## create new mapcel from rule id and length ##
 aka("mapcel_new()")
+
+
+
 
 
 ## get head and tail anchors within fragment for mapcel ##
@@ -185,6 +221,9 @@ procedure:
   for head anchor at offset
   for tail anchor at offset + length
   
+
+
+
 
 
 ## find the deepest fragment which accomodates length ##
@@ -242,6 +281,8 @@ procedure:
         -yes-
         update cursor
             to frag, frag offset
+
+
 
 
 ### find child fragment ###

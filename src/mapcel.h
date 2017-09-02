@@ -10,15 +10,17 @@
 
 
 struct hiena_mapcel {
-        struct hiena_mapcel *next;
-        struct hiena_mapcel *prev;
         void *ruleid;
         size_t len;
         struct map_anchor *head_anchor;
         struct map_anchor *tail_anchor;
-        struct hiena_frag *frag;
         btree_t *children;
-        btree_t *child_ids;
+        btree_t *directory;
+
+/* depricate? */
+        struct hiena_mapcel *next;
+        struct hiena_mapcel *prev;
+        struct hiena_frag *frag;
 };
 
 struct hiena_mapcel *mapcel_new(char *, size_t);

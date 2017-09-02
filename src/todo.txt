@@ -11,3 +11,10 @@ working in:
   mapsvc
   .l .y
   mapcel
+
+
+2017-8-8
+
+frag_curs logic visually sound
+
+2017-8-27

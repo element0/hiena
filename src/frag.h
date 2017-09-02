@@ -22,6 +22,9 @@ struct hiena_frag {
     btree_t *children;
     btree_t *anchors;
     struct hiena_mfrag *mfrag;
+
+    /* convenience */
+    size_t len;
     struct map_anchor *head_anchor;
     struct map_anchor *tail_anchor;
 
@@ -46,7 +49,7 @@ int frag_cleanup( struct hiena_frag *f );
 
 #define frag_is_container( f ) f->mfrag == NULL
 
-#define frag_has_room( f, off, len ) (( off + len ) < frag_get_length( f ))
+#define frag_has_room( f, off, len ) (( off + len ) <= frag_get_length( f ))
 
 
 int frag_insert( struct hiena_frag *, struct hiena_frag *, HIFRAG_POS_T );

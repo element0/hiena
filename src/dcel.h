@@ -4,6 +4,8 @@
 
 
 #include "frag.h"
+#include "mapcel.h"
+#include "btrees.h"
 
 
 #define dcel_retain( dc ) dc->retain++
@@ -13,6 +15,7 @@
 
 struct hiena_dcel {
         struct hiena_frag *frag;
+        struct hiena_mapcel *mapcel;
         int retain;
         btree_t *dircache;
 };

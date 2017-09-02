@@ -39,9 +39,8 @@ static int get_indent_len(char *indent, int tabwidth) {
 
 LINE    ^[^ \t\n][^\n]*[\n]
 INDENT  ^[ \t]+
-BLANKLINE    ^([ \t]{-}[\n])*[\n]
-
 INDENTED_LINE   [^ \t\n][^\n]*[\n]
+BLANKLINE    ^([ \t]{-}[\n])*[\n]
 
 
 %%

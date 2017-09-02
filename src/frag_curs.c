@@ -76,8 +76,7 @@ int frag_curs_step_into( struct frag_curs *fc, struct hiena_frag *f, size_t new_
         struct frag_fh *cur;
         struct frag_fh *cursav;
 
-        cur = fc->cur;
-        cursav = cur;
+        cursav = fc->cur;
 
         cur = frag_curs_node_new(f);
         cur->outer_fh = cursav;
@@ -126,6 +125,7 @@ int frag_curs_step_outward( struct frag_curs *fc )
         outer->off = off;
 
         fc->cur = outer;
+        outer->inner_fh = NULL;
 
         frag_curs_node_cleanup(cur);
 
@@ -136,7 +136,7 @@ int frag_curs_step_outward( struct frag_curs *fc )
 struct hiena_frag *frag_curs_find_deepest_has_room( struct frag_curs *fcurs, size_t len )
 {
         struct hiena_frag *f, *cf;
-        size_t off, new_off;
+        size_t off, coff, new_off;
         bnode_t n;
 
         f = fcurs->cur->frag;
@@ -151,11 +151,15 @@ struct hiena_frag *frag_curs_find_deepest_has_room( struct frag_curs *fcurs, siz
 find_child:
 
         if( f->children == NULL )
+        {
                 return f;
+        }
 
-        cf = (struct hiena_frag *) bnode_value_at_key_or_nearest_lesser(f->children->root, (bkey_t)off, (void **)&new_off);
+        cf = (struct hiena_frag *) bnode_value_at_key_or_nearest_lesser(f->children->root, (bkey_t)off, (void **)&coff);
 
-        if(frag_has_room( cf, off, len ))
+        new_off = off - coff;
+
+        if(frag_has_room( cf, new_off, len ))
         {
                 
 frag_curs_step_into( fcurs, cf, new_off );
@@ -174,7 +178,7 @@ find_parent:
                 HIERR("frag_curs_find_deepest_has_room: improbable: parent null");
                 return NULL;
         case -2:
-                HIERR("frag_curs_find_deepest_has_room: frag has no parent and no room");
+                HIERR("frag_curs_find_deepest_has_room: valid: frag has no parent and no room");
                 return NULL;
         case -3:
                 HIERR("frag_curs_find_deepest_has_room: improbable: frag has no parent ");

@@ -4,9 +4,10 @@
 
 ox		: blank or indented lines ?
 		  (:: outline+ ::)
-     		  blank or indented lines ?
+     	  blank or indented lines ?
 		  END
    		;
+
 outline		: line
 		  indented_area(:: outline + ::) ?
 		  {:: remove_indent() ::}
