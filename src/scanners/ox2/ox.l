@@ -51,7 +51,7 @@ static int indent_spaces = 0;
 char *ttsa = NULL;
 int ttsi = 0;
 
-ttsa = yyextra->op->getenv("TAB_TO_SPACE");
+ttsa = NULL;  // yyextra->op->getenv("TAB_TO_SPACE");
 
 if (ttsa != NULL) {
     ttsi = atoi(ttsa);

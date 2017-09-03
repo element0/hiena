@@ -15,7 +15,7 @@ struct hiena_mapcel {
         struct map_anchor *head_anchor;
         struct map_anchor *tail_anchor;
         btree_t *children;
-        btree_t *directory;
+        btree_t *dir;
 
 /* depricate? */
         struct hiena_mapcel *next;

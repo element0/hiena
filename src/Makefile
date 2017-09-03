@@ -87,6 +87,9 @@ mfrag-svc:
 ox-so:
 	$(MAKE) -C scanners/ox/
 
+ox2-so:
+	$(MAKE) -C scanners/ox2/
+
 ox:
 	bison -d scanners/ox.y
 	flex -o scanners/ox.yy.c scanners/ox.l
@@ -95,7 +98,7 @@ ox:
 ox-tester:
 	gcc -rdynamic -o ox-tester ox-tester.c -ldl
 
-scanners: ox-so
+scanners: ox-so ox2-so
 
 
 scanner:
