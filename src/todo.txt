@@ -1,3 +1,30 @@
+2017-9-7 1800
+
+goal: fix mapping system and API.
+
+
+2017-9-7 0730
+
+goal: allow inconsistent levels of indent later in an outline
+
+priority:  low.  finish hiena mapping system first.  use ox3 as a test util.
+
+example:  the outline nests 3 layers in, and then steps out in smaller indent sizes for 5 layers.
+
+solution: use btree to keep indent stack
+
+solution: array elements are altered to match the new indent size after an END_BODY
+
+
+2017-9-6  DONE
+
+write ox3: same as ox2 but no mapping calls
+
+goal: debug ox parser
+
+note: mapping calls caused a double-free err.
+ 
+
 2017-8-3
 
 add hash function internal to mapsvc to hash strings into rule ids.
@@ -17,4 +44,3 @@ working in:
 
 frag_curs logic visually sound
 
-2017-8-27

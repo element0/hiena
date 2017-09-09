@@ -15,7 +15,7 @@
 
 bnode_t *bnode_new ( bnode_t *garbage )
 {
-        struct bnode *bn;
+        bnode_t *bn;
 
         bn = malloc(sizeof(*bn));
         memset(bn, 0, sizeof(*bn));
@@ -453,22 +453,32 @@ do_tree_add:
 
 	/* NOT SPLIT */
 
-	if( res_n == cur_n )
+    if( res_n == cur_n )
+    {
+	     res_n = bnode_add( cur_n, key, v );
+	     if( res_n == NULL )
         {
-	        res_n = bnode_add( cur_n, key, v );
-	        if( res_n == NULL )
-		{
-			HIERR("bnode_tree_add: notice: identical key exists.");
-		        return cur_root;
-	        }
-	        if(res_n == cur_n)
-		{ /* cur_n is leaf, successful add */
-		        return cur_root; /* success, return value of cur root */
-	        } else {		 /* res_n is link, setup recursion: */
-		        upper_n = cur_n; /* current node becomes upper node */
-		        cur_n   = res_n; /* link becomes current node */
-	        }
-	}
+            HIERR("bnode_tree_add: notice: identical key exists.");
+            return cur_root;
+        }
+        if(res_n == cur_n)
+        {
+            /* cur_n is leaf, successful add */
+
+            return cur_root;
+
+            /* success, return value of cur root */
+
+        } else {
+            /* res_n is link, setup recursion: */
+
+            upper_n = cur_n;
+
+            /* current node becomes upper node */
+
+            cur_n   = res_n; /* link becomes current node */
+         }
+    }
 
 	/* expect always to evaluate true */
         if(cur_n != NULL)

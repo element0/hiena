@@ -12,9 +12,10 @@ static struct frag_fh *frag_curs_node_new( struct hiena_frag *f )
         struct frag_fh *ffh;
 
         ffh = frag_fh_new();
+
         ffh->frag = f;
-        ffh->off  = 0;
-        ffh->mfrag_fh = NULL;
+
+        return ffh;
 }
 
 static void frag_curs_node_cleanup( struct frag_fh *ffh )
@@ -26,16 +27,23 @@ static void frag_curs_node_cleanup( struct frag_fh *ffh )
 
 struct frag_curs *frag_curs_new( struct hiena_frag *f )
 {
+        if( f == NULL )
+        {
+                HIERR("frag_curs_new: err: input: f NULL");
+                return NULL;
+        }
+
         struct frag_curs *fc;
         struct frag_fh *root;
 
+        fc = malloc(sizeof(*fc));
+        memset(fc, 0, sizeof(*fc));
+
         root = frag_curs_node_new(f);
+
         root->outer_fh = root;
         root->inner_fh = NULL;
 
-
-        fc = malloc(sizeof(*fc));
-        memset(fc, 0, sizeof(*fc));
         fc->root = root;
         fc->cur = root;
 

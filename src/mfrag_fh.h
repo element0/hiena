@@ -15,6 +15,9 @@ struct mfrag_fh {
         void *srcfh;
         off_t pos;
         int is_eof;
+
+        /* debug */
+        struct hiena_mfrag *mfrag_sav;
 };
 
 struct mfrag_fh *mfrag_fh_new();

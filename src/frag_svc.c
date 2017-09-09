@@ -81,13 +81,19 @@ ffh_getc_loop:
         c = mfrag_svc_getc( (void *)mfh );
 
         if( c != EOF )
+        {
+                printf("frag_svc_getc: c = '%c'\n", c);
+                fflush(stdout);
+
                 return c;
+        }
 
         /* goto ffh_step_next; */
 
 
 
 ffh_step_next:
+        HIERR("ffh_step_next:");
 
         if( ifh->frag == NULL )
         {
@@ -124,7 +130,7 @@ ffh_step_next:
 
 
 ffh_step_out:
-
+        HIERR("ffh_step_out:");
 
         if(ifh == ofh)
         {

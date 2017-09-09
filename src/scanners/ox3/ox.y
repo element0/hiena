@@ -8,6 +8,11 @@
 
 typedef void* yyscan_t;
 
+
+#define OXPRINT(s) \
+    printf(s);\
+    fflush(stdout);
+
 }
 
 %define lr.type ielr
@@ -45,13 +50,15 @@ typedef void* yyscan_t;
 
 /*
 %destructor { free($$); } <str>
-%destructor { mapcel_cleanup($$); } <ob> */
+%destructor { mapcel_cleanup($$); } <ob>
+*/
 
 
 %{
     int num_ox = 0;
     int prev_indent = 0;
     void *ruleid;
+
 %}
 
 %%
@@ -59,8 +66,8 @@ typedef void* yyscan_t;
 ox_good
    : ox_file
     {
-        printf("\n");
-        printf("ox good.\n");
+        OXPRINT("\n");
+        OXPRINT("ox good.\n");
         return;
     }
    ;
@@ -70,20 +77,21 @@ ox_file
      ox_file_body
      ox_file_tail
     {
-        printf("ox_file\n");
+        OXPRINT("ox_file\n");
     }
    ;
 
 ox_file_head
    : BEGIN_OXFILE
    {
-    printf("parser: BEGIN_OXFILE\n");
+        OXPRINT("parser: BEGIN_OXFILE\n");
    }
    | BEGIN_OXFILE
      blank_or_indented_lines
    {
-    printf("parser: BEGIN_OXFILE\n");
-printf("parser: blank_or_indented_lines\n");
+    OXPRINT("parser: BEGIN_OXFILE\n");
+    OXPRINT("parser: blank_or_indented_lines\n");
+    
    }
    ;
 
@@ -98,26 +106,14 @@ ox_file_tail
 ox_file_body
 	: outline_block
 	{
-/*
-       ruleid = (void *) "ox_file_body";
 
-		$$ = hsp->op->new(ruleid);
-
-        hsp->op->add($$, $1);
-        hsp->op->new_dirent(hsp->dfh, $1);
-
-        hsp->op->new_dir(hsp->dfh, $$);
-*/
 	}
 
 	| ox_file_body
 	  blank_or_indented_lines
 	  outline_block
 	{
-/*
-		hsp->op->add($$, $1);
-       hsp->op->new_dirent(hsp->dfh, $3);
-*/
+
 	}
    ;
 
@@ -125,21 +121,13 @@ ox_file_body
 outline_block	
 	: outline
 	{
-       ruleid = (void *)"outline_block";
-/*
-		$$ = hsp->op->new(ruleid);
-		hsp->op->add($$,$1);
-		hsp->op->new_dirent(hsp->dfh, $1);
-*/
+      
 	}
 
 	| outline_block
 	  outline
 	{
-/*
-		hsp->op->add($$,$2);
-		hsp->op->new_dirent(hsp->dfh, $2);
-*/
+
 	}
 	;
 
@@ -147,11 +135,7 @@ outline_block
 outline
 	: LINE
 	{
-       ruleid = (void *)"outline";
-/*
-		$$ = hsp->op->new(ruleid);
-       hsp->op->add($$, $1);
-*/
+       
 	}
 
    | LINE
@@ -159,13 +143,7 @@ outline
      outline_body
      END_BODY
    {
-       ruleid = (void *)"outline";
-/*
-		$$ = hsp->op->new(ruleid);
-       hsp->op->add($$, $1);
-       hsp->op->add($$, $3);
-		hsp->op->new_dirent(hsp->dfh, $$);
-*/
+       
 	}
 	;
 
@@ -174,15 +152,13 @@ outline
 outline_body
    : START_ELEMENT outline
    {
-       ruleid = (void *)"outline_body";
-		// $$ = hsp->op->new(ruleid);
-       // hsp->op->add($$, $2);
+       
    }
 
    | outline_body
      START_ELEMENT outline
    {
-       // hsp->op->add($$, $3);
+
    }
    ;
 
@@ -190,7 +166,7 @@ outline_body
 blank_or_indented_lines
    : BLANKLINE
    {
-       printf("parser: BLANKLINE\n");
+       
    }
 
    | FLOATING_LINE

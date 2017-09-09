@@ -3,6 +3,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "frag.h"
 #include "hierr.h"
@@ -11,16 +12,17 @@
 
 struct hiena_frag *new_frag()
 {
-        struct hiena_frag *f;
-        f = malloc(sizeof(*f));
-
-        return f;
+        return frag_new();
 }
 
 struct hiena_frag *frag_new()
 {
         struct hiena_frag *f;
         f = malloc(sizeof(*f));
+        memset(f,0,sizeof(*f));
+
+        f->anchors = btree_new();
+        f->children = btree_new();
 
         return f;
 }
@@ -30,6 +32,9 @@ int frag_cleanup ( struct hiena_frag *f )
 {
         if( f == NULL )
                 return -1;
+
+        btree_cleanup(f->anchors);
+        btree_cleanup(f->children);
 
         free( f );
 

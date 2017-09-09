@@ -10,7 +10,7 @@ struct frag_fh *frag_fh_new()
         struct frag_fh *fh;
 
         fh = malloc( sizeof( *fh ));
-        memset( fh, 0, sizeof( *fh ));
+        memset(fh,0,sizeof( *fh ));
 
         return fh;
 }
@@ -19,6 +19,11 @@ int frag_fh_cleanup( struct frag_fh *fh )
 {
         if( fh == NULL )
                 return 0;
+
+        if(fh->mode != NULL)
+        {
+                free(fh->mode);
+        }
         
         free( fh );
 

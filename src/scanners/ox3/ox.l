@@ -33,21 +33,23 @@ static int get_indent_len(char *indent, int tabwidth)
 %x IGNORE
 
 BEGIN_FILE   ^(.|[\n])
+BLANKLINE    ^([ \t]{-}[\n])*[\n]
 INDENT  ^[ \t]+
 LINE    [^ \t\n][^\n]*[\n]
-BLANKLINE    ^([ \t]{-}[\n])*[\n]
+NOINDENTLINE    ^[^ \t\n][^\n]*[\n]
+
 
 
 %%
 
 %{
 #define OX_MAX_DEPTH 64
-int indent_stack[OX_MAX_DEPTH] = { 0,};
-int cur_indent = 0;
 
-
-int tab_to_space = 8; 
+static int indent_stack[OX_MAX_DEPTH] = { 0,};
+static int cur_indent = 0;
 static int indent_spaces = 0;
+
+static int tab_to_space = 8;
 char *ttsa = NULL;
 int ttsi = 0;
 
@@ -66,8 +68,9 @@ if (ttsi != 0) {
 <INITIAL>{BEGIN_FILE}   {
 
     yyless(0);
+    yy_set_bol(1);
 
-    printf("BEGIN_OXFILE\n");
+    OXPRINT("BEGIN_OXFILE\n");
 
     BEGIN(OX);
     return BEGIN_OXFILE;
@@ -76,74 +79,62 @@ if (ttsi != 0) {
 
 <*><<EOF>>	{
 
-    printf("END\n");
+    OXPRINT("END\n");
 
     return END;
   }
 
 
+<OX>{BLANKLINE}    {
 
-<OUTLINE>{BLANKLINE}    {
-
-    if( cur_indent > 0 )
-    {
-        cur_indent--;
-
-    printf("END_BODY\n");
-
-        yyless(0);
-        return END_BODY;
-    }
-    /* fall through */
-  }
-
-
-<OX,OUTLINE,IGNORE>{BLANKLINE}    {
-
-
-    yylval->ob = yyextra->op->newterm( yyextra->dfh, (void *)"BLANKLINE", yyextra->cur_location, yyleng );
-
-    printf("BLANKLINE\n");
+    OXPRINT("BLANKLINE, BEGIN(IGNORE)\n");
 
     BEGIN(IGNORE);
+
     return BLANKLINE;
-
   }
 
-<OX>{INDENT}    {
 
+<OX,OUTLINE>{LINE}		{
+
+    OXPRINT("LINE\n");
+
+    return LINE;
+  }
+
+<OX,OUTLINE>{INDENT}	{
+
+    OXPRINT("INDENT, BEGIN(OUTLINE)\n");
     BEGIN(OUTLINE);
-
-    printf("INDENT\n");
-
-    /* fallthrough */
-  }
-
-
-<OUTLINE>{INDENT}	{
-
 
     indent_spaces = get_indent_len(yytext,tab_to_space);
 
     if( indent_spaces > indent_stack[cur_indent] )
     {
+        if( cur_indent == OX_MAX_DEPTH )
+        {
+                fprintf(stderr,"ox err: cur_indent at max.");
+                fflush(stderr);
+                return END;
+        }
         cur_indent++;
+
         indent_stack[cur_indent] = indent_spaces;
 
 
-    printf("START_BODY\n");
+        OXPRINT("START_BODY\n");
 
 
         yyless(0);
+        yy_set_bol(1);
+
         return START_BODY;
     }
 
     if( indent_spaces == indent_stack[cur_indent])
     {
 
-        yylval->ob = yyextra->op->newterm( yyextra->dfh, (void *)"INDENT", yyextra->cur_location, yyleng );
-
-    printf("START_ELEMENT\n");
+        OXPRINT("START_ELEMENT\n");
 
 
         return START_ELEMENT;
@@ -155,9 +146,11 @@ if (ttsi != 0) {
         cur_indent--;
 
 
-    printf("END_BODY\n");
+        OXPRINT("END_BODY\n");
 
         yyless(0);
+        yy_set_bol(1);
+
         return END_BODY;
     }
 
@@ -165,39 +158,58 @@ if (ttsi != 0) {
 
 
 
-<IGNORE>{LINE}    {
 
-    BEGIN(OX);
+<OUTLINE>{BLANKLINE}    {
 
-    /* fall through */
+    if( cur_indent > 0 )
+    {
+        cur_indent--;
+
+        OXPRINT("END_BODY\n");
+
+        yyless(0);
+        yy_set_bol(1);
+
+        return END_BODY;
+    }
+
+    OXPRINT("BLANKLINE, BEGIN(IGNORE)\n");
+
+    BEGIN(IGNORE);
+
+    return BLANKLINE;
   }
 
 
-<OX,OUTLINE>{LINE}		{
+<IGNORE>{BLANKLINE}    {
+    OXPRINT("BLANKLINE (IGNORE)\n");
 
-    yylval->ob = yyextra->op->newterm(yyextra->dfh, (void *)"LINE", yyextra->cur_location, yyleng);
-
-    printf("LINE\n");
-
-
-    return LINE;
-
+    return BLANKLINE;
   }
-
 
 
 <IGNORE>{INDENT}{LINE}    {
 
-      yylval->ob = yyextra->op->newterm( yyextra->dfh, (void *)"FLOATING_LINE", yyextra->cur_location, yyleng );
+    OXPRINT("FLOATING_LINE, (IGNORE)\n");
 
-    printf("FLOATING_LINE\n");
-
-      return FLOATING_LINE;
+    return FLOATING_LINE;
   }
 
 
+<IGNORE>{NOINDENTLINE}    {
 
-.    { /* ignored */ }
+    BEGIN(OX);
+    OXPRINT("LINE, BEGIN(OX)\n");
+
+    return LINE;
+  }
+
+
+.    {
+
+    OXPRINT("Unrecognized character, sweeping under the rug.\n");
+
+  }
 
 %%
 

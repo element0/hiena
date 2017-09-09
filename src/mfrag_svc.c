@@ -38,6 +38,17 @@ int mfrag_svc_getc( void *fhp )
 
         mf = fh->mfrag;
 
+        if( mf != fh->mfrag_sav )
+        {
+                fprintf(stderr,"mfrag_svc_getc: mfrag_sav %lu, mfrag %lu\",fh->mfrag_sav,mf");
+        }
+
+        if( mf == NULL )
+        {
+                HIERR("mfrag_svc_getc: mf NULL");
+                return EOF;
+        }
+
         if( fh->pos > mf->boundtail
         || fh->pos < mf->boundhead )
         {
@@ -123,6 +134,8 @@ void *mfrag_svc_open( void *mfp, const char *mode )
         fh->srcfh = srcfh;
         fh->pos = mf->boundhead;
         fh->is_eof = 0;
+
+        fh->mfrag_sav = mf;
 
         return (void *)fh;
 }
