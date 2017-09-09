@@ -9,11 +9,14 @@
 #include "frag.h"
 #include "frag_fh.h"
 
+#define fc_node frag_fh
+#define fc_node_new frag_fh_new
+#define fc_node_cleanup frag_fh_cleanup
 
 struct frag_curs
 {
-        struct frag_fh *root;
-        struct frag_fh *cur;
+        struct fc_node *root;
+        struct fc_node *cur;
         size_t pos;
 };
 

@@ -7,20 +7,30 @@
 #include "hierr.h"
 
 
-static struct frag_fh *frag_curs_node_new( struct hiena_frag *f )
+static struct fc_node *frag_curs_node_new( struct hiena_frag *f )
 {
-        struct frag_fh *ffh;
+        if( f == NULL )
+        {
+                HIERR("frag_curs_node_new: err: input: f NULL");
+                return NULL;
+        }
+        struct fc_node *fcn;
 
-        ffh = frag_fh_new();
+        fcn = fc_node_new();
 
-        ffh->frag = f;
+        fcn->frag = f;
 
-        return ffh;
+        return fcn;
 }
 
-static void frag_curs_node_cleanup( struct frag_fh *ffh )
+static void frag_curs_node_cleanup( struct fc_node *fcn )
 {
-        frag_fh_cleanup( ffh );
+        if( fcn == NULL )
+        {
+                HIERR("frag_curs_node_cleanup: err: input: fcn NULL");
+                return;
+        }
+        fc_node_cleanup( fcn );
 }
 
 
@@ -34,7 +44,7 @@ struct frag_curs *frag_curs_new( struct hiena_frag *f )
         }
 
         struct frag_curs *fc;
-        struct frag_fh *root;
+        struct fc_node *root;
 
         fc = malloc(sizeof(*fc));
         memset(fc, 0, sizeof(*fc));
@@ -81,15 +91,26 @@ int frag_curs_step_into( struct frag_curs *fc, struct hiena_frag *f, size_t new_
                  return -1;
         }
 
-        struct frag_fh *cur;
-        struct frag_fh *cursav;
+        struct fc_node *cur;
+        struct fc_node *cursav;
 
         cursav = fc->cur;
 
         cur = frag_curs_node_new(f);
+        if( cur == NULL )
+        {
+                HIERR("frag_curs_step_into: can't init cursor node");
+                return -1;
+        }
+
         cur->outer_fh = cursav;
         cur->off = new_off;
 
+        if( cursav == NULL )
+        {
+                HIERR("frag_curs_step_into: cursav NULL");
+                return -1;
+        }
         cursav->inner_fh = cur;
 
         fc->cur = cur;
@@ -105,8 +126,8 @@ int frag_curs_step_outward( struct frag_curs *fc )
                 return -1;
         }
 
-        struct frag_fh *cur;
-        struct frag_fh *outer;
+        struct fc_node *cur;
+        struct fc_node *outer;
         size_t off;
 
         cur = fc->cur;
@@ -115,6 +136,12 @@ int frag_curs_step_outward( struct frag_curs *fc )
         {
                 HIERR("frag_curs_step_out: err: cur is root, can't step out.");
                 return -2;
+        }
+
+        if( cur == NULL )
+        {
+                HIERR("frag_curs_step_out: err: cur NULL");
+                return -4;
         }
 
         outer = cur->outer_fh;
@@ -143,12 +170,30 @@ int frag_curs_step_outward( struct frag_curs *fc )
 
 struct hiena_frag *frag_curs_find_deepest_has_room( struct frag_curs *fcurs, size_t len )
 {
+        if( fcurs == NULL )
+        {
+                HIERR("frag_curs_find_deepest_has_room: err: input: fcurs NULL");
+                return NULL;
+        }
+
         struct hiena_frag *f, *cf;
         size_t off, coff, new_off;
         bnode_t n;
 
+        if( fcurs->cur == NULL )
+        {
+                HIERR("frag_curs_find_deepest_has_room: err: fcurs->cur NULL");
+                return NULL;
+        }
+
         f = fcurs->cur->frag;
         off = fcurs->cur->off;
+
+        if( f == NULL )
+        {
+                HIERR("frag_curs_find_deepest_has_room: err: f NULL");
+                return NULL;
+        }
 
 
         if( frag_has_room( f, off, len ))
@@ -166,6 +211,12 @@ find_child:
         cf = (struct hiena_frag *) bnode_value_at_key_or_nearest_lesser(f->children->root, (bkey_t)off, (void **)&coff);
 
         new_off = off - coff;
+
+        if( cf == NULL )
+        {
+                HIERR("frag_curs_find_deepest_has_room: err: cf NULL");
+                return NULL;
+        }
 
         if(frag_has_room( cf, new_off, len ))
         {
@@ -191,11 +242,27 @@ find_parent:
         case -3:
                 HIERR("frag_curs_find_deepest_has_room: improbable: frag has no parent ");
                 return NULL;
-        default:
+        case 0:
                 break;
+
+        default:
+                HIERR("frag_curs_find_deepest_has_room: unrecognized return code from frag_curs_step_outward()");
+                return NULL;
+        }
+
+        if( fcurs->cur == NULL )
+        {
+                HIERR("frag_curs_find_deepest_has_room::find_parent: err: fcurs->cur NULL");
+                return NULL;
         }
 
         f = fcurs->cur->frag;
+
+        if( f == NULL )
+        {
+                HIERR("frag_curs_find_deepest_has_room::find_parent: err: f NULL");
+                return NULL;
+        }
 
         if(!frag_has_room( f, off, len ))
                goto find_parent;
@@ -256,6 +323,12 @@ struct map_anchor *frag_curs_get_anchor( struct frag_curs *fc )
         }
 
         f = frag_curs_find_deepest( fc );
+
+        if( fc->cur == NULL )
+        {
+                HIERR("frag_curs_get_anchor: err: fc->cur NULL");
+                return NULL;
+        }
 
         pos = fc->cur->off;
 
