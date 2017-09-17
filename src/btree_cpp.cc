@@ -41,20 +41,24 @@ void *btree_get(hbtree *bt, bkey_t key)
         return it->second;
 }
 
-void *btree_put(hbtree *bt, bkey_t key, void *val )
+hbtree::iterator *btree_put(hbtree *bt, bkey_t key, void *val )
 {
         if( bt == NULL )
-                return NULL;
+                return nullptr;
 
-        std::pair res;
+        std::pair<hbtree::iterator,bool> res;
+        hbtree::iterator *it;
 
         res = bt->insert(std::make_pair(key,val));
+        it = nullptr;
 
-        if( res->second == FALSE )
+        if( res.second == false )
         {
-                return NULL;
+                return nullptr;
         }
-        return (void *)res->first;
+        it = &(res.first);
+
+        return it;
 }
 
 void btree_print(hbtree *bt)
@@ -62,7 +66,7 @@ void btree_print(hbtree *bt)
         hbtree::iterator it;
         for(it = bt->begin();
             it != bt->end();
-            it++;)
+            it++)
         {
                 std::cout << it->first << ":" << (long unsigned int)(it->second) << "\n";
         }
@@ -80,23 +84,18 @@ void
 
         hbtree::iterator it;
         
-        it = bt->lower_bound;
+        it = bt->lower_bound(k);
 
         if( it->first != k )
         {
             if( it == bt->begin() )
-                return NULL
+                return NULL;
             it = --it;
         }
 
         return it->first;
 }
 
-void
-*btree_value_at_key_or_nearest_greater( _t *n, bkey_t k, bkey_t *kres )
-{
-        return NULL;
-}
+}   // end extern "C"
 
-
-}
+}   // end namespace

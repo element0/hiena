@@ -24,7 +24,7 @@ btrees:
 	gcc $(dbugopts) -c btrees.c -o $(out-o)/btrees.o
 
 btree_cpp:
-	g++ $(dbugopts) -std=c++0x btree_cpp.cc -o $(out-o)/btree_cpp.o
+	g++ $(dbugopts) -c -std=c++0x btree_cpp.cc -o $(out-o)/btree_cpp.o
 
 context-frame:
 	gcc $(dbugopts) -c context_frame.c -o $(out-o)/context_frame.o
