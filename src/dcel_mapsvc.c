@@ -60,6 +60,12 @@ struct hiena_mapcel *dcel_mapsvc_newterm( struct dcel_fh *dfh, void *p, size_t p
                 return NULL;
         }
 
+        if( p == NULL )
+        {
+                HIERR("dcel_mapsvc_newterm: err: p is NULL");
+                return NULL;
+        }
+
         struct frag_curs *fc;
         struct hiena_mapcel *mc;
         struct map_anchor *mh;

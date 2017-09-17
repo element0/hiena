@@ -23,6 +23,9 @@ btrees:
 	gcc $(dbugopts) -c btree.c -o $(out-o)/btree.o
 	gcc $(dbugopts) -c btrees.c -o $(out-o)/btrees.o
 
+btree_cpp:
+	g++ $(dbugopts) -std=c++0x btree_cpp.cc -o $(out-o)/btree_cpp.o
+
 context-frame:
 	gcc $(dbugopts) -c context_frame.c -o $(out-o)/context_frame.o
 
@@ -127,6 +130,10 @@ tests: out-dirs test-btrees test-dcel-svc test-file-svc test-hiena-fh test-mapce
 
 test-dcel-svc: btrees map-anchor mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs frag-svc dcel-svc
 	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o} dcel_svc_test.c -o $(out-test-bin)/dcel_svc_test
+
+
+test-cpp-btree:
+	g++ $(dbugopts) -std=c++0x test_cpp_btree.cc -o $(out-test-bin)/cpp_btree_test
 
 
 test-btrees: btrees

@@ -22,7 +22,7 @@ struct hiena_frag *frag_new()
         memset(f,0,sizeof(*f));
 
         f->anchors = btree_new();
-        f->children = btree_new();
+        f->children = NULL;
 
         return f;
 }
@@ -34,7 +34,6 @@ int frag_cleanup ( struct hiena_frag *f )
                 return -1;
 
         btree_cleanup(f->anchors);
-        btree_cleanup(f->children);
 
         free( f );
 

@@ -176,9 +176,11 @@ struct hiena_frag *frag_curs_find_deepest_has_room( struct frag_curs *fcurs, siz
                 return NULL;
         }
 
+
         struct hiena_frag *f, *cf;
         size_t off, coff, new_off;
         bnode_t n;
+
 
         if( fcurs->cur == NULL )
         {
@@ -287,6 +289,12 @@ int frag_curs_seek( struct frag_curs *fc, size_t off, int whence)
                 return -1;
         }
 
+        if( fc->cur == NULL )
+        {
+                HIERR("frag_curs_seek: err: fc->cur NULL");
+                return NULL;
+        }
+
         switch( whence )
         {
         case SEEK_SET:
@@ -322,13 +330,13 @@ struct map_anchor *frag_curs_get_anchor( struct frag_curs *fc )
                 return NULL;
         }
 
-        f = frag_curs_find_deepest( fc );
-
         if( fc->cur == NULL )
         {
                 HIERR("frag_curs_get_anchor: err: fc->cur NULL");
                 return NULL;
         }
+
+        f = frag_curs_find_deepest( fc );
 
         pos = fc->cur->off;
 

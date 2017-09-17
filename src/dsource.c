@@ -14,11 +14,14 @@
 
 struct hiena_dcel *dsource( struct context_frame *cx, int argc, void **argv)
 {
+        /* cx ignored */
+
         if( argc != 1 )
         {
                 HIERR("prod_fn dsource: argc != 1");
                 return NULL;
         }
+
         if( argv == NULL )
         {
                 HIERR("prod_fn dsource: argv NULL");
@@ -31,14 +34,16 @@ struct hiena_dcel *dsource( struct context_frame *cx, int argc, void **argv)
         void *srca;
         struct prod_instr *pi;
 
-        f = frag_new( );
+        f = frag_new();
+
         if( f == NULL )
         {
                 HIERR("dsource: frag_new NULL");
                 return NULL;
         }
 
-        mf = mfrag_new( );
+        mf = mfrag_new();
+
         if( mf == NULL )
         {
                 HIERR("dsource: mfrag_new NULL");
@@ -56,8 +61,8 @@ struct hiena_dcel *dsource( struct context_frame *cx, int argc, void **argv)
 
         frag_set_mfrag( f, mf );
 
-	dc = malloc(sizeof(*dc));
-	memset(dc, 0, sizeof(*dc));
+        dc = malloc(sizeof(*dc));
+        memset(dc, 0, sizeof(*dc));
 
         dc->frag = f;
 
