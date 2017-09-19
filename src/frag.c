@@ -15,6 +15,7 @@ struct hiena_frag *new_frag()
         return frag_new();
 }
 
+
 struct hiena_frag *frag_new()
 {
         struct hiena_frag *f;
@@ -39,7 +40,6 @@ int frag_cleanup ( struct hiena_frag *f )
 
         return 0;
 }
-
 
 
 // ---- old ----
@@ -300,7 +300,7 @@ int frag_put_anchor( struct hiena_frag *f, size_t pos, struct map_anchor *ma )
 {
         if( f == NULL )
         {
-                HIERR("frag_get_anchor: err: f NULL");
+                HIERR("frag_put_anchor: err: f NULL");
                 return -1;
         }
 
@@ -308,6 +308,13 @@ int frag_put_anchor( struct hiena_frag *f, size_t pos, struct map_anchor *ma )
         void *er;
 
         b = f->anchors;
+
+        if( b == NULL )
+        {
+                HIERR("frag_get_anchor: err: f->anchors NULL");
+                return NULL;
+        }
+
         er = btree_put( b, (void *)pos, (void *)ma );
 
         return 0;
@@ -325,7 +332,16 @@ struct map_anchor *frag_get_anchor( struct hiena_frag *f, size_t pos )
         struct map_anchor *ma;
 
         b = f->anchors;
+
+        if( b == NULL )
+        {
+                HIERR("frag_get_anchor: err: f->anchors NULL");
+                return NULL;
+        }
+
         ma = (struct map_anchor *)btree_get(b,(void *)pos);
+
+        
 
         return ma;
 }

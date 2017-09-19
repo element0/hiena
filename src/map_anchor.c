@@ -5,6 +5,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include "map_anchor.h"
 #include "mapcel.h"
 #include "hierr.h"
@@ -15,6 +16,10 @@ struct map_anchor *map_anchor_new()
         struct map_anchor *ma;
 
         ma = malloc(sizeof(*ma));
+        memset(ma,0,sizeof(*ma));
+
+        ma->id_head = btree_new();
+        ma->id_tail = btree_new();
 
         return ma;
 }
@@ -22,11 +27,18 @@ struct map_anchor *map_anchor_new()
 int map_anchor_cleanup( struct map_anchor *ma )
 {
         if( ma == NULL )
-		return -1;
+                return -1;
 
-	free( ma );
+        if( ma->id_head != NULL )
+                btree_cleanup( ma->id_head );
 
-	return 0;
+        if( ma->id_head != NULL )
+                btree_cleanup( ma->id_head );
+
+
+        free( ma );
+
+        return 0;
 }
 
 
@@ -40,20 +52,20 @@ int map_anchor_add( struct map_anchor *ma, struct hiena_mapcel *mc )
                 return -1;
         }
 
-        btree_t *tr;
+        btree_t *b;
         void *id;
         
-        tr = ma->id_head;
+        b = ma->id_head;
 
-        if( tr == NULL )
+        if( b == NULL )
         {
-                HIERR("map_anchor_add: tr NULL");
+                HIERR("map_anchor_add: b NULL");
                 return -1;
         }
 
         id = mc->ruleid;
 
-        btree_put( tr, id, (void *)mc );
+        btree_put( b, id, (void *)mc );
 
         mc->head_anchor = ma;
 
@@ -71,20 +83,20 @@ int map_anchor_add_tail( struct map_anchor *ma, struct hiena_mapcel *mc )
                 return -1;
         }
 
-        btree_t *tr;
+        btree_t *b;
         void *id;
         
-        tr = ma->id_tail;
+        b = ma->id_tail;
 
-        if( tr == NULL )
+        if( b == NULL )
         {
-                HIERR("map_anchor_add_tail: tr NULL");
+                HIERR("map_anchor_add_tail: b NULL");
                 return -1;
         }
 
         id = mc->ruleid;
 
-        btree_put( tr, id, (void *)mc );
+        btree_put( b, id, (void *)mc );
 
         mc->tail_anchor = ma;
 

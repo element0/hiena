@@ -41,7 +41,7 @@ void *btree_get(hbtree *bt, bkey_t key)
         return it->second;
 }
 
-hbtree::iterator *btree_put(hbtree *bt, bkey_t key, void *val )
+void *btree_put(hbtree *bt, bkey_t key, void *val)
 {
         if( bt == NULL )
                 return nullptr;
@@ -58,7 +58,7 @@ hbtree::iterator *btree_put(hbtree *bt, bkey_t key, void *val )
         }
         it = &(res.first);
 
-        return it;
+        return (void *)it;
 }
 
 void btree_print(hbtree *bt)
@@ -88,12 +88,15 @@ void
 
         if( it->first != k )
         {
-            if( it == bt->begin() )
+            if( it == bt->begin()
+             || it == bt->end() )
                 return NULL;
             it = --it;
         }
 
-        return it->first;
+        *kres = it->first;
+
+        return it->second;
 }
 
 }   // end extern "C"

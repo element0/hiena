@@ -20,10 +20,14 @@ int frag_fh_cleanup( struct frag_fh *fh )
         if( fh == NULL )
                 return 0;
 
+        /* eventually implement this
+
         if(fh->mode != NULL)
         {
                 free(fh->mode);
         }
+
+        */
         
         free( fh );
 

@@ -210,7 +210,7 @@ find_child:
                 return f;
         }
 
-        cf = (struct hiena_frag *) bnode_value_at_key_or_nearest_lesser(f->children->root, (bkey_t)off, (void **)&coff);
+        cf = (struct hiena_frag *) btree_value_at_key_or_nearest_lesser(f->children, (bkey_t)off, (void **)&coff);
 
         new_off = off - coff;
 
