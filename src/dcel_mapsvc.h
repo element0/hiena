@@ -5,6 +5,7 @@
 #include "dcel_fh.h"
 #include "mapcel.h"
 #include "dcel.h"
+#include "scanner_hdl.h"
 
 
 /*
@@ -21,6 +22,7 @@
 int dcel_mapsvc_idcmp( void *, void * );
 
 
+
 struct dcel_mapsvc_ops {
 
         struct hiena_mapcel *(*newterm)(struct dcel_fh *, void *ruleid, size_t pos, size_t len);
@@ -31,7 +33,7 @@ struct dcel_mapsvc_ops {
 
         int (*new_dirent)(struct dcel_fh *, struct hiena_mapcel *direntcel);
 
-        int (*new_dir)(struct dcel_fh *, struct hiena_mapcel *dircel);
+        int (*make_dir)(struct dcel_fh *, struct hiena_mapcel *dircel);
 
         char *(*getenv)(const char *);
 

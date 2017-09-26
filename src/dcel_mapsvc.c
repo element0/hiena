@@ -10,6 +10,7 @@
 #include "dcel_fh.h"
 #include "dcel_mapsvc.h"
 #include "mapcel.h"
+#include "mapcel_dir.h"
 #include "hierr.h"
 #include "btrees.h"
 
@@ -194,8 +195,8 @@ int dcel_mapsvc_add( struct hiena_mapcel *par, struct hiena_mapcel *chi )
 
 
 /**
-    warning:  this implementation does not accomodate dirents on the same mapanchor -- that is to say, if two grammar rules map to the same byte position.
- *
+    update (9/22/2017):
+    implements a simple variable length array as a directory.
  */
 int dcel_mapsvc_new_dirent( struct dcel_fh *dfh, struct hiena_mapcel *mc )
 {
@@ -205,48 +206,39 @@ int dcel_mapsvc_new_dirent( struct dcel_fh *dfh, struct hiena_mapcel *mc )
                 HIERR("dcel_mapsvc_new_dirent: err: dfh or mc NULL");
                 return -1;
         }
-       
-        struct map_anchor *ma;
-        btree_t *bt;
-        void *key;
 
-        ma = mc->head_anchor;
-        if( ma == NULL )
+        struct hiena_mapcel **d;
+
+        if( dfh->dir == NULL )
         {
-                HIERR("dcel_mapsvc_new_dirent: warn: map anchor NULL. probably not what you want.");
-
+                dfh->dir = mapcel_dir_new();
         }
 
-        key = (void *)ma;
+        d = dfh->dir;
 
-        if( bt == NULL )
+        if(mapcel_dir_add(d, mc) == -1);
         {
-                bt = btree_new();
-                dfh->tmpdir = bt;
+                HIERR("dcel_mapsvc_new_dirent: can't add dirent.");
         }
-
-        btree_put( bt, key, (void *)mc );
 
         return 0;
 }
 
-int dcel_mapsvc_new_dir(struct dcel_fh *dfh, struct hiena_mapcel *mc)
+int dcel_mapsvc_make_dir(struct dcel_fh *dfh, struct hiena_mapcel *mc)
 {
         if( dfh == NULL
          || mc == NULL )
         {
-                HIERR("dcel_mapsvc_new_dir: err: dfh or mc NULL");
+                HIERR("dcel_mapsvc_make_dir: err: dfh or mc NULL");
                 return -1;
         }
         
         if( mc->dir != NULL )
         {
-                HIERR("dcel_mapsvc_new_dir: warn: mc->dir NOT NULL. Previous directory struct may be lost.");
+                HIERR("dcel_mapsvc_make_dir: warn: mc->dir NOT NULL. Previous directory struct may be lost.");
         }
-        mc->dir = dfh->tmpdir;
-        dfh->tmpdir = NULL;
-
-        dfh->dcel->mapcel = mc;
+        mc->dir = dfh->dir;
+        dfh->dir = NULL;
 
         return 0;
 }
@@ -258,7 +250,7 @@ struct dcel_mapsvc_ops dcel_mapsvc = {
         .newterm = dcel_mapsvc_newterm,
         .add = dcel_mapsvc_add,
         .new_dirent = dcel_mapsvc_new_dirent,
-        .new_dir = dcel_mapsvc_new_dir,
+        .new_dir = dcel_mapsvc_make_dir,
         .getenv = getenv,
 };
 

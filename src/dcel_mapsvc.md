@@ -32,11 +32,19 @@ a dirent may be created by the parser before its directory is created.
 
     dcel_mapsvc_new_dirent( ... )
 
-the dcel_mapsvc_new_dirent() function creates a dirent and holds it on a directory builder stack in the dcel file handle.
+the dcel_mapsvc_new_dirent() function creates a dirent and holds it on a dirent stack in the parser handle.
 
-when the parser creates a directory mapcel, it consumes the directory builder stack and incorporates the dirents.
+when the parser makes a directory mapcel, it consumes the dirent stack and incorporates the dirents.
 
-    dcel_mapsvc_new_dircel( ... )
+    dcel_mapsvc_make_dir( ... )
+
+a directory is part of the semantic value of a mapcel.  dirents are mapcel pointers. (9/20/17)
+
+a simple directory implementation is an array of mapcel pointers:(9/21/17)
+
+    mapcel_t **dir;
+    int num_entries; 
+
 
 
 

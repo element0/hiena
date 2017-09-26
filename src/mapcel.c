@@ -23,6 +23,7 @@ struct hiena_mapcel *mapcel_new(char *ruleid, size_t len)
 int mapcel_cleanup( struct hiena_mapcel *mc )
 {
         btree_t *cn;
+        struct mapcel_dir *d;
 
         if( mc == NULL )
         {
@@ -31,11 +32,18 @@ int mapcel_cleanup( struct hiena_mapcel *mc )
         }
 
         cn = mc->children;
+        d = mc->dir;
 
         if( cn != NULL )
         {
                 btree_cleanup( cn );
         }
+
+        if( dir != NULL )
+        {
+                mapcel_dir_cleanup( d );
+        }
+
 
         free(mc);
         return 0;

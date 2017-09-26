@@ -25,19 +25,24 @@ struct dcel_fh;
 
 struct dcel_fh {
         struct hiena_dcel *dcel;
+        size_t pos;
+
         struct hiena_frag *frag;
+        size_t fragpos;
         void *frag_fh;
         struct frag_curs *fcurs;
 
-        btree_t *tmpdir;
-
-        size_t pos;
-        size_t fragpos;
         struct hiena_svc *ops;
         struct dcel_mapsvc_ops *mapops;
 
+        /* directory builder */
+
+        int num_dirents;
+        struct hiena_mapcel **dir;
+
 /* depricate? */
 
+        btree_t *tmpdir;
         struct hiena_mapcel *mc;
         struct map_anchor *ma;
 

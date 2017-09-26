@@ -1,6 +1,15 @@
+2017-9-20 1913
+
+goal: rephrase mapsvc to encapsulate scanner_hdl rather than dcel.
+
+
 2017-9-7 1800
 
 goal: fix mapping system and API.
+
+status:
+    9-21 working on dcel_dir_svc
+    9-21 working on mapsvc/{new_dirent,make_dir}
 
 
 2017-9-7 0730

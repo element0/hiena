@@ -1,3 +1,4 @@
+#include <string.h>
 #include "dcel_dirh.h"
 #include "dcel_dirent.h"
 #include "dcel_dirsvc.h"
@@ -27,6 +28,8 @@ struct dcel_dirh *dcel_dirsvc_open( struct hiena_dcel *dc)
         struct map_anchor *ma;
 
         dh = malloc(sizeof(*dh));
+        memset(dh,0,sizeof(*dh));
+
         f = dc->frag;
         fc = frag_curs_new( f );
         ma = frag_curs_get_anchor( fc );
