@@ -36,16 +36,16 @@ typedef void* yyscan_t;
 %token <ob> LINE
 %token <ob> BLANKLINE
 %token <ob> FLOATING_LINE
-%token BEGIN_OXFILE
-%token END
-%token START_BODY
-%token END_BODY
-%token START_ELEMENT
+%token <ob> BEGIN_OXFILE
+%token <ob> END
+%token <ob> START_BODY
+%token <ob> END_BODY
+%token <ob> START_ELEMENT
 
-%type <ob> outline outline_block
-%type <ob> outline_body
-%type <ob> ox_file_head
-%type <ob> ox_file_body
+%type <ob> ox_file ox_file_head ox_file_body ox_file_tail
+
+%type <ob> outline_block outline outline_body start_body_action
+
 %type <ob> blank_or_indented_lines
 
 /*
@@ -68,6 +68,10 @@ ox_good
     {
         OXPRINT("\n");
         OXPRINT("ox good.\n");
+
+        OXPRINT("op finish\n");
+        hsp->op->finish(hsp->dfh,$1);
+
         return;
     }
    ;
@@ -78,6 +82,14 @@ ox_file
      ox_file_tail
     {
         OXPRINT("ox_file\n");
+
+        $$ = hsp->op->new((void *)"ox_file");
+        hsp->op->add($$,$1);
+        hsp->op->add($$,$2);
+        hsp->op->add($$,$3);
+
+        OXPRINT("op finish dir\n");
+        hsp->op->finish_dir(hsp->dfh, $$);
     }
    ;
 
@@ -85,13 +97,18 @@ ox_file_head
    : BEGIN_OXFILE
    {
         OXPRINT("parser: BEGIN_OXFILE\n");
+
+        $$ = hsp->op->new((void *)"ox_file_head");
+
    }
    | BEGIN_OXFILE
      blank_or_indented_lines
    {
     OXPRINT("parser: BEGIN_OXFILE\n");
     OXPRINT("parser: blank_or_indented_lines\n");
-    
+
+        $$ = hsp->op->new((void *)"ox_file_head");
+        hsp->op->add($$,$1);
    }
    ;
 
@@ -99,21 +116,41 @@ ox_file_head
 ox_file_tail
    : blank_or_indented_lines
      END
+   {
+        $$ = hsp->op->new((void *)"ox_file_tail");
+        hsp->op->add($$,$1);
+   }
    | END
+   {
+        $$ = hsp->op->new((void *)"ox_file_tail");
+   }
    ;
 
 
 ox_file_body
 	: outline_block
 	{
+        $$ = hsp->op->new((void *)"ox_file_body");
+        hsp->op->add($$,$1);
 
+        OXPRINT("op finish dir\n");
+        hsp->op->finish_dir(hsp->dfh, $1);
+
+        OXPRINT("op new dirent\n");
+        hsp->op->new_dirent(hsp->dfh, $1);
 	}
 
 	| ox_file_body
 	  blank_or_indented_lines
 	  outline_block
 	{
+        hsp->op->add($1,$2);
+        hsp->op->add($1,$3);
 
+        OXPRINT("op finish dir\n");
+        hsp->op->finish_dir(hsp->dfh, $3);
+        OXPRINT("op new dirent\n");
+        hsp->op->new_dirent(hsp->dfh, $3);
 	}
    ;
 
@@ -121,13 +158,22 @@ ox_file_body
 outline_block	
 	: outline
 	{
-      
+        $$ = hsp->op->new((void *)"outline_block");
+        hsp->op->add($$,$1);
+
+        OXPRINT("op new dirent\n");
+
+        hsp->op->new_dirent(hsp->dfh, $1 );
 	}
 
 	| outline_block
 	  outline
 	{
+        hsp->op->add($1,$2);
 
+        OXPRINT("op new dirent\n");
+
+        hsp->op->new_dirent(hsp->dfh, $2 );
 	}
 	;
 
@@ -135,30 +181,59 @@ outline_block
 outline
 	: LINE
 	{
-       
+        $$ = hsp->op->new((void *)"outline");
+        hsp->op->add($$,$1);
 	}
 
    | LINE
-     START_BODY
+     start_body_action
      outline_body
      END_BODY
    {
-       
+        $$ = hsp->op->new((void *)"outline");
+        hsp->op->add($$,$1);
+        hsp->op->add($$,$2);
+        hsp->op->add($$,$3);
+        hsp->op->add($$,$4);
+
+        OXPRINT("op finish dir\n");
+
+        hsp->op->finish_dir(hsp->dfh, $$);
 	}
 	;
 
+start_body_action
+   : START_BODY
+   {
+        $$ = $1;
 
+        OXPRINT("op start dir\n");
+
+        hsp->op->start_dir(hsp->dfh);
+   }
+   ;
 
 outline_body
    : START_ELEMENT outline
    {
-       
+        $$ = hsp->op->new((void *)"outline_body");
+        hsp->op->add($$,$1);
+        hsp->op->add($$,$2);
+
+        OXPRINT("op new dirent\n");
+
+        hsp->op->new_dirent(hsp->dfh, $2);
    }
 
    | outline_body
      START_ELEMENT outline
    {
+        hsp->op->add($1,$2);
+        hsp->op->add($1,$3);
 
+        OXPRINT("op new dirent\n");
+
+        hsp->op->new_dirent(hsp->dfh, $3);
    }
    ;
 
@@ -166,16 +241,27 @@ outline_body
 blank_or_indented_lines
    : BLANKLINE
    {
-       
+        $$ = hsp->op->new((void *)"blank_or_indented_lines");
+        hsp->op->add($$,$1);
    }
 
    | FLOATING_LINE
+   {
+        $$ = hsp->op->new((void *)"blank_or_indented_lines");
+        hsp->op->add($$,$1);
+   }
 
    | blank_or_indented_lines
      BLANKLINE
+   {
+        hsp->op->add($1,$2);
+   }
 
    | blank_or_indented_lines
      FLOATING_LINE
+   {
+        hsp->op->add($1,$2);
+   }
    ;
 
 

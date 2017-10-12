@@ -64,9 +64,9 @@ int mapcel_dir_add( struct mapcel_dir *d, struct hiena_mapcel *mc )
                 d->arr_size = b;
                 d->arr = a;
 
-                fflush(stdin);
+                fflush(stderr);
                 printf("malloc a\n");
-                fflush(stdin);
+                fflush(stdout);
         } else if( i >= k )
         {
                 r = realloc(a,z+b);
@@ -86,9 +86,9 @@ int mapcel_dir_add( struct mapcel_dir *d, struct hiena_mapcel *mc )
                 d->arr_dim += MAPCEL_DIR_BLOCK_CAPACITY;
                 d->arr_size += b;
 
-                fflush(stdin);
+                fflush(stderr);
                 printf("realloc a\n");
-                fflush(stdin);
+                fflush(stdout);
         }
 
         a[i] = mc;

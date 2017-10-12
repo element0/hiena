@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "mapcel.h"
 #include "hierr.h"
 
@@ -12,10 +13,10 @@ struct hiena_mapcel *mapcel_new(char *ruleid, size_t len)
                 HIERR("mapcel_new: malloc NULL");
                 return NULL;
         }
+        memset(mc,0,sizeof(*mc));
 
         mc->len = len;
         mc->ruleid = ruleid;
-        mc->children = NULL;
 
         return mc;
 }
@@ -39,7 +40,7 @@ int mapcel_cleanup( struct hiena_mapcel *mc )
                 btree_cleanup( cn );
         }
 
-        if( dir != NULL )
+        if( d != NULL )
         {
                 mapcel_dir_cleanup( d );
         }

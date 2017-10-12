@@ -21,6 +21,7 @@ struct dcel_fh;
 #include "frag_curs.h"
 #include "mapcel.h"
 #include "map_anchor.h"
+#include "ptr_stack.h"
 
 
 struct dcel_fh {
@@ -37,8 +38,7 @@ struct dcel_fh {
 
         /* directory builder */
 
-        int num_dirents;
-        struct hiena_mapcel **dir;
+        ptr_stack_t *dir_stack;
 
 /* depricate? */
 

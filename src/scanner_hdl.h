@@ -2,16 +2,7 @@
 #define HIENA_SCANNER_HANDLE_H
 
 
-#include <stdio.h>
-#include "btrees.h"
-#include "dcel.h"
-#include "dcel_fh.h"
-#include "dcel_dirent.h
-#include "dcel_mapsvc.h"
-#include "scanner.h"
-#include "slib.h"
-#include "rql.h"
-
+/* please leave these typedefs before the includes */
 
 typedef struct scanner_hdl Hsp;
 typedef int Htok_t;
@@ -20,6 +11,16 @@ typedef void* yyscan_t;
 typedef struct hiena_scanner scannerserver;
 typedef struct hiena_slib scanlib;
 typedef struct dcel_mapsvc_ops Hspops;
+
+#include <stdio.h>
+#include "btrees.h"
+#include "dcel.h"
+#include "dcel_fh.h"
+#include "dcel_dirent.h"
+#include "dcel_mapsvc.h"
+#include "scanner.h"
+#include "slib.h"
+#include "rql.h"
 
 
 struct hiena_scanner_payload_callback_ops 

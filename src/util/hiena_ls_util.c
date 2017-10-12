@@ -77,9 +77,9 @@ int main( int argc, char *argv[] )
 
 
         hs->op->parse( hsp );
-
+/*
         util_print_dir( dc );
-
+*/
         hsp_cleanup( hsp );
         dcel_cleanup( dc );
         slib_cleanup( slib );

@@ -1,6 +1,29 @@
-2017-9-20 1913
 
-goal: rephrase mapsvc to encapsulate scanner_hdl rather than dcel.
+2017-10-5  0723
+
+todo:  how to associate fragment info with a mapcel (see mapcel.md)
+
+
+
+2017-10-4  0625
+
+todo:  read bytes from a mapcel.
+
+how:  use a dcel to encapsulate the mapcel target.
+
+why:  a mapcel doesn't contain media information, a fragment does.
+
+
+2017-9-28  1755
+
+done: use a directory builder stack in dcel_fh for dcel_mapsvc functions
+
+
+2017-9-26  1844
+
+fixed: mapcel_dir object
+
+    implements an array of mapcel pointers that reallocate in blocks when more elements are added.
 
 
 2017-9-7 1800

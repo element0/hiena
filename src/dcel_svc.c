@@ -79,15 +79,18 @@ int dcel_svc_close( void *p )
 
         struct hiena_mapcel *mc;
         struct map_anchor *ma;
+        ptr_stack_t dstack;
 
 
         dfh = (struct dcel_fh *)p;
         dc  = dfh->dcel;
         ffh = dfh->frag_fh;
         fcurs = dfh->fcurs;
+        dstack = dfh->dir_stack;
 
         frag_svc_close( ffh );
         frag_curs_cleanup( fcurs );
+        ptr_stack_cleanup( dstack );
 
         dcel_release( dc );
 

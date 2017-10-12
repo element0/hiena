@@ -198,59 +198,135 @@ int dcel_mapsvc_add( struct hiena_mapcel *par, struct hiena_mapcel *chi )
     update (9/22/2017):
     implements a simple variable length array as a directory.
  */
-int dcel_mapsvc_new_dirent( struct dcel_fh *dfh, struct hiena_mapcel *mc )
+int dcel_mapsvc_new_dirent( struct dcel_fh *dst, struct hiena_mapcel *mc )
 {
-        if( dfh == NULL
+        if( dst == NULL
          || mc == NULL )
         {
-                HIERR("dcel_mapsvc_new_dirent: err: dfh or mc NULL");
+                HIERR("dcel_mapsvc_new_dirent: err: dst or mc NULL");
                 return -1;
         }
 
-        struct hiena_mapcel **d;
+        ptr_stack_t dstack;
+        struct mapcel_dir *d;
 
-        if( dfh->dir == NULL )
+        dstack = dst->dir_stack;
+
+        if( dstack == NULL )
         {
-                dfh->dir = mapcel_dir_new();
+                dstack = ptr_stack_new();
+                dst->dir_stack = dstack;
+                d = mapcel_dir_new();
+                ptr_stack_push( dstack, (void *)d );
+
+        }else{
+
+                d = (struct mapcel_dir *)ptr_stack_top(dstack);
+                if( d == NULL )
+                {
+                        d = mapcel_dir_new();
+                        ptr_stack_push( dstack, (void *)d );
+                }
         }
 
-        d = dfh->dir;
-
-        if(mapcel_dir_add(d, mc) == -1);
+        if( mapcel_dir_add(d, mc) == -1 )
         {
                 HIERR("dcel_mapsvc_new_dirent: can't add dirent.");
+                return -1;
         }
 
         return 0;
 }
 
-int dcel_mapsvc_make_dir(struct dcel_fh *dfh, struct hiena_mapcel *mc)
+int dcel_mapsvc_start_dir(struct dcel_fh *dst)
 {
-        if( dfh == NULL
-         || mc == NULL )
+        if( dst == NULL )
         {
-                HIERR("dcel_mapsvc_make_dir: err: dfh or mc NULL");
+                HIERR("dcel_mapsvc_start_dir: err: dst or mc NULL");
                 return -1;
         }
+
+        ptr_stack_t dstack;
+        struct mapcel_dir *d;
+
+        dstack = dst->dir_stack;
+        d = mapcel_dir_new();
+
+        if( dstack == NULL )
+        {
+                dstack = ptr_stack_new();
+                dst->dir_stack = dstack;
+        }
+
+                ptr_stack_push( dstack, (void *)d );
+       
+        return 0;
+}
+
+int dcel_mapsvc_finish_dir( struct dcel_fh *dst, struct hiena_mapcel *mc )
+{
+        if( dst == NULL
+         || mc == NULL )
+        {
+                HIERR("dcel_mapsvc_finish_dir: err: dat or mc NULL");
+                return -1;
+        }
+
+        ptr_stack_t dstack;
+        struct mapcel_dir *d;
+
+        dstack = dst->dir_stack;
+        if( dstack == NULL )
+        {
+                HIERR("dcel_mapsvc_finish_dir: err: dstack NULL.");
+                return -1;
+        }
+
+        d = (struct mapcel_dir *)ptr_stack_top( dstack );
         
         if( mc->dir != NULL )
         {
-                HIERR("dcel_mapsvc_make_dir: warn: mc->dir NOT NULL. Previous directory struct may be lost.");
+                HIERR("dcel_mapsvc_finish_dir: warn: mc->dir NOT NULL. Previous directory struct may be lost.");
         }
-        mc->dir = dfh->dir;
-        dfh->dir = NULL;
+        mc->dir = d;
+        ptr_stack_pop( dstack );
 
         return 0;
 }
 
 
+int dcel_mapsvc_finish(struct dcel_fh *dst, struct hiena_mapcel *mc)
+{
+        if( dst == NULL
+         || mc == NULL )
+        {
+                HIERR("dcel_mapsvc_finish: err: input dst or mc NULL");
+                return -1;
+        }
+
+        struct hiena_dcel *dc;
+
+        dc = dst->dcel;
+
+        if( dc == NULL )
+        {
+                HIERR("dcel_mapsvc_finish: err: dc NULL");
+                return -1;
+        }
+
+        dc->mapcel = mc;
+
+        return 0;
+}
 
 struct dcel_mapsvc_ops dcel_mapsvc = {
         .new = dcel_mapsvc_new,
         .newterm = dcel_mapsvc_newterm,
         .add = dcel_mapsvc_add,
         .new_dirent = dcel_mapsvc_new_dirent,
-        .new_dir = dcel_mapsvc_make_dir,
+        .start_dir = dcel_mapsvc_start_dir,
+        .finish_dir = dcel_mapsvc_finish_dir,
+        .finish = dcel_mapsvc_finish,
         .getenv = getenv,
 };
 

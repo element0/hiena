@@ -28,6 +28,12 @@ the binder expects its argv to be dcels.  an array of dcels will suffice:
         ...
         dc_new = dbind( dc );
 
+## find function ##
+
+a find function searches for and selects a mapcel from a source dcel.
+
+the mapcel becomes the root mapcel of the result dcel.  the dcel's root fragment is a window of the (possibly larger) root fragment in the source dcel.  a window fragment has start and end boundaries which shall be respected during dcel service operations.
+
 
 ## grind function ##
 

@@ -281,9 +281,5 @@ Hsp *hsp_init_src_scanner_slib( Ppak *src_ref, scannerserver *s, scanlib *slib )
     hsp_set_scanner(h,s);
     hsp_set_scanlib(h,slib);
 
-    /* directory builder */
-    
-    h->_stack = malloc(sizeof(struct dcel_dirent**)*HIENA_DIRENT_STACK_DEFAULT);
-
     return verify_hsp(h);
 }

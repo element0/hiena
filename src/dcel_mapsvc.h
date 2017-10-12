@@ -33,10 +33,15 @@ struct dcel_mapsvc_ops {
 
         int (*new_dirent)(struct dcel_fh *, struct hiena_mapcel *direntcel);
 
-        int (*make_dir)(struct dcel_fh *, struct hiena_mapcel *dircel);
+        int (*start_dir)(struct dcel_fh *);
+
+        int (*finish_dir)(struct dcel_fh *, struct hiena_mapcel *dircel);
+
+        int (*finish)(struct dcel_fh *, struct hiena_mapcel *);
+
+
 
         char *(*getenv)(const char *);
-
 };
 
 struct dcel_mapsvc_ops dcel_mapsvc;
