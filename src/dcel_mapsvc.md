@@ -22,30 +22,71 @@ contents
 - create new mapcel from rule id and length
 
 
+mapping technology overview
+---------------------------
+(10/12/17)
+
+  dcel file handle
+     frag cursor
+
+first we create a "mapping" production instruction which takes a source dcel and a scanner id, and generates a new dcel which contains a hierarchy of mapcels.  it also updates and shares the frag-map from the source dcel.
+
+the scanner reads the stream from the dcel file handle.  when it generates a mapcel, it adds the mapcel to the fragment pointed to by the frag cursor.
+
+if multiple mapcels create a higher rank mapcel, those cells are listed as children in the higher cell and the higher cell is added to the cursor's fragment.
+
+if a cell is deemed a dirent, the map service creates a production instruction from the mapcel, fragment, source dcel; then executes the instruction to generate a new dcel.  the dcel is added to the directory at the top of the directory stack in the file handle.
+
+when the top directory is finalized, the map service creates a production instruction as before to create a dirent dcel, and then pops the top directory from the file handle and saves it in the new dcel.  the new dcel is added to the next directory at the top of the stack.
+
+(this constrains every directory to become a dirent in the previous directory on the stack)
+
+under this model, the directory is never a part of the semantic value of a scanner's grammar rule.(2017-10-12)
+
+the semantic value of gammar rules are mapcels. (2017-10-12)
+
+the dcel file handle tracks the fragment location via the frag cursor; it tracks the directory hierarchy position via the directory stack.
+
+the scan is finalized by taking the final, highest ranking mapcel, adding it and the source's root fragment and the final directory to a new dcel.  the dcel is returned as the result.  this is the result of the mapping production instruction.
+
+the fragment will have been updated via the map service's use of the frag cursor.
+
+
+
+
+   
+
 adding dirents and dirs
 -----------------------
-a directory is held in a mapcel.
+(rev 10/12/17)
 
-there may be one or more layers of grammar rulespace separation between a directory and its dirents.
+a directory is held in a dcel.
 
-a dirent may be created by the parser before its directory is created.
+there may be multiple layers of scanner rule separation between a directory and its dirents.
+
+a dirent may be created by the scanner before its directory is created.
 
     dcel_mapsvc_new_dirent( ... )
 
-the dcel_mapsvc_new_dirent() function creates a dirent and holds it on a dirent stack in the parser handle.
+the dcel_mapsvc_new_dirent() function creates a dirent and holds it on a dir stack in the dcel_fh.
 
-when the parser makes a directory mapcel, it consumes the dirent stack and incorporates the dirents.
+when the parser makes a directory dcel, it pops the top of the dir stack and gives it to the dcel.
 
-    dcel_mapsvc_make_dir( ... )
+    dcel_mapsvc_finish_dir( ... )
 
 a directory is part of the semantic value of a mapcel.  dirents are mapcel pointers. (9/20/17)
 
 a simple directory implementation is an array of mapcel pointers:(9/21/17)
 
     mapcel_t **dir;
-    int num_entries; 
+    int num_entries;
 
+the above assumes all entries share the same frag.  a sequence of arrays, each with a header, addresses this shortcoming.
 
+    sequence block[]
+        frag ptr
+        num elements
+        array[]
 
 
 generating a rule id

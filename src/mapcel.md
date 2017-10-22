@@ -6,112 +6,33 @@
 mapcel
 ======
 
-- mapcel database analogy
-- domain cell map: a complex table
-- sql query strings for use in examples
-- mapcel hierarchy implementation
-- querying mapcels
 - mapcel relation to frag
 
 
-2017-10-07 1745
+2017-10-16 1345
 
-mapcel database analogy
+mapcel children
+---------------
 
-a mapcel directory is a table
-a mapcel is a single row in a table
-ruleid's are column names
-
-
-2017-10-08 0730
-
-domain cell map: complex table
-
-a domain cell can be visualized as a single row in a table.  the columns of the table are layered and nested and reflect the mappings.
+a mapcel has a flat list of direct descendents.
 
 
-2017-10-11 2046
+## flat directory vs. btree ##
 
-domain cell is the searchable unit.
+how is the child list accessed?
 
-mapcel is not searchable; is a leaf of info about length and ruleid.
+a user may request an area described by the mapcel-fragment combo via a ruleid index.  this enables random nonlinear access to areas described by children.  however the index lives inside the dcel structure.
 
-the mapcel is useful in conjunction with the map anchor and the frag to create a searchable map.
+a parser will be more interested in sequential access.  likewise an index creation operation must scan every child cell so gains no speed from a random access model.
 
+use flat list model as a natural intermediate structure between parsing and indexing. (2017-10-16)
 
-2017-10-09 0615
-
-sql query strings for use in examples
-
-
-  select "name" from "child";
-
-  select "name" from "child" where "type" is like "synopsis";
-
-  select "name" from "prop"
-
-
-2017-10-06 2300
-
-mapcel hierarchy implementation
-
-  dcel
-    frag ptr            // frag map
-    mapcel ptr          // map
-    child array[#]      // child tab
-      frag ref
-      mapcel ptr[#]
-    child index[$]  // child indices
-    prop index          // prop tab
-    
-
-  mapcel
-    head anchor
-    tail anchor
-    ---
-    index[$ruleid]
-      index block[#]
-        frag ref
-        mapcel ptr[$rulecontent]
-
-
-  anchor              // prop tab
-    mapcel ptr[$len]
-
-  frag
-    anchor[$off]
-    child frag[$len]
-    mfrag
-
-
-paper test: can the above support an sql query?
-
-  (assume ox4 map)
-
-  select * from "child";
-  select * from "prop";
-
-  select * from "prop" where "LINE" like "this is a test";
-
-
-2017-10-09 1724
-
-querying mapcels
-
-  select "name" from "child";
-
-start with a dcel
-
-  if child index[name]
-      print each in it
-
-  else
-  
 
 
 2017-10-05 0700
 
-a mapcel is relative to a frag.
+a mapcel is relative to a frag
+------------------------------
 
 mapcels access can be random or sequential.
 

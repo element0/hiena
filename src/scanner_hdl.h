@@ -85,6 +85,8 @@ struct scanner_hdl
     struct hiena_svc *svc;
     struct dcel_mapsvc_ops *mapsvc; 
 
+    struct hiena_dcel *res;
+
     rq *rq;		/*:= !NULL */			
 
     Ppak *src_ref;	/*:= !NULL */

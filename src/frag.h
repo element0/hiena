@@ -23,6 +23,10 @@ struct hiena_frag {
     btree_t *anchors;
     struct hiena_mfrag *mfrag;
 
+    /* windowing */
+    off_t start_off;
+    off_t end_off;
+
     /* convenience */
     size_t len;
     struct map_anchor *head_anchor;

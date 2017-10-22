@@ -1,11 +1,40 @@
 
+2017-10-15  1600
+
+todo: eliminate mapcel object, combine functionality into dcel
+
+
+2017-10-12  2517
+
+todo: lookup_hdl.h lookup_module.h
+
+
+2017-10-12  1734
+
+todo: revise dcel_mapsvc, directories use dcels instead of mapcels.
+
+...
+
+todo:  conform scanner api to work as prod fn.
+
+save result dcel into hsp.
+
+...
+
+wip: dfind() dgrind() prod_exec()
+
+...
+
+todo: implement readdir()
+
+
+
 2017-10-5  0723
 
-todo:  how to associate fragment info with a mapcel (see mapcel.md)
+done:  associate fragment info with a mapcel (see mapcel.md) -- use a dcel (see dcel.md)
 
 
-
-2017-10-4  0625
+2017-10-4  0625  IN PROGRESS...
 
 todo:  read bytes from a mapcel.
 

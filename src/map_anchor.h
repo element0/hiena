@@ -28,7 +28,6 @@ struct map_anchor
 
         /* deprecate */
         struct hiena_frag *frag;
-
 };
 
 struct map_anchor *map_anchor_new();

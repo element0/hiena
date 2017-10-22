@@ -5,6 +5,7 @@
 #include "frag.h"
 #include "map_anchor.h"
 #include "mapcel_dir.h"
+#include "ptr_stack.h"
 
 
 
@@ -19,8 +20,8 @@ struct hiena_mapcel {
 
         struct map_anchor *head_anchor;
         struct map_anchor *tail_anchor;
-        btree_t *children;
-        struct mapcel_dir *dir;
+
+        ptr_stack_t children;
 
         /* depricate? */
         struct hiena_mapcel *next;

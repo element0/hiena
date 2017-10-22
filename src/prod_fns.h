@@ -2,6 +2,7 @@
 #define HIENA_PRODUCER_FUNCS_H
 
 #include "context_frame.h"
+#include "dcel.h"
 
 
 /* the four producer functions */

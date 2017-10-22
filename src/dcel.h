@@ -12,12 +12,21 @@
 
 #define dcel_release( dc ) dc->retain--
 
+/**
+    @param index a btree.  keys are ruleids.  values are btrees.  the value btrees are keyed with ruleid values.  the values at the keys are dcel ptrs.
+
+    index[ruleid]
+        index[value]
+            ptrlist[]
+
+ */
 
 struct hiena_dcel {
         struct hiena_frag *frag;
         struct hiena_mapcel *mapcel;
         int retain;
         btree_t *dircache;
+        btree_t *index;
 };
 
 struct hiena_dcel *dcel_new( struct hiena_dcel * );
