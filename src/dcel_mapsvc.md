@@ -33,7 +33,7 @@ first we create a "mapping" production instruction which takes a source dcel and
 
 the scanner reads the stream from the dcel file handle.  when it generates a mapcel, it adds the mapcel to the fragment pointed to by the frag cursor.
 
-if multiple mapcels create a higher rank mapcel, those cells are listed as children in the higher cell and the higher cell is added to the cursor's fragment.
+if multiple mapcels reduce to a higher rank mapcel, those cells are listed as children in the higher cell and the higher cell is added to the cursor's fragment.
 
 if a cell is deemed a dirent, the map service creates a production instruction from the mapcel, fragment, source dcel; then executes the instruction to generate a new dcel.  the dcel is added to the directory at the top of the directory stack in the file handle.
 
@@ -44,6 +44,7 @@ when the top directory is finalized, the map service creates a production instru
 under this model, the directory is never a part of the semantic value of a scanner's grammar rule.(2017-10-12)
 
 the semantic value of gammar rules are mapcels. (2017-10-12)
+mapcels are implemented by dcels. (2017-11-07)
 
 the dcel file handle tracks the fragment location via the frag cursor; it tracks the directory hierarchy position via the directory stack.
 

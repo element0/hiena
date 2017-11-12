@@ -66,22 +66,22 @@ dcel-mapcel hierarchy structure
 
   dcel
     prod instr
-    frag ptr            // frag map
+    frag ptr          // frag map
     scanner id        // mapcel area
     rule id
     len
     map list[#]       // prop tab
         dcel ptr
+    map index[$ruleid]
+        dcel ptr
+    map index build state
     dir list[#]       // child tab
         dcel ptr
     dir index[$ruleid]
         index[$value]
             dcel ptr list[#]
                 dcel ptr
-    map index[$ruleid]
-        dcel ptr
     dir index build state
-    map index build state
 
   anchor
     mapcel index[$len]
@@ -131,13 +131,14 @@ a dcel is a product of a production instruction.
 
 when a map scanner generates a dcel within a map, it must create a production instruction.
 
-ie, the original dcel will be generated with a "source" production.
+ie:
+the root dcel will be generated with a "source" production.
 
-the mapper may identify a subcel, and will generate a "select" production:
+the mapper identifies a subcel, and generates a "select" production:
 
-  select $src_dcel $scanner $ruleid
+  select $src_dcel $scanner $ruleid $start_off $end_off
 
-if the src_dcel is altered, the select production can be verified against a new map of the src.  if nothing changes within the map dcel, the dcel remains valid.
+if the src_dcel is altered, the select production can be verified against a new map of the src_dcel.  if nothing changes within the map dcel, the dcel remains valid.
 
 
 dcel validity: map and frag

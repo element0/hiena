@@ -4,13 +4,18 @@
 
 
 #include "frag.h"
-#include "mapcel.h"
 #include "btrees.h"
+#include "prod_instr.h"
 
 
 #define dcel_retain( dc ) dc->retain++
 
 #define dcel_release( dc ) dc->retain--
+
+#define dcel_child_val(dc,s,len)\
+    r = dcel_child( dcel,varname );\
+    val = dcel_read( r, &len );
+
 
 /**
     @param index a btree.  keys are ruleids.  values are btrees.  the value btrees are keyed with ruleid values.  the values at the keys are dcel ptrs.
@@ -22,11 +27,17 @@
  */
 
 struct hiena_dcel {
+        struct prod_instr *pinstr;
         struct hiena_frag *frag;
-        struct hiena_mapcel *mapcel;
+        void *scanner_id;
+        void *rule_id;
+        btree_t *map;
+        btree_t *map_index;
+        void *map_index_state
+        btree_t *dir;
+        btree_t *dir_index;
+        void *dir_index_state
         int retain;
-        btree_t *dircache;
-        btree_t *index;
 };
 
 struct hiena_dcel *dcel_new( struct hiena_dcel * );
