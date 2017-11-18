@@ -2,42 +2,52 @@
 ARCHITECTURE
 ------------
 
-This file describes
-	1) the broad archetectural components of the system
-	2) the API layers of the system
-	3) synopsis of architectural paradigms, ie. REST, ASH
+platforms
+---------
+linux
+windows
+macos
 
 
-architectural components
-------------------------
 
-snafu fuse instance
-	{*}-->{1} cosmos instance
+products
+--------
+snafufs
+cosmos tools
+hiena tools
+libcosmos
+libhiena
+cosm/sbin/lookup
+cosm/types/
+  <scanners>,
+  <xformers>,
+  <media sourcerers>,
+  <item templates>
+cosm/tools/<xformers>
 
-cosmos instance
-	--{ dcel db, axnode db, scanner db, string db }
-	--> scanner modules
-	--> lookup modules
-	--> producer modules
-	--> hiena library
 
-hiena library
+user generated products
+-----------------------
+scanners
+xformrs
+sourcerers
+item templates
+.cosm directories
 
- 
 
 api layers
 ----------
 
-util, fs_snafu, scanner_producer
+util, snafufs, scanners, xformrs, lookup
 
-lookup_fudge, exec_syssvc,
-   access_paths
+libcosmos
 
-dcel_producer
+cosmosd
 
-cosmos_cosm, dcel, dcel_mapsvc,
-   access_frame, scanner_lib,
-   cosmos_grid
+source_mods, access_frame, host_access_mod, dcel_production_mods
+
+cosm, dcel, mapsvc, scanner_mods,
+   grid
 
 frag, mfrag, map_anchor
 
@@ -46,8 +56,104 @@ implementation primatives:
 
 
 
-description of architectures
-----------------------------
+object relationships
+--------------------
+
+  cosm-dcel 
+  scan_def scan_prod scanner_mod
+
+
+  cosm
+  ----
+  lookup_lib
+  producer_lib
+  scanner_lib
+  service_lib
+
+
+  lookup_mod
+  ----------
+  prod_instr  prod_fn_mod   dcel
+
+
+  dcel    dcel_svc    dcel_fh
+          dcel_mapsvc
+  ----    --------    -------
+  frag    frag_svc    frag_fh
+                      frag_cursor
+  ----    --------    -------
+  mfrag   mfrag_svc   mfrag_fh
+  ----    --------    -------
+  file    file_svc    FILE
+
+
+  btree
+  ptr_list
+
+
+description of api layers
+-------------------------
+
+snafu_fs uses libcosmos.  through the cosmos API, it requests inos and operates on inos.
+
+libcosmos spawns a cosmosd for each user as needed.  its API provides lookup requests and file system operations that satisfy the FUSE API.
+
+cosmosd manages memory objects.  it uses libcosmos.  it creates a localhost-user access_frame which can be used as a boot frame for lookups.
+
+cosmosd performs a lookup by loading a lookup_module from the access_frame.
+
+a lookup_module uses libhiena.  it creates production_instructions or chains of production_instructions and sends those to the production_core.
+
+the production_core factors the instruction to other production_core grid nodes.  A un-factorable "prime" instruction is run.
+
+the production_core uses scanner_modules, producer_modules and source_modules from the access_frame.  the result is a dcel.  
+
+the production_core envelopes the dcel inside a new access_frame.
+
+a factored instruction will result in multiple access_frame returns.  the production_core merges these and returns an access_frame.
+
+
+psuedo-code (ox, fudge)
+----------------
+
+  
+
+  snafufs( url.str )
+    mountpoint = url.str
+    fuseops = cosmos/fuseops
+    root = cosmosd/init()
+    fuseops/lookup(root,mountpoint)
+
+  cosmos
+    init
+    fuseops
+    get_access( ino )
+    get_localhost_access()
+
+  cosmos/init
+    if no daemon, fork daemon
+
+  cosmos/fuseops
+    == cosmosd/fuseops
+
+  cosmosd/fuseops
+    lookup( ino, str )
+
+  lookup( ino, str )
+    access = axdb/get( ino )
+    lookup_mod = access/cosm/lookup
+    production_instruction =
+      lookup_mod
+      access
+      1
+      str
+    return production_exec(
+      production_instruction )
+
+   
+
+reference architectures
+-----------------------
 
 ## REST ##
 
