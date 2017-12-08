@@ -2,14 +2,14 @@
 #define COSMOS_FILE_SYSTEM_H
 
 #include <dirent.h>
+#include <sys/stat.h>
 
 
-snafu_stat(cosmos_id_t, struct stat *);
+int snafu_stat(cosmos_id_t, struct stat *);
 
 cosmos_id_t cosmos_lookup(cosmos_id_t, char *);
 
-struct dirent *
-cosmos_readdir( cosmos_dirh_t );
+struct dirent *cosmos_readdir( cosmos_dirh_t );
 
 cosmos_fh_t cosmos_open( cosmos_id_t );
 

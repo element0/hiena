@@ -5,6 +5,7 @@ out-bin = ../out/bin
 out-test-bin = ../out/test-bin
 
 dbugopts = -g
+warnopts = -Wall
 
 
 out-dirs:
@@ -28,6 +29,15 @@ btree_cpp:
 
 context-frame:
 	gcc $(dbugopts) -c context_frame.c -o $(out-o)/context_frame.o
+
+cosmos-db:      btree_cpp hash
+	gcc $(dbugopts) $(warnopts) -c cosmos/cosmos_db.c -o $(out-o)/cosmos_db.o
+
+cosmos-init:    cosmos-db
+	gcc $(dbugopts) $(warnopts) -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
+
+cosmos-util:    cosmos-db cosmos-init
+	gcc $(dbugopts) $(warnopts) $(out-o)/cosmos_init.o cosmos/cosmos_util.c -o $(out-bin)/cosmos
 
 dcel:
 	gcc $(dbugopts) -c dcel.c -o $(out-o)/dcel.o
@@ -139,6 +149,8 @@ slib:
 	gcc $(dbugopts) -c slib.c -o $(out-o)/slib.o
 
 
+snafufs:
+	gcc $(dbugopts) -Wall snafufs.c `pkg-config fuse3 --cflags --libs` -o $(out-bin)/snafufs
 
 
 hiena-obs: btrees btree_cpp dcel dsource context-frame hash map-anchor mapcel mapcel-dir mapcel-svc mapcel-fh mfrag mfrag-fh mfrag-svc ptr-stack frag frag-fh frag-curs frag-svc dcel-svc dcel-mapsvc
