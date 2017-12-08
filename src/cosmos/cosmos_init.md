@@ -7,7 +7,15 @@ runs the daemon if not running.
 
 daemon runs init procedure.
 
-there should only be one daemon per host
+(there should only be one daemon per user per host)
+
+init procedure creates cosmos db and loads essential modules:
+
+  file source
+  dcelcosmos xformr
+  lookup module
+
+now the daemon is able to take requests
 
 
 run daemon
@@ -21,128 +29,128 @@ check
 init procedure
 --------------
 
-uses libhiena/dcel
-
 input gathered from host device
+
+  host
+  user
   cosmos.conf
-    device user cosm root
-    device user env root
-    device user cosmos database
-  device user
+    ROOT_COSM_PATH
+    ROOT_ENV
+    DB_FILE
 
 
 output
+
   cosmosd socket
   root access frame
   cosmos database
 
 
-'device user cosm root' has
-  lookup mod
-  scanners
-  source mods
-  tools
-
-  wizards
-    sourcerer
-    spellbinder
-    summoner
-    alchemist
+ROOT_COSM has:
 
   bin
   etc
-    cosmos.conf
-    hiena.conf
   lib
     scanners
       divine
       ox
-    producers
-    sourcers
+      raymarks
+      md
+    services
       file
     tranformers
       to-divine
       to-html
-  sbin
-    lookup mod
+      to-cosm
+    lookup
+      fudge
 
 
-input gathered from host device
--------------------------------
+libcosmos key funcs
+-------------------
 
-cosmos_init is platform specific code.
+  source()
+  xformr()
+  bind()
+  cascade()
+  exec()
+
+  load_mod()
 
 
 procedure w api dependencies
 ----------------------------
 
-  file_sourcerer =
-    load_mod( $file_mod_filepath )
+  file_svc_ino =
+    load_mod( $file_svc_filepath )
 
-  dcel_cosm_xformr =
-    load_mod( $dcel_cosm_fpath )
+  dcelcosm_xformr_ino =
+    load_mod( $dcelcosm_fpath )
 
-  sourcelib.put( file_sourcerer )
-  xformrlib.put( dcel_cosm_xformr )
+  lookup_mod_ino = 
+    load_mod( $lookup_mod_fpath );
+
+  root_cosm_ino =
+    source( $root_cosm_fpath )
+
+  /* source() looks in
+    "/usr/lib/cosmos/svc/" 
+    from the cosmosdb
+    to find a service to match
+    the filepath input.
+    it produces an access frame
+    as output and stores it in
+    the cosmosdb at filepath key. */
 
 
-  --- note
-   source() uses sourcelib
-   xformr() uses xformrlib
-  ---
-
-
-
-  root_cosm_dcel =
-    source( $root_cosm_filepath )
-
-  new root_access_frame = {
-    cosm dcel = 
-      xformr(root_cosm_dcel,cosm)
-
-  cosm_from
-    "scanners.slib" dcel =
-      trans(src_dcel/scanners, slib)
-
-  src_dcel/scanners.slib
-
-  cosm/"lookup mod" =
-    dcel dyload(conf/lookup_mod)
-
-  cosm/"source mods" =
-    dcel srclib_load(conf/source_mods)
-
-  cosm/tools =
-    dcel binlib_load(conf/tools)
+  root_access_frame_ino = 
+    xformr( root_cosm_ino, dcelcosm_xformr_ino )
 
 
 now the root cosm is ready.
 
 if we load another cosm
 
-  src = dcel source($filepath)
-  cosm = dcel cosm_from( src )
+  src_ino = source( $filepath )
+
+  cosm_ino = xformr( dcelcosm_xformr_ino, 1, src_ino)
 
 we can cascade cosm[1] onto cosm[0]
 
-  cosm[2]
-    = dcel cascade(cosm[0],cosm[1])
+  cosm_ino[2] =
+    cascade(cosm_ino[0],cosm_ino[1])
 
 
-api required above
-------------------
+we can lookup a path via:
 
-  dcel
-      dcel cascade(dcel,dcel)
+  ino = lookup( ino_a, $filepath )
 
-  productions
-      dcel source(url)
-      dcel srclib_load(dcel)
-      dcel slib_load(dcel)
-      dcel binlib_load(dcel)
-      dcel dyload(dcel)
 
-  cosmos
-      dcel cosm_from(dcel)
+we can stat
+
+  stbuf *stat( ino )
+
+
+we can read
+
+  fh *open( ino, mode )
+  buf *read( ino, len_ask, &len_res)
+  
+
+we can list
+
+  dir *opendir( ino )
+  dirent *readdir( dir )
+
+
+we can execute
+
+  ino *exec( ino, argc, argv )
+
+the execution results in an access frame which can be read and which can have multiple streams represented by file descriptors internal to the frame.
+
+
+
+--------
 
   

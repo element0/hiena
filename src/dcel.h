@@ -33,11 +33,17 @@ struct hiena_dcel {
         void *rule_id;
         btree_t *map;
         btree_t *map_index;
-        void *map_index_state
+     /* xattr stored in map_index */
+     /* attr stored in map_index */
+     /* exec helper
+         referenced in map_index */
+        
+        void    *map_index_state
         btree_t *dir;
         btree_t *dir_index;
-        void *dir_index_state
+        void    *dir_index_state
         int retain;
+        int dirty;
 };
 
 struct hiena_dcel *dcel_new( struct hiena_dcel * );

@@ -13,9 +13,9 @@
 %%
 
 [.]     return DOT;
-[/]     return FWD_SLASH;
+[/]+    return FWD_SLASH;
 [:]     return COLON;
-[^\n]+  {
+.+      {
           yylval = yytext;
           return IDENTIFIER;
         }

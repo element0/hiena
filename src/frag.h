@@ -23,16 +23,22 @@ struct hiena_frag {
     btree_t *anchors;
     struct hiena_mfrag *mfrag;
 
-    /* windowing */
+   /* windowing */
     off_t start_off;
     off_t end_off;
 
-    /* convenience */
+
+   /* buffer */
+    void *buf;
     size_t len;
+
+   /* convenience */
+    /* size_t len; */
     struct map_anchor *head_anchor;
     struct map_anchor *tail_anchor;
 
-    //---- old ----
+
+    //---- legacy ----
     struct hiena_frag *first_content;
     struct hiena_frag *last_content;
     struct hiena_frag *prev;

@@ -33,7 +33,7 @@ struct hiena_mfrag {
         HIMFRAG_BOUND_T boundhead;
         HIMFRAG_BOUND_T boundtail;
         void *buf;
-        HIMFRAG_BUFSIZE_T bufsize;
+        HIMFRAG_BUFSIZE_T len;
         HIMFRAG_BOUND_T bufh;
         HIMFRAG_BOUND_T buft;
         int flags;

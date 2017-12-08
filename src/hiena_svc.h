@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const int hiena_service_mod = 1;
+
 struct hiena_svc
 {
 	void * (*open)( void *addr, const char *mode);
@@ -13,6 +15,18 @@ struct hiena_svc
 	size_t (*write)( void *ptr, size_t size, size_t nmemb, void *fp );
         int (*getchar)( void * );
 };
+
+
+/* a database item */
+
+
+struct svc_item {
+        void *dl;
+        struct hiena_svc *svc;
+}
+
+struct svc_item *svc_item_new( void *dl );
+
 
 
 

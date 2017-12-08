@@ -84,30 +84,36 @@ struct hiena_dcel *lookup_find_prop( struct lookup_hdl *h, char *s )
         return res;
 }
 
-struct hiena_dcel *lookup_grind( struct lookup_hdl *h, char *sn )
+struct hiena_dcel *lookup_grind( struct lookup_hdl *look, char *str )
 {
-        if( h == NULL )
+        if( look == NULL )
         {
-                HIERR("lookup_find_child: err: h NULL");
+                HIERR("lookup_grind: err: look NULL");
                 return NULL;
         }
 
+        struct cosmos_cosm *cosm;
+
         struct prod_instr *pi;
         struct hiena_dcel *dc;
+
         struct hiena_slib *slib;
         struct hiena_scanner *hs;
         struct hiena_dcel *res;
 
+        cosm = look->cosm;
+        dc = look->target;
+        ax = look->aframe;
         pi = prod_instr_new();
-        dc = h->target;
-        slib = h->scanlib;
+
+        slib = look->scanlib;
         hs = slib_get_scanner(sn,slib);
 
         pi->fn = dgrind;
         pi->argc = 3;
-        pi->argv[0] = slib;
-        pi->argv[1] = sn;
-        pi->argv[2] = dc;
+        pi->argv[0] = cmdline;
+        pi->argv[1] = ;
+        pi->argv[2] = ;
 
         res = prod_exec( pi );
         

@@ -12,18 +12,19 @@ macos
 
 products
 --------
-snafufs
-cosmos tools
-hiena tools
-libcosmos
-libhiena
-cosm/sbin/lookup
-cosm/types/
-  <scanners>,
-  <xformers>,
-  <media sourcerers>,
+/usr/bin/snafufs
+/usr/bin/cosmosd
+/usr/lib/libcosmos.so
+/usr/lib/cosmos.cosm/lookup/fudge.so
+/usr/lib/cosmos.cosm/helper/grind.so
+    /grind_int()
+    ,grind_ext()
+/usr/lib/cosmos.cosm/source/file.so
+/usr/lib/cosmos.cosm/grinder/
+/usr/lib/cosmos.cosm/types/ox.so
+/usr/lib/cosmos.cosm/types/div.so
+/usr/lib/cosmos.cosm/types/raymks.so
   <item templates>
-cosm/tools/<xformers>
 
 
 user generated products

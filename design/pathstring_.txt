@@ -1,0 +1,60 @@
+
+
+
+
+
+
+
+pathstring cache
+----------------
+
+a pathstring
+
+  pathto/something
+
+links to an access frame
+
+
+pathstring to an executable
+---------------------------
+
+an access frame for an executable.
+
+from a fuse file system perspective, an access frame to an executable just needs to have a dcel with attributes set.
+
+the file system just serves the data.  the operating system executes the data.
+
+if the filesystem wants to use an executable, it has to use the os to load from itself:  serve data to the os, let the os execute and then capture the output.
+
+
+
+pathstring to a function
+------------------------
+
+a function is intended to be called internally, but we could blur the lines and allow it to be used like a shell builtin.
+
+the function may be used as a modifier by fudge.
+
+the pathstring of a func is the path to it's parent object file, plus a / and the func name.
+
+for accessing data, we expect an access frame to give us a dcel which will use a dsource helper to return bytes when we read it.
+
+how about a function?  if the dcel is nothing more than a function pointer, a dcel could use a dexec helper to execute it.
+
+this is the point behind the dgrind producer function.  dgrind produces a dynamic, calculated result.
+
+that's fine, but the functions that dgrind calls are static—they are not calculated.
+
+a helper function for executables is necessary—in a way, similar to how the OS reads a magic number to determine which binary should be used to execute a script.
+
+
+universal design for executable dcels
+------------------
+
+a dcel is generated from a production instruction.  its up to the instruction to set the executable bit and the "magic number" surrogate.  I say surrogate because maybe there isn't a place within a dcel's bytestream for a magic number -- ie, the bytestream is a single function pointer.
+
+
+executable helper functions
+---------------------------
+
+

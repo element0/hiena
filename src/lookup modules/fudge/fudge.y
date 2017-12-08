@@ -3,6 +3,7 @@
 
 #include "../../lookup_hdl.h"
 #include "../../dcel.h"
+#include "fudge.h"
 
 typedef void* yyscan_t;
 }
@@ -12,11 +13,12 @@ typedef void* yyscan_t;
 %locations
 %lex-param {yyscan_t scanner}
 %parse-param {yyscan_t scanner}
-%parse-param {struct lookup_hdl *h}
+%parse-param {struct lookup_hdl *look}
 
 
 %token <str> IDENTIFIER
 %token FWD_SLASH
+%token DOT
 %token COLON
 %token END
 
@@ -25,55 +27,59 @@ typedef void* yyscan_t;
 
 %%
 
-fudge_good :
-    fudge END;
-  {
-    h->result = h->target;
+%code {
+        char *cmd;
+}
 
-    return 0;
-  }
+fudge_good
+  : fudge END
+    {
+      look->result = look->target;
+
+      return 0;
+    }
   ;
 
-fudge :
-    fudge_seg
-  | fudge fudge_seg
+fudge
+  : fudge_seg
+  | fudge path_sep fudge_seg
   ;
 
-fudge_seg :
-    prod_instr
-  {
-    h->set_target( p, $1 );
-  }
+path_sep
+  : FWD_SLASH
+    {
+      look->step_aframe(look);
+    }
   ;
 
-prod_instr :
-    find_child
-  | find_prop
-  | grind_scan
+fudge_seg
+  : %empty
+  | find_child
+    {
+      look->set_target(look, $1);
+    }
+  | fudge_seg modifier
+    {
+      look->set_target(look, $3);
+    }
   ;
 
 find_child :
     IDENTIFIER
   {
-    $$ = h->find_child( h, $1 );
-  }
-  | FWD_SLASH IDENTIFIER
-  {
-    $$ = h->find_child( h, $2 );
+    $$ = look->find_child(look, $1);
   }
   ;
 
-find_prop :
+modifier :
     COLON IDENTIFIER
   {
-    $$ = h->find_prop( h, $2 );
+    $$ = look->find_prop(look, $2);
   }
-  ;
-
-grind_scan :
-    DOT IDENTIFIER
+  | DOT IDENTIFIER
   {
-    $$ = h->grind( h, $2 );
+    cmd = fudge_expand(look, $2);
+    $$ = look->grind(look, cmd);
   }
   ;
 

@@ -10,10 +10,11 @@
 struct lookup_hdl
 {
         struct hiena_dcel *target;
-        char *lookup_str;
-        struct hiena_slib *scanlib;
         struct hiena_dcel *result;
-        
+        char *str;
+        struct cosmos *cosmos;
+        struct access_frame *aframe;
+        struct hiena_dcel *cosm;
 
         int (*set_target)( struct lookup_hdl *, struct hiena_dcel * );
 
@@ -22,6 +23,7 @@ struct lookup_hdl
         struct hiena_dcel *(*find_prop)( struct lookup_hdl *, char * );
 
         struct hiena_dcel *(*grind)( struct lookup_hdl *, char * );
+
 };
 
 

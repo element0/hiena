@@ -10,5 +10,7 @@ typedef void* yyscan_t;
 
 int fudge_parse(struct lookup_hdl *);
 
+char *fudge_expand(struct lookup_hdl *, char *);
+
 
 #endif  /* ! _HIENA_FUDGE_H_ */

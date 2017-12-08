@@ -8,11 +8,13 @@
      dcel_child_val( af->env, s, len )
 
 struct access_frame {
-        struct cosmos_cosm *cosm;
+        struct cosmos *cosmos;
+        struct hiena_dcel *cosm;
         struct hiena_dcel *dcel;
         struct hiena_dcel *env;
         struct access_frame *parent;
         btree_t *lookup_cache;
+        struct access_frame *(*execfn)(struct access_frame *, int argc, char **);
 };
 
 struct access_frame *aframe_new();

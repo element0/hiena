@@ -1,3 +1,22 @@
+2017-12-08  0806
+
+wip:  snafufs.c
+
+
+
+2017-11-29  1951
+
+DONE:  cosmos_init()
+
+
+
+2017-11-21  0756
+
+wip: lookup_grind()
+
+focus: dgrind_so()
+
+
 
 2017-10-15  1600
 
