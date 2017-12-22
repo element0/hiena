@@ -38,10 +38,10 @@ struct hiena_dcel {
      /* exec helper
          referenced in map_index */
         
-        void    *map_index_state
+        void    *map_index_state;
         btree_t *dir;
         btree_t *dir_index;
-        void    *dir_index_state
+        void    *dir_index_state;
         int retain;
         int dirty;
 };

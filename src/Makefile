@@ -19,7 +19,7 @@ all: out-dirs tests utils
 
 
 access-frame:
-	gcc $(dbugopts) $(warnopts) -c access_frame.c -o $(out-o)/access_frame.o
+	gcc $(dbugopts)  -c access_frame.c -o $(out-o)/access_frame.o
 
 
 btrees:
@@ -32,13 +32,13 @@ btree_cpp:
 
 
 cosmos-db:      btree_cpp hash
-	gcc $(dbugopts) $(warnopts) -c cosmos/cosmos_db.c -o $(out-o)/cosmos_db.o
+	gcc $(dbugopts)  -c cosmos/cosmos_db.c -o $(out-o)/cosmos_db.o
 
 cosmos-init:    cosmos-db
-	gcc $(dbugopts) $(warnopts) -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
+	gcc $(dbugopts)  -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
 
 cosmos-util:    cosmos-db cosmos-init
-	gcc $(dbugopts) $(warnopts) $(out-o)/cosmos_init.o cosmos/cosmos_util.c -o $(out-bin)/cosmos
+	gcc $(dbugopts)  $(out-o)/cosmos_init.o cosmos/cosmos_util.c -o $(out-bin)/cosmos
 
 dcel:
 	gcc $(dbugopts) -c dcel.c -o $(out-o)/dcel.o

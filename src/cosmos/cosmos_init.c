@@ -34,7 +34,7 @@ static void example_init_seq()
 struct cosmos *cosmos_init(int modc, char *mod_path[])
 {
         if( modc < 3
-          || mod_path = NULL )
+          || mod_path == NULL )
         {
                 HIERR("cosmos_init: err: modc < 3 || mod_path NULL");
                 return NULL;
@@ -48,6 +48,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         cosmos_id_t cosm_src_id;
         cosmos_id_t af_id;
         cosmos_id_t xf_id;
+        cosmos_id_t virt_cosm_path_id;
         cosmos_id_t root_cosm_id;
         cosmos_id_t root_cosm_link_id;
         struct prod_instr *pi;
@@ -66,6 +67,8 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         base_svc_id = load_mod( cm, mod_path[1] );
 
         xf_id = load_mod(cm, mod_path[2] );
+
+        virt_cosm_path_id = cosmos_path_put( cm, "/.cosm" );
 
 
 
@@ -104,7 +107,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         af->cosmos = cm;
         af->dcel = dc;
 
-        af_id = cosmos_aframe_put( cm, "/.cosm", af );
+        af_id = cosmos_aframe_put( cm, virt_cosm_path_id, af );
 
 
 

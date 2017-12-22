@@ -9,7 +9,7 @@
 
 struct hiena_dcel;
 
-struct cosmos *cosmos_obj_new()
+struct cosmos *cosmos_db_new()
 {
         struct cosmos *cm;
         cm = malloc(sizeof(*cm));
@@ -17,7 +17,7 @@ struct cosmos *cosmos_obj_new()
         return cm;
 }
 
-int cosmos_obj_cleanup(struct cosmos *cm)
+int cosmos_db_cleanup(struct cosmos *cm)
 {
         if(cm == NULL)
                 return 0;
