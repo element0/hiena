@@ -1,4 +1,5 @@
 #include <libgen.h>
+#include "cosmos_db.h"
 
 char *shortname( char *fpath )
 {
@@ -93,8 +94,12 @@ cosmos_id_t load_mod( struct cosmos *cm, char *fpath )
         }
 
 
+        /* make dcel */
 
-        /* make dcel prod instr
+        dc = dcel_new(NULL);
+
+
+        /* dcel prod instr
 
           note
           normally we create a dcel
@@ -102,28 +107,15 @@ cosmos_id_t load_mod( struct cosmos *cm, char *fpath )
           which runs a module,
           but this is an init func
           so there might be no mods.
-
-          however, we make a prod
-          instr as part of the dcel.
         */
 
-        pi = prod_instr_new();
-        pi->fnptr = NULL;
-        pi->fnid = dylib_svc_pathid;
-        pi->argc = 1;
-        pi->argv = fpath_id;
-
-
-        /* make dcel */
-
-        dc = dcel_new()
-        dc->prod_instr = pi;
+        dc->prod_instr = NULL;
 
 
 
-        /* encapsulate dl in dcel */
+        /* encapsulate dl in dcel
+           (sets buffer in mfrag) */
 
-        /* sets buffer in mfrag */
         dcel_set_val(dc, dl, 0);
 
 
@@ -135,11 +127,12 @@ cosmos_id_t load_mod( struct cosmos *cm, char *fpath )
 
 
 
-        /* add dl's dcel to db */
+        /* associate aframe
+           with fpath */
 
-        id = hash_sdbm(fpath);
-        btree_put(strs, id, fpath);
-        btree_put(db, id, dl);
+        id = cosmos_path_put(cm, fpath);
+
+        cosmos_aframe_put(cm, id, af);
 
         return id;
 }

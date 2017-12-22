@@ -4,7 +4,7 @@
 
 
 #include "frag.h"
-#include "btrees.h"
+#include "btree_cpp.h"
 #include "prod_instr.h"
 
 
@@ -27,7 +27,7 @@
  */
 
 struct hiena_dcel {
-        struct prod_instr *pinstr;
+        struct prod_instr *prod_instr;
         struct hiena_frag *frag;
         void *scanner_id;
         void *rule_id;

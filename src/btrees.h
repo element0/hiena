@@ -3,6 +3,14 @@
 
 #include <sys/types.h>
 
+#define BTREE_CPP
+#ifdef BTREE_CPP
+
+#include "btree_cpp.h"
+
+#endif
+#ifndef BTREE_CPP
+
 #define NUM_KEYS  5
 #define ROOTKEY 1
 #define MAX_INSERTS 20
@@ -81,6 +89,8 @@ btree_curs_t
 
 btree_curs_t
 *btree_curs_seek_key_or_nearest_lesser( btree_curs_t *, bkey_t k );
+
+#endif /* !BTREE_CPP */
 
 
 #endif /*! HIENA_BTREES_H */

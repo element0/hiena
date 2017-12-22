@@ -8,12 +8,12 @@
 
 #define PRODFN_T(fnname) struct hiena_dcel *(*fnname)(struct access_frame *, int, void **)
 
-typecast uintptr_t prodfn_guid_t;
+typedef uintptr_t prodfn_guid_t;
 
 
 struct prod_instr {
-    prodfn_guid_t prodfn_guid;
-    PRODFN_T(prod_fn);
+    prodfn_guid_t fnid;
+    PRODFN_T(fnptr);
     struct access_frame *aframe;
     int argc;
     void **argv;

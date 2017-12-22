@@ -15,19 +15,25 @@ static struct cosmos *db_init()
 
         };
 
-        cm = cosmos_init( modc,mod_path );
+        cm = cosmos_init(modc, mod_path);
 
 }
 
 
-int main(int argc, char *argv[])
+cosmos_id_t main(int argc, char *argv[])
 {
-        if(argc < 2)
+        if(argc != 2)
         {
                 printf("usage: cosmos FILEPATH\n");
                 return 0;
         }
+        struct cosmos *cm;
+        cosmos_id_t ino;
+        struct stat *stbuf;
 
         cm = db_init();
 
+        ino = cosmos_lookup(cm, 0, argv[1]);
+
+        return ino;
 }

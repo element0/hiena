@@ -1,28 +1,28 @@
 
 
 #include <stdlib.h>
-#include "context_frame.h"
+#include "access_frame.h"
 #include "hierr.h"
 
 
-struct context_frame *context_frame_init()
+struct access_frame *access_frame_init()
 {
-        struct context_frame *cf;
+        struct access_frame *af;
 
-        cf = malloc(sizeof(*cf));
+        af = malloc(sizeof(*af));
 
-        return cf;
+        return af;
 }
 
 
-int context_frame_cleanup( struct context_frame *cf )
+int access_frame_cleanup( struct access_frame *af )
 {
-        if( cf == NULL )
+        if( af == NULL )
         {
-                HIERR("context_frame_cleanup called on a NULL ptr");
+                HIERR("access_frame_cleanup called on a NULL ptr");
                 return -1;
         }
-        free( cf );
+        free( af );
 
         return 0;
 }

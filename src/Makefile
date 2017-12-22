@@ -18,6 +18,8 @@ all: out-dirs tests utils
 
 
 
+access-frame:
+	gcc $(dbugopts) $(warnopts) -c access_frame.c -o $(out-o)/access_frame.o
 
 
 btrees:
@@ -27,8 +29,7 @@ btrees:
 btree_cpp:
 	g++ $(dbugopts) -c -std=c++0x btree_cpp.cc -o $(out-o)/btree_cpp.o
 
-context-frame:
-	gcc $(dbugopts) -c context_frame.c -o $(out-o)/context_frame.o
+
 
 cosmos-db:      btree_cpp hash
 	gcc $(dbugopts) $(warnopts) -c cosmos/cosmos_db.c -o $(out-o)/cosmos_db.o

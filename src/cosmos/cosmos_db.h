@@ -4,10 +4,10 @@
 #include <stdint.h>
 #include "../btree_cpp.h"
 
-typedef cosmos_id_t uint64_t;
+typedef uint64_t cosmos_id_t;
 
 struct hiena_dcel;
-
+struct access_frame;
 
 
 struct cosmos {
@@ -26,7 +26,7 @@ cosmos_id_t cosmos_path_put( struct cosmos *, char * );
 
 char *cosmos_path_get( struct cosmos *, cosmos_id_t );
 
-cosmos_id_t cosmos_aframe_put(struct cosmos *, struct access_frame * );
+cosmos_id_t cosmos_aframe_put(struct cosmos *, cosmos_id_t, struct access_frame * );
 
 struct access_frame *cosmos_aframe_get(struct cosmos *, cosmos_id_t );
 
