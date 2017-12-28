@@ -7,13 +7,13 @@ runs the daemon if not running.
 
 daemon runs init procedure.
 
-(there should only be one daemon per user per host)
+(there should only be one daemon per user per host - host/user/daemon)
 
 init procedure creates cosmos db and loads essential modules:
 
   file source
-  dcelcosmos xformr
-  lookup module
+  lookup
+  dcel-cosmos xformr
 
 now the daemon is able to take requests
 
@@ -24,6 +24,46 @@ run daemon
 check
   cosmosd run status
   cosmosd socket
+
+fork daemon
+
+
+load modules
+------------
+
+for each path
+
+stdlib::dlopen path
+cosmosdb::store dl, path
+
+
+
+
+init host cosm
+--------------
+
+
+
+create volume dcel
+------------------
+
+
+
+respond to lookup request
+-------------------------
+
+lookup =
+cosmos::get $aframe, ".cosm/lookup"
+
+return =
+lookup $aframe, $string
+
+uses:
+searches aframe.dcel.children
+runs aframe.dcel.prodinstr
+produces aframe.dcel.children
+
+
 
 
 init procedure
@@ -36,7 +76,7 @@ input gathered from host device
   cosmos.conf
     ROOT_COSM_PATH
     ROOT_ENV
-    DB_FILE
+    COSMOS_DB_FILE
 
 
 output
