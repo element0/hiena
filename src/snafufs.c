@@ -23,7 +23,7 @@
  * \include hello_ll.c
  */
 
-#define FUSE_USE_VERSION 31
+#define FUSE_USE_VERSION 30
 
 #include <fuse_lowlevel.h>
 #include <stdio.h>
@@ -35,17 +35,22 @@
 #include <assert.h>
 
 #include "cosmos.h"
+#include "hierr.h"
 
 
 
 
 static void snafu_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi)
 {
+        struct cosmos *cm;
 	struct stat stbuf;
 
 	memset(&stbuf, 0, sizeof(stbuf));
 
-	if (cosmos_stat(ino, &stbuf) == -1)
+        cm = (struct cosmos *)fuse_req_userdata(req);
+
+
+	if (cosmos_stat(cm, (cosmos_id_t)ino, &stbuf) == -1)
 		fuse_reply_err(req, ENOENT);
 	else
 		fuse_reply_attr(req, &stbuf, 1.0);
@@ -54,11 +59,13 @@ static void snafu_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info 
 
 static void snafu_lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
 {
-	struct fuse_entry_param e;
+        struct fuse_entry_param e;
+        cosmos_id_t ino;
+        struct cosmos *cm;
 
-   cosmos_id_t ino;
+        cm = (struct cosmos *)fuse_req_userdata(req);
 
-   ino = cosmos_lookup(parent, name);
+        ino = cosmos_lookup(cm, (cosmos_id_t)parent, (char *)name);
 
    if (ino == 0)
 		fuse_reply_err(req, ENOENT);
@@ -67,7 +74,7 @@ static void snafu_lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
 		e.ino = ino;
 		e.attr_timeout = 1.0;
 		e.entry_timeout = 1.0;
-		cosmos_stat(e.ino, &e.attr);
+		cosmos_stat(cm, (cosmos_id_t)(e.ino), &e.attr);
 
 		fuse_reply_entry(req, &e);
 	}
@@ -125,9 +132,9 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
         struct dirbuf b;
         memset(&b, 0, sizeof(b));
 
-        while((e = cosmos_readdir( DIR )) != NULL)
+        while((e = cosmos_readdir( (cosmos_dirh_t)DIR )) != NULL)
         {
-                dirbuf_add(req, &b, e->name, e->ino);
+                dirbuf_add(req, &b, e->d_name, e->d_ino);
                 free(e);
         }
 
@@ -140,10 +147,13 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
 static void snafu_open(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi)
 {
         void *FILE;
+        struct cosmos *cm;
+        
+        cm = (struct cosmos *)fuse_req_userdata(req);
 
-        FILE = cosmos_open( ino );
+        FILE = cosmos_open( cm, (cosmos_id_t)ino );
 
-        fi->fh = FILE;
+        fi->fh = (uint64_t)FILE;
 
         if (ino == 0)
                 fuse_reply_err(req, EISDIR);
@@ -161,7 +171,7 @@ static void snafu_open(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi
 static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, struct fuse_file_info *fi)
 {
         void *buf;
-        size_t len, size_read;
+        size_t size_read;
         void *FILE;
 
         if(fi == NULL)
@@ -171,7 +181,7 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
                 return;
         }
 
-        FILE = fi->fh;
+        FILE = (void *)fi->fh;
         
         if(FILE == 0)
         {
@@ -180,7 +190,7 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
                 return;
         }
 
-        size_read = cosmos_read(&buf, size, 1, FILE);
+        size_read = cosmos_read(&buf, size, 1, (cosmos_fh_t)FILE);
 
         fuse_reply_buf(req, buf, size_read);
 
@@ -188,8 +198,7 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
 
 
 
-
-void *snafu_init(struct fuse_conn_info *conn, struct fuse_config *cfg)
+static struct cosmos *snafu_init()
 {
         struct cosmos *cm;
         int modc = 6;
@@ -205,17 +214,15 @@ void *snafu_init(struct fuse_conn_info *conn, struct fuse_config *cfg)
         };
 
         cm = cosmos_init(modc, mod_path);
-
-        return (void *)cm;
+        return cm;
 }
 
 static struct fuse_lowlevel_ops snafu_oper = {
 	.lookup   = snafu_lookup,
-	.getattr	= snafu_getattr,
-	.readdir	= snafu_readdir,
-	.open		= snafu_open,
-	.read		= snafu_read,
-	.init		= snafu_init,
+	.getattr  = snafu_getattr,
+	.readdir  = snafu_readdir,
+	.open     = snafu_open,
+	.read     = snafu_read,
 };
 
 
@@ -223,58 +230,35 @@ static struct fuse_lowlevel_ops snafu_oper = {
 
 int main(int argc, char *argv[])
 {
-	struct fuse_args args;
-	struct fuse_session *se;
-	struct fuse_cmdline_opts opts;
-	int ret;
+        struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
+        struct fuse_chan *ch;
+        char *mountpoint;
+	int err = -1;
+        
+        struct cosmos *cm;
+        cm = snafu_init();
 
-        args = FUSE_ARGS_INIT(argc, argv);
-        ret = -1;
+	if (fuse_parse_cmdline(&args, &mountpoint, NULL, NULL) != -1 &&
+	    (ch = fuse_mount(mountpoint, &args)) != NULL) {
+		struct fuse_session *se;
 
+		se = fuse_lowlevel_new(&args, &snafu_oper,
+				       sizeof(snafu_oper), (void *)cm);
+		if (se != NULL) {
+			if (fuse_set_signal_handlers(se) != -1) {
+				fuse_session_add_chan(se, ch);
 
-	if (fuse_parse_cmdline(&args, &opts) != 0)
-		return 1;
-	if (opts.show_help) {
-		printf("usage: %s [options] <mountpoint>\n\n", argv[0]);
-		fuse_cmdline_help();
-		fuse_lowlevel_help();
-		ret = 0;
-		goto err_out1;
-	} else if (opts.show_version) {
-		printf("FUSE library version %s\n", fuse_pkgversion());
-		fuse_lowlevel_version();
-		ret = 0;
-		goto err_out1;
+				/* Block until ctrl+c or fusermount -u */
+				err = fuse_session_loop(se);
+
+				fuse_remove_signal_handlers(se);
+				fuse_session_remove_chan(ch);
+			}
+			fuse_session_destroy(se);
+		}
+		fuse_unmount(mountpoint, ch);
 	}
-
-	se = fuse_session_new(&args, &snafu_oper, sizeof(snafu_oper), NULL);
-
-	if (se == NULL)
-	    goto err_out1;
-
-	if (fuse_set_signal_handlers(se) != 0)
-	    goto err_out2;
-
-	if (fuse_session_mount(se, opts.mountpoint) != 0)
-	    goto err_out3;
-
-	fuse_daemonize(opts.foreground);
-
-	/* Block until ctrl+c or fusermount -u */
-
-	if (opts.singlethread)
-		ret = fuse_session_loop(se);
-	else
-		ret = fuse_session_loop_mt(se, opts.clone_fd);
-
-	fuse_session_unmount(se);
-err_out3:
-	fuse_remove_signal_handlers(se);
-err_out2:
-	fuse_session_destroy(se);
-err_out1:
-	free(opts.mountpoint);
 	fuse_opt_free_args(&args);
 
-	return ret ? 1 : 0;
+	return err ? 1 : 0;
 }

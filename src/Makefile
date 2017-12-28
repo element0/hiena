@@ -151,7 +151,7 @@ slib:
 
 
 snafufs:
-	gcc $(dbugopts) -Wall snafufs.c `pkg-config fuse3 --cflags --libs` -o $(out-bin)/snafufs
+	gcc $(dbugopts) snafufs.c `pkg-config fuse --cflags --libs` -o $(out-bin)/snafufs
 
 
 hiena-obs: btrees btree_cpp dcel dsource context-frame hash map-anchor mapcel mapcel-dir mapcel-svc mapcel-fh mfrag mfrag-fh mfrag-svc ptr-stack frag frag-fh frag-curs frag-svc dcel-svc dcel-mapsvc
