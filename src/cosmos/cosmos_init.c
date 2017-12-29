@@ -72,7 +72,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
 
 
 
-        /* load addtl modules */
+        /* load modules */
 
 
         for(i=2; i<modc; i++)

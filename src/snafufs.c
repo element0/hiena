@@ -197,6 +197,14 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
 }
 
 
+/** TODO: snafu_vol
+  @param root_ino snafufs translates ino "0" to this root_ino in the cosmos_db
+
+ */
+static struct snafu_vol {
+        cosmos_id_t root_ino;
+        struct cosmos *cosmos_db;
+}
 
 static struct cosmos *snafu_init()
 {
@@ -216,6 +224,9 @@ static struct cosmos *snafu_init()
         cm = cosmos_init(modc, mod_path);
         return cm;
 }
+
+
+
 
 static struct fuse_lowlevel_ops snafu_oper = {
 	.lookup   = snafu_lookup,

@@ -34,8 +34,11 @@ btree_cpp:
 cosmos-db:      btree_cpp hash
 	gcc $(dbugopts)  -c cosmos/cosmos_db.c -o $(out-o)/cosmos_db.o
 
-cosmos-init:    cosmos-db
-	gcc $(dbugopts)  -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
+cosmos-load-mod:
+	gcc $(dbugopts)  -c cosmos/load_module.c -o $(out-o)/cosmos_load_module.o
+
+cosmos-init:    cosmos-db cosmos-load-mod
+	gcc $(dbugopts)  -c cosmos/cosmos_init.c} -o $(out-o)/cosmos_init.o
 
 cosmos-util:    cosmos-db cosmos-init
 	gcc $(dbugopts)  $(out-o)/cosmos_init.o cosmos/cosmos_util.c -o $(out-bin)/cosmos

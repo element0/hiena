@@ -32,10 +32,16 @@ load modules
 ------------
 
 for each path
+        load_mod
 
-stdlib::dlopen path
-cosmosdb::store dl, path
+load_mod
+        dlopen path
+        attach dl to dcel
+        assign dl service to dcel
+        store dcel in cosmosdb
 
+builtin
+        dl_service
 
 
 
