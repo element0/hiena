@@ -13,11 +13,25 @@ maps a pathstring to an aframe id
 
 
 ## aframes ##
-maps aframe id to an aframe
+a tree structure of aframes.
+aframes are keyed into each other through string id's.
+
+root access frame belongs to the db, not to the file system.  multiple fs roots can be children of the db root.
+
+linked list destructor chain for end of life.
+
+a string uniquely defines each branch off an aframe (relative to te namespace of the aframe).  strings are hashed and the value is used to key the branch. (the cosmos string db is kept for reverse lookups of a hashed value).
+
+the string values of each aframe path segment can be concatenated into a global pathname.  the hash value of this pathname can be a key to a global access-frame-by-path db.
+
+recap:  an access frame can be accessed by a path walk over the access frame tree or by a full pathname index.
 
 
 ## dcels ##
-maps a dcel id to a dcel
+dcels kept in-memory
+
+linked list destructor chain for cosmosdb end of life.
+
 
 
 

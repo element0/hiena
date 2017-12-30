@@ -37,7 +37,7 @@ for each path
 load_mod
         dlopen path
         attach dl to dcel
-        assign dl service to dcel
+        assign dl_service to dcel
         store dcel in cosmosdb
 
 builtin
@@ -52,6 +52,11 @@ init host cosm
 
 create volume dcel
 ------------------
+(part of snafu but described here)
+
+new dcel
+    addr: $mountpoint
+    svc:  file_module
 
 
 
