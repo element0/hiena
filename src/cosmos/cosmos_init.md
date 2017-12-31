@@ -39,6 +39,7 @@ load_mod
         attach dl to dcel
         assign dl_service to dcel
         store dcel in cosmosdb
+        attach dl to 
 
 builtin
         dl_service

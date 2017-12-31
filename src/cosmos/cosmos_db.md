@@ -4,9 +4,16 @@
 cosmos object
 -------------
 
-## strings ##
-maps a hashval to a string
+The cosmos db object has:
 
+        - databases
+        - handles to boot modules
+
+
+## strings ##
+maps a uint64_t hashval to a string
+
+(access frames reference strings by hash value)
 
 ## pathstrings ##
 maps a pathstring to an aframe id
@@ -14,13 +21,25 @@ maps a pathstring to an aframe id
 
 ## aframes ##
 a tree structure of aframes.
-aframes are keyed into each other through string id's.
 
-root access frame belongs to the db, not to the file system.  multiple fs roots can be children of the db root.
+aframes branches are keyed by string hash values (relative to te namespace of the aframe).
+
+(the cosmos string db is kept for reverse lookups of a hashed value).
 
 linked list destructor chain for end of life.
 
-a string uniquely defines each branch off an aframe (relative to te namespace of the aframe).  strings are hashed and the value is used to key the branch. (the cosmos string db is kept for reverse lookups of a hashed value).
+root access frame belongs to the db, not to the file system.  multiple fs roots can be children of the db root.
+
+    cosmosdb
+        aframe  // db root
+            cosmos://skinner@badfish:cnrelease/ // these are context roots
+            cosmos://skinner@badfish:httpd/
+            cosmos://skinner@badfish:gnome/
+                /home/skinner/deepwater         // this is a mountpoint
+                    scuba.ox                    // these are branches
+                    scuba.html                  // they can branch to same data
+                    scuba/                      // presented differently
+
 
 the string values of each aframe path segment can be concatenated into a global pathname.  the hash value of this pathname can be a key to a global access-frame-by-path db.
 
@@ -31,6 +50,9 @@ recap:  an access frame can be accessed by a path walk over the access frame tre
 dcels kept in-memory
 
 linked list destructor chain for cosmosdb end of life.
+
+
+
 
 
 

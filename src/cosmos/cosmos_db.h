@@ -4,17 +4,21 @@
 #include <stdint.h>
 #include "../btree_cpp.h"
 
-typedef uint64_t cosmos_id_t;
 
 struct hiena_dcel;
 struct access_frame;
+typedef struct access_frame *cosmos_id_t;
 
-
+/**
+  @param aframe cosmos db root aframe
+  @param dcel   cosmos db root dcel
+ */
 struct cosmos {
         btree_t *strings;
-        btree_t *pathstrings;
-        btree_t *aframes;
-        btree_t *dcels;
+        btree_t *paths;
+        struct access_frame *init;
+        struct access_frame *aframe;
+        struct hiena_dcel *dcel;
 };
 
 

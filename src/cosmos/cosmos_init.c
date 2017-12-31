@@ -1,5 +1,6 @@
 
-#include <libgen.h>    // basename()
+#include <libgen.h>     // basename()
+#include <unistd.h>     // chdir()
 #include "../hierr.h"
 #include "../prod_instr.h"
 #include "../dcel.h"
@@ -31,6 +32,7 @@ static void example_init_seq()
 */
 
 
+
 struct cosmos *cosmos_init(int modc, char *mod_path[])
 {
         if( modc < 3
@@ -41,44 +43,55 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         }
 
 
-        struct cosmos *cm;
-        int i;
-        cosmos_id_t err;
-        cosmos_id_t base_svc_id;
-        cosmos_id_t cosm_src_id;
         cosmos_id_t af_id;
         cosmos_id_t xf_id;
-        cosmos_id_t virt_cosm_path_id;
         cosmos_id_t root_cosm_id;
         cosmos_id_t root_cosm_link_id;
+
+        int i;
+        dev_t  dev;
+        char *cosm_src_path;
+        struct cosmos *cm;
+        struct access_frame *db_root_af;
+        struct access_frame *virt_cosm;
+        struct access_frame *cur_path;
+        struct access_frame *mod;
         struct prod_instr *pi;
         struct hiena_dcel *dc;
         struct access_frame *af;
 
+
+
+        /* allocate db object */
+
         cm = cosmos_db_new();
+        cm->init = aframe_new(); 
+        cm->dcel = dcel_new(NULL);
 
 
+        /* setup "boot" cosm */
 
-        /* parse args 1 and 2 */
 
+        /**
+          adds ".cosm" to the string db.  uses the hash value to key a branch
+          from cm->aframe.  returns a new aframe.
+         */
+        dev = 0;
+        virt_cosm = cosmos_mknod(cm, cm->init, ".cosm", S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, dev);
 
-        cosm_src_id = cosmos_path_put( cm, mod_path[0] );
-
-        base_svc_id = load_mod( cm, mod_path[1] );
-
-        xf_id = load_mod(cm, mod_path[2] );
-
-        virt_cosm_path_id = cosmos_path_put( cm, "/.cosm" );
 
 
 
         /* load modules */
 
+        cosm_src_path = mod_path[0];
+        chdir(cosm_src_path);
 
-        for(i=2; i<modc; i++)
+        for(i=1; i<modc; i++)
         {
-                err = load_mod( cm, mod_path[i] );
-                if( err == 0 )
+                cur_path = cosmos_mknod_path( cm, virt_cosm, mod_path[i] );
+                mod = load_mod( cm, cur_path, mod_path[i] );
+                if( mod == 0 )
                 {
                         HIERR("cosmos_init: warning: load_mod() fail (");
                         HIERR(mod_path[i]);
@@ -88,9 +101,9 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
 
 
 
-        /* setup root cosm src */
+//-----> WIP
 
-  /*----> wip  */
+        /* setup root cosm src */
 
         pi = prod_instr_new();
         pi->fnid = (prodfn_guid_t)base_svc_id;

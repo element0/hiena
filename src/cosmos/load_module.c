@@ -27,15 +27,19 @@ char *shortname( char *fpath )
 
 /** load any type of module for 
    cosmos from a pathname;
-   store in cosmos object db.
+   store module in a dcel.
 
    module is accessed by pathname
    or hash id.  pathname is hashed
    to id.  id retrieves module. 
+
+   @param cm   the cosmos db -- do we need this?  TBD
+   @param par  the access frame to save the module in
+   @param fpath  the module file relative to PWD of process
   */
 
 
-cosmos_id_t load_mod( struct cosmos *cm, char *fpath )
+cosmos_id_t load_mod( struct cosmos *cm, cosmos_id_t par, char *fpath )
 {
         if( cm == NULL
          || fpath == NULL )
