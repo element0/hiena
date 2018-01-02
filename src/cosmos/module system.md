@@ -9,13 +9,18 @@ a module's funcs are avail thru fudge.
 
 in fudge, the path can be resolved via a PATH resolution mechanism and via aliases.  In both, a shorthand func name expands to the full pathname.
 
-and the full pathname resolves to a numerical id.
+and the full pathname resolves to an access frame pointer.
 
 
 types of modules
 ----------------
 
-mod_load() is used at cosmos init time to differentiate modules and add their essential functions to the access frames db.
+
+
+load_mod()
+----------
+
+load_mod() is used at cosmos init time to load modules and add their essential functions to the cosmos db.
 
 
 prod instr to create mod paths
@@ -56,8 +61,108 @@ or (cli)
 
 
 
-bootstrapping core mods to paths
---------------------------------
+bootstrapping core mods
+-----------------------
+
+create paths of access frames
+to reference the module op structs.
+
+  cosmos db
+    aframe
+      init
+        file.ops
+        cosm.ops
+        lookup.ops
+
+
+create paths of aframes to track open handles (in this case, from dlopen) so we can close the open handles later.
+
+  cosmos db
+    aframe
+      open
+        file.dlh
+        cosm.dlh
+        lookup.dlh
+
+
+for each module, create a production instruction.
+
+  prod instr
+    fn_aframe: \0
+    fn: dlsvc->open     // builtin
+    context_aframe: \0
+    argc: 1
+    argv: { modpath }
+
+
+run each prod instr to generate a dcel.  then, store dcel at aframe/open/<handle>.
+
+for each, create prod instr
+
+  prod instr
+    fn_aframe: \0
+    fn: dlsvc->dlsym     // builtin
+    context_aframe: \0
+    argc: 1
+    argv: { "service_ops" }
+
+run to create dcel and store at aframe/init/<module>
+
+
+for init cosm create
+
+  cosmosdb
+    aframe
+        .cosm
+
+  prod instr
+    fn_aframe: \0
+    fn: filesvc->source
+    context_aframe: /.cosm
+    argc: 1
+    argv: { cosmpath }
+
+run prodinstr and save dcel at aframe/.cosm
+
+each time cosmos_init is called, create a user-host-context root aframe.
+
+  cosmosdb
+    aframe
+      user@host
+        context
+
+each time snafufs is run, create a mountpoint aframe off the context
+
+  cosmosdb
+    aframe
+      user@host
+        context
+          home
+            user
+              example_mnt
+
+
+and create a prod instr    
+
+  prod instr
+    fn_aframe: /.cosm/svc/file/source
+    fn: filesvc->source
+    context_aframe: /user@host/context/home/user/
+    argc: 1
+    argv: { mountpoint }
+
+
+run to create dcel and store dcel at example_mnt
+
+
+when snafufs runs lookup on example_mnt aframe
+
+  lookup: example_mnt/.cosm/lookup
+
+  lookup somename
+
+  
+
 
 
 "/pathto"

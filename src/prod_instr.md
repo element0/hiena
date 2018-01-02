@@ -14,6 +14,8 @@ production instruction implementation
 
 - production engine
 
+- implementation
+
 
 rationale
 ---------
@@ -221,3 +223,14 @@ at its most robust, a context frame is an execution environment instance, which 
 at a bare minimum it is empty and ignored.
 
 the environment
+
+
+
+implementation
+--------------
+
+
+    prod instr
+        aframe to prod fn
+        fn ptr
+
