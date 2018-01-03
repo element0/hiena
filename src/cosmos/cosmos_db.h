@@ -14,9 +14,15 @@ typedef struct access_frame *cosmos_id_t;
   @param dcel   cosmos db root dcel
  */
 struct cosmos {
+        /* init */
+        void *filesvc;
+        void *cosmsvc;
+        void *lookup;
+        struct access_frame *init;
+
+        /* runtime */
         btree_t *strings;
         btree_t *paths;
-        struct access_frame *init;
         struct access_frame *aframe;
         struct hiena_dcel *dcel;
 };

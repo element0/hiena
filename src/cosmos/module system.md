@@ -109,57 +109,9 @@ for each, create prod instr
 run to create dcel and store at aframe/init/<module>
 
 
-for init cosm create
-
-  cosmosdb
-    aframe
-        .cosm
-
-  prod instr
-    fn_aframe: \0
-    fn: filesvc->source
-    context_aframe: /.cosm
-    argc: 1
-    argv: { cosmpath }
-
-run prodinstr and save dcel at aframe/.cosm
-
-each time cosmos_init is called, create a user-host-context root aframe.
-
-  cosmosdb
-    aframe
-      user@host
-        context
-
-each time snafufs is run, create a mountpoint aframe off the context
-
-  cosmosdb
-    aframe
-      user@host
-        context
-          home
-            user
-              example_mnt
 
 
-and create a prod instr    
 
-  prod instr
-    fn_aframe: /.cosm/svc/file/source
-    fn: filesvc->source
-    context_aframe: /user@host/context/home/user/
-    argc: 1
-    argv: { mountpoint }
-
-
-run to create dcel and store dcel at example_mnt
-
-
-when snafufs runs lookup on example_mnt aframe
-
-  lookup: example_mnt/.cosm/lookup
-
-  lookup somename
 
   
 

@@ -49,20 +49,85 @@ builtin
 init host cosm
 --------------
 
+for the initial host cosm create
+
+  cosmosdb
+    aframe
+      .cosm
+
+  dlopen( filesvc );
+  dlsym( filesvc_ops );
+
+  prod instr
+    context_aframe: &(aframe)
+    fn_aframe: \0
+    fn: filesvc_ops->source
+    argc: 1
+    argv: { cosmfpath }
+
+run prodinstr and save dcel at aframe/.cosm
+
+  cosmosdb
+    aframe
+      .cosm
+        dcel
+
+
+create user-host-context root
+-----------------------------
+
+each time cosmos_init is called, create a user-host-context root aframe.
+
+  url: cosmos://user@host/context/
+
+  cosmosdb
+    aframe
+      user@host
+        context
 
 
 create volume dcel
 ------------------
 (part of snafu but described here)
 
-new dcel
-    addr: $mountpoint
-    svc:  file_module
+each time snafufs is run, create a mountpoint aframe off the context
+
+  url: cosmos://user@host/context/mountpoint
+  url: cosmos://user@host/context/home/user/example_mnt
+
+  cosmosdb
+    aframe
+      user@host
+        context
+          home
+            user
+              example_mnt
+
+
+and create a prod instr.  fn_aframe is derived from context_aframe.
+
+  prod instr
+    context_aframe: &(aframe/user@host/context/home/user/)
+    fn_aframe: &((context_aframe)/.cosm/svc/file/source)
+    fn: &((fn_aframe)/dcel:value)
+    argc: 1
+    argv: { mountfpath }
+
+
+run to create dcel and store dcel at example_mnt
 
 
 
 respond to lookup request
 -------------------------
+
+when snafufs runs lookup on example_mnt aframe
+
+  lookup: example_mnt/.cosm/lookup
+
+  lookup somename
+
+---
 
 lookup =
 cosmos::get $aframe, ".cosm/lookup"
