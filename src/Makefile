@@ -34,6 +34,9 @@ btree_cpp:
 cosmos-db:      btree_cpp hash
 	gcc $(dbugopts)  -c cosmos/cosmos_db.c -o $(out-o)/cosmos_db.o
 
+cosmos-fs:      cosmos-db access-frame
+	gcc $(dbugopts)  -c cosmos/cosmos_fs.c -o $(out-o)/cosmos_fs.o
+
 cosmos-load-mod:
 	gcc $(dbugopts)  -c cosmos/load_module.c -o $(out-o)/cosmos_load_module.o
 
@@ -171,6 +174,9 @@ test-dcel-svc: btrees map-anchor mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs
 	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o} dcel_svc_test.c -o $(out-test-bin)/dcel_svc_test
 
 
+test-btrees: btrees
+	gcc $(dbugopts) btree.o btrees.o btrees_test.c -o $(out-test-bin)/btrees_test
+
 test-cpp-btree:
 	g++ $(dbugopts) -std=c++0x test_cpp_btree.cc -o $(out-test-bin)/cpp_btree_test
 
@@ -178,9 +184,8 @@ test-cpp-btree:
 test-cpp-btree-c: btree_cpp
 	gcc $(dbugopts) $(out-o)/btree_cpp.o test_cpp_btree.c -o $(out-test-bin)/cpp_btree_test -lstdc++
 
-
-test-btrees: btrees
-	gcc $(dbugopts) btree.o btrees.o btrees_test.c -o $(out-test-bin)/btrees_test
+test-cosmos-fs: cosmos-fs
+	gcc $(dbugopts) $(out-o)/cosmos_{db,fs}.o $(out-o)/{hash,btree_cpp,access_frame}.o cosmos/cosmos_fs_test.c -o $(out-test-bin)/cosmos_fs_test -lstdc++
 
 test-file-svc:
 	gcc $(dbugopts) hiena_svc.c file_svc_test.c -o $(out-test-bin)/file_svc_test

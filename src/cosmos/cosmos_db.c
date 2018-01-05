@@ -47,7 +47,7 @@ cosmos_id_t cosmos_string_put(struct cosmos *cm, char *s)
                 cm->strings=strings;
         }
 
-        id = hash_sdbm(s);
+        id = (cosmos_id_t)hash_sdbm(s);
         btree_put(strings, (bkey_t)id, (void *)s);
 
         return id;
@@ -89,17 +89,17 @@ cosmos_id_t cosmos_path_put( struct cosmos *cm, char *s )
                 return 0;
         }
         cosmos_id_t id;
-        btree_t *pathstrings;
+        btree_t *paths;
 
-        pathstrings = cm->pathstrings;
-        if( pathstrings == NULL )
+        paths = cm->paths;
+        if( paths == NULL )
         {
-                pathstrings=btree_new();
-                cm->pathstrings=pathstrings;
+                paths=btree_new();
+                cm->paths=paths;
         }
 
-        id = hash_sdbm(s);
-        btree_put(pathstrings, (bkey_t)id, (void *)s);
+        id = (cosmos_id_t)hash_sdbm(s);
+        btree_put(paths, (bkey_t)id, (void *)s);
 
         return id;
 }
@@ -114,70 +114,19 @@ char *cosmos_path_get( struct cosmos *cm, cosmos_id_t id)
                 return NULL;
         }
         char *s;
-        btree_t *pathstrings;
+        btree_t *paths;
 
-        pathstrings = cm->pathstrings;
-        if( pathstrings == NULL )
+        paths = cm->paths;
+        if( paths == NULL )
         {
-                HIERR("cosmos_pathstring_get: warn cosmos object->pathstrings NULL");
+                HIERR("cosmos_pathstring_get: warn cosmos object->paths NULL");
 
                 return NULL;
         }
 
-        s = btree_get(pathstrings, (bkey_t)id);
+        s = btree_get(paths, (bkey_t)id);
 
         return s;
-}
-
-
-
-
-cosmos_id_t cosmos_aframe_put(struct cosmos *cm, cosmos_id_t id, struct access_frame *af)
-{
-        if(cm == NULL)
-        {
-                HIERR("cosmos_aframe_put: err cosmos object NULL");
-                return 0;
-        }
-        btree_t *aframes;
-
-        aframes = cm->aframes;
-        if( aframes == NULL )
-        {
-                HIERR("cosmos_aframe_put: warn cosmos object->aframes NULL");
-
-                return 0;
-        }
-
-        btree_put(aframes, (bkey_t)id, (void *)af);
-
-        return id;
-}
-
-
-
-
-struct access_frame *cosmos_aframe_get(struct cosmos *cm, cosmos_id_t id)
-{
-        if(cm == NULL)
-        {
-                HIERR("cosmos_aframe_get: err cosmos object NULL");
-                return 0;
-        }
-        struct access_frame  *af;
-        btree_t *aframes;
-
-        aframes = cm->aframes;
-        if( aframes == NULL )
-        {
-                HIERR("cosmos_aframe_get: warn cosmos object->aframes NULL");
-
-                return 0;
-        }
-
-        af = btree_get(aframes, (bkey_t)id);
-
-        return af;
 }
 
 
@@ -189,21 +138,8 @@ cosmos_id_t cosmos_dcel_put( struct cosmos *cm, struct hiena_dcel *dc )
                 HIERR("cosmos_dcel_put: err cosmos object NULL");
                 return 0;
         }
-        cosmos_id_t id;
-        btree_t *dcels;
 
-        dcels = cm->dcels;
-        if( dcels == NULL )
-        {
-                HIERR("cosmos_dcel_put: warn cosmos object->dcels NULL");
-
-                return 0;
-        }
-
-        id = (cosmos_id_t)dc;
-        btree_put(dcels, (bkey_t)id, (void *)dc);
-
-        return id;
+        return NULL;
 }
 
 
@@ -215,18 +151,6 @@ struct hiena_dcel *cosmos_dcel_get( struct cosmos *cm, cosmos_id_t id)
                 HIERR("cosmos_dcel_get: err cosmos object NULL");
                 return NULL;
         }
-        struct hiena_dcel  *dc;
-        btree_t *dcels;
 
-        dcels = cm->dcels;
-        if( dcels == NULL )
-        {
-                HIERR("cosmos_dcel_get: warn cosmos object->dcels NULL");
-
-                return NULL;
-        }
-
-        dc = btree_get(dcels, (bkey_t)id);
-
-        return dc;
+        return NULL;
 }

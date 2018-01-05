@@ -1,5 +1,3 @@
-
-
 #include <stdlib.h>
 #include <string.h>
 #include "access_frame.h"

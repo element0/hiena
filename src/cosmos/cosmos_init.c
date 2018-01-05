@@ -1,6 +1,6 @@
-
 #include <libgen.h>     // basename()
 #include <unistd.h>     // chdir()
+#include <sys/stat.h>
 #include "../hierr.h"
 #include "../prod_instr.h"
 #include "../dcel.h"
@@ -49,7 +49,6 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         cosmos_id_t root_cosm_link_id;
 
         int i;
-        dev_t  dev;
         char *cosm_src_path;
         struct cosmos *cm;
         struct access_frame *db_root_af;
@@ -76,8 +75,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
           adds ".cosm" to the string db.  uses the hash value to key a branch
           from cm->aframe.  returns a new aframe.
          */
-        dev = 0;
-        virt_cosm = cosmos_mknod(cm, cm->init, ".cosm", S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, dev);
+        virt_cosm = cosmos_mknod(cm, cm->init, ".cosm", S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
 
 
 
