@@ -26,6 +26,8 @@ struct access_frame *aframe_new();
 
 int aframe_cleanup( struct access_frame * );
 
+struct access_frame *aframe_lookup(struct access_frame *, char *);
+
 
 
 #endif /* !HIENA_ACCESS_FRAME_H */

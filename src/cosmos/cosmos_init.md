@@ -49,23 +49,22 @@ builtin
 init host cosm
 --------------
 
-for the initial host cosm create
-
-  cosmosdb
-    aframe
-      .cosm
+the first time cosmos_init is called, create the host cosm:
 
   dlopen( filesvc );
   dlsym( filesvc_ops );
 
-  prod instr
+  prodinstr
     context_aframe: &(aframe)
     fn_aframe: \0
     fn: filesvc_ops->source
     argc: 1
     argv: { cosmfpath }
 
-run prodinstr and save dcel at aframe/.cosm
+  cosmos_mknod( aframe, prodinstr, ".cosm", mode, dev );
+
+
+makes...
 
   cosmosdb
     aframe
@@ -76,7 +75,30 @@ run prodinstr and save dcel at aframe/.cosm
 create user-host-context root
 -----------------------------
 
-each time cosmos_init is called, create a user-host-context root aframe.
+a context is a configuration that might impose different restrictions from another configuration, such as two different desktop environments running on the same host, under the same user.
+
+a context access frame can share the same root dcel as another context, but the local .cosm will differ.
+
+  cosmosdb
+    aframe
+      skinner@badfish
+        context-demo
+          "/"
+            .cosm
+              <demo config>
+        context-fishbowl
+          "/"
+            .cosm
+              <fishbowl config>
+
+a generic default context exists
+
+    cosmosdb
+    aframe
+      skinner@badfish
+        "/"
+
+each time cosmos_init is called, create a user-host-context aframe if needed.
 
   url: cosmos://user@host/context/
 
@@ -85,12 +107,19 @@ each time cosmos_init is called, create a user-host-context root aframe.
       user@host
         context
 
+using these calls:
+
+  cosmos_mknod( aframe, null_prodinstr, userhost_str, mode, dev );
+
+  cosmos_mknod( userhost_aframe, null_prodinstr, context_str, mode, dev );
+
+
 
 create volume dcel
 ------------------
 (part of snafu but described here)
 
-each time snafufs is run, create a mountpoint aframe off the context
+each time snafufs is run, create a mountpoint aframe:
 
   url: cosmos://user@host/context/mountpoint
   url: cosmos://user@host/context/home/user/example_mnt
@@ -120,6 +149,8 @@ run to create dcel and store dcel at example_mnt
 
 respond to lookup request
 -------------------------
+
+lookup requests can come from the file system user, or they can be internal, such as a reference within a prod instr.
 
 when snafufs runs lookup on example_mnt aframe
 
