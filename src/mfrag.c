@@ -23,7 +23,7 @@ struct hiena_mfrag *mfrag_dup( struct hiena_mfrag *mf )
 
         struct hiena_mfrag *m2;
         void *buf;
-        HIMFRAG_BUFSIZE_T bufsize;
+        HIMFRAG_BUFSIZE_T len;
 
 
         m2 = malloc( sizeof(*mf) );
@@ -34,14 +34,14 @@ struct hiena_mfrag *mfrag_dup( struct hiena_mfrag *mf )
 
         if( mf->buf != NULL )
         {
-                bufsize = mf->bufsize;
-                buf = malloc( bufsize );
+                len = mf->len;
+                buf = malloc( len );
                 if( buf == NULL )
                 {
                         HIERR( "mfrag_dup: can't malloc dup buffer" );
                         goto abort_badbuf;
                 }else{
-                        memcpy( buf, mf->buf, bufsize );
+                        memcpy( buf, mf->buf, len );
                 }
         }
 

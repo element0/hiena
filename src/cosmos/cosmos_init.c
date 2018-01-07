@@ -97,7 +97,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
 
         for(i=1; i<modc; i++)
         {
-                cur_path = cosmos_mknod_path( cm, virt_cosm, mod_path[i] );
+                cur_path = cosmos_mknod_path( cm, boot_cosm, mod_path[i], S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
                 mod = load_mod( cm, cur_path, mod_path[i] );
                 if( mod == 0 )
                 {
@@ -108,43 +108,6 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         }
 
 
-
-//-----> WIP
-
-        /* setup root cosm src */
-
-        pi = prod_instr_new();
-        pi->fnid = (prodfn_guid_t)base_svc_id;
-
-        // argc 0 means argv is valu
-        pi->argc = 0;
-        pi->argv = (void **)cosm_src_id;
-
-
-        dc = dcel_new(NULL);
-        dc->prod_instr = pi;
-
-        af = aframe_new();
-        af->cosmos = cm;
-        af->dcel = dc;
-
-        af_id = cosmos_aframe_put( cm, virt_cosm_path_id, af );
-
-
-
-        /* parse root cosm */
-
-        root_cosm_id = cosmos_xformr(cm, xf_id, 1, (void **)af_id);
-
-
-
-
-
-        /* link root cosm */
-
-        root_cosm_link_id = cosmos_path_put( cm, "/.cosm" );
-
-        cosmos_ln( cm, root_cosm_link_id, root_cosm_id );
 
 
         return cm;

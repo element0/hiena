@@ -221,8 +221,7 @@ static struct cosmos *snafu_init()
 
         };
 
-        //cm = cosmos_init(modc, mod_path);
-        cm = cosmos_db_new();
+        cm = cosmos_init(modc, mod_path);
         return cm;
 }
 

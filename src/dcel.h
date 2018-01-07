@@ -6,6 +6,7 @@
 #include "frag.h"
 #include "btree_cpp.h"
 #include "prod_instr.h"
+#include "ptr_stack.h"
 
 
 #define dcel_retain( dc ) dc->retain++
@@ -44,6 +45,8 @@ struct hiena_dcel {
         void    *dir_index_state;
         int retain;
         int dirty;
+
+        ptr_stack_t undo;
 };
 
 struct hiena_dcel *dcel_new( struct hiena_dcel * );

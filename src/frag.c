@@ -312,7 +312,7 @@ int frag_put_anchor( struct hiena_frag *f, size_t pos, struct map_anchor *ma )
         if( b == NULL )
         {
                 HIERR("frag_get_anchor: err: f->anchors NULL");
-                return NULL;
+                return -1;
         }
 
         er = btree_put( b, (void *)pos, (void *)ma );

@@ -37,16 +37,16 @@ cosmos-db:      btree_cpp hash
 cosmos-fs:      cosmos-db access-frame
 	gcc $(dbugopts)  -c cosmos/cosmos_fs.c -o $(out-o)/cosmos_fs.o
 
-cosmos-load-mod:
+cosmos-load-mod:        dcel access-frame
 	gcc $(dbugopts)  -c cosmos/load_module.c -o $(out-o)/cosmos_load_module.o
 
 cosmos-init:    cosmos-db cosmos-load-mod
-	gcc $(dbugopts)  -c cosmos/cosmos_init.c} -o $(out-o)/cosmos_init.o
+	gcc $(dbugopts)  -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
 
 cosmos-util:    cosmos-db cosmos-init
 	gcc $(dbugopts)  $(out-o)/cosmos_init.o cosmos/cosmos_util.c -o $(out-bin)/cosmos
 
-dcel:
+dcel:   ptr-stack frag
 	gcc $(dbugopts) -c dcel.c -o $(out-o)/dcel.o
 
 dcel-svc:
@@ -67,7 +67,7 @@ file-svc:
 	gcc $(dbugopts) -c file_svc.c -o $(out-o)/file_svc.o
 
 
-frag:
+frag:   mfrag
 	gcc $(dbugopts) -c frag.c -o $(out-o)/frag.o
 
 frag-fh:
@@ -156,8 +156,8 @@ slib:
 	gcc $(dbugopts) -c slib.c -o $(out-o)/slib.o
 
 
-snafufs:  cosmos-fs
-	gcc $(dbugopts) $(out-o)/cosmos_{db,fs}.o $(out-o)/{access_frame.o,btree_cpp.o,hash.o} snafufs.c `pkg-config fuse --cflags --libs` -o $(out-bin)/snafufs -lstdc++
+snafufs:  cosmos-fs cosmos-init
+	gcc $(dbugopts) $(out-o)/cosmos_{db,fs,init,load_module}.o $(out-o)/{access_frame.o,btree_cpp.o,dcel.o,frag.o,hash.o,mfrag.o,ptr_stack.o} snafufs.c `pkg-config fuse --cflags --libs` -o $(out-bin)/snafufs -lstdc++ -ldl
 
 
 hiena-obs: btrees btree_cpp dcel dsource context-frame hash map-anchor mapcel mapcel-dir mapcel-svc mapcel-fh mfrag mfrag-fh mfrag-svc ptr-stack frag frag-fh frag-curs frag-svc dcel-svc dcel-mapsvc

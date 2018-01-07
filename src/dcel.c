@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <string.h>
 #include "dcel.h"
 #include "hierr.h"
 #include "frag.h"
@@ -43,7 +45,7 @@ int dcel_set_val( struct hiena_dcel *dc, void *buf, size_t len )
         if( dc == NULL )
         {
                 HIERR("dcel_set_val: err: input dc NULL");
-                return NULL;
+                return 0;
         }
 
         int res;

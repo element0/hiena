@@ -1,5 +1,12 @@
+#include <stdlib.h>
 #include <libgen.h>
+#include <string.h>
+#include <dlfcn.h>
 #include "cosmos_db.h"
+#include "../dcel.h"
+#include "../access_frame.h"
+#include "../hierr.h"
+
 
 char *shortname( char *fpath )
 {
@@ -13,7 +20,7 @@ char *shortname( char *fpath )
 
         chopoff[0] = '\0';
 
-        char *svc_name = strndup( svc_name_tmp );
+        char *svc_name = strndup(svc_name_tmp, strlen(svc_name_tmp));
 
         free(fpathdup);
 
@@ -58,6 +65,7 @@ cosmos_id_t load_mod( struct cosmos *cm, cosmos_id_t par, char *fpath )
         char *chopoff;
         btree_t *aframes;
         struct access_frame *af;
+        struct hiena_dcel *dc;
         cosmos_id_t id;
 
 
@@ -69,7 +77,7 @@ cosmos_id_t load_mod( struct cosmos *cm, cosmos_id_t par, char *fpath )
 
         if(strstr(fpath,"/") == NULL)
         {
-                HIERR("mod_load: err: fpath must include a '/'";
+                HIERR("mod_load: err: fpath must include a '/'");
                 return NULL;
         }
 
@@ -136,7 +144,5 @@ cosmos_id_t load_mod( struct cosmos *cm, cosmos_id_t par, char *fpath )
 
         id = cosmos_path_put(cm, fpath);
 
-        cosmos_aframe_put(cm, id, af);
-
-        return id;
+        return af;
 }
