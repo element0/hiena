@@ -36,8 +36,20 @@
 
 #include "cosmos.h"
 #include "hierr.h"
+#include "access_frame.h"
 
 
+/** TODO: snafu_vol
+  @param root_ino snafufs translates ino "0" to this root_ino in the cosmos_db
+
+ */
+struct snafu_vol {
+        cosmos_id_t root_ino;
+        struct cosmos *cosmos_db;
+};
+
+
+struct snafu_vol snafu_vol;
 
 
 static void snafu_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi)
@@ -48,6 +60,7 @@ static void snafu_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info 
 	memset(&stbuf, 0, sizeof(stbuf));
 
         cm = (struct cosmos *)fuse_req_userdata(req);
+
 
 
 	if (cosmos_stat(cm, (cosmos_id_t)ino, &stbuf) == -1)
@@ -197,18 +210,11 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
 }
 
 
-/** TODO: snafu_vol
-  @param root_ino snafufs translates ino "0" to this root_ino in the cosmos_db
 
- */
-static struct snafu_vol {
-        cosmos_id_t root_ino;
-        struct cosmos *cosmos_db;
-};
-
-static struct cosmos *snafu_init()
+static struct cosmos *snafu_init(struct snafu_vol *snafu_vol, char *mountpoint)
 {
         struct cosmos *cm;
+        struct access_frame *root, *mount;
         int modc = 6;
 
         char *mod_path[] = {
@@ -222,6 +228,13 @@ static struct cosmos *snafu_init()
         };
 
         cm = cosmos_init(modc, mod_path);
+
+        root = cm->aframe;
+        mount = cosmos_mknod(cm, root, mountpoint, S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
+
+        snafu_vol->root_ino = mount;
+        snafu_vol->cosmos_db = cm;
+
         return cm;
 }
 
@@ -244,12 +257,15 @@ int main(int argc, char *argv[])
         struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
         struct fuse_chan *ch;
         char *mountpoint;
-	int err = -1;
-        
         struct cosmos *cm;
-        cm = snafu_init();
+	int err = -1;
+        int cmdline_err;
 
-	if (fuse_parse_cmdline(&args, &mountpoint, NULL, NULL) != -1 &&
+        cmdline_err = fuse_parse_cmdline(&args, &mountpoint, NULL, NULL);
+        
+        cm = snafu_init(&snafu_vol, mountpoint);
+
+	if ( cmdline_err != -1 &&
 	    (ch = fuse_mount(mountpoint, &args)) != NULL) {
 		struct fuse_session *se;
 
