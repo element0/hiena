@@ -52,7 +52,8 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         char *cosm_src_path;
         struct cosmos *cm;
         struct access_frame *db_root_af;
-        struct access_frame *virt_cosm;
+        struct access_frame *boot_cosm;
+        struct access_frame *uhost_cosm;
         struct access_frame *cur_path;
         struct access_frame *mod;
         struct prod_instr *pi;
@@ -60,22 +61,31 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         struct access_frame *af;
 
 
+        /* default access paths */
+
+        char *ap[]={
+                ".cosm",
+                "demo@localhost",
+        };
+
+
 
         /* allocate db object */
 
         cm = cosmos_db_new();
-        cm->init = aframe_new(); 
+        cm->aframe = aframe_new(); 
         cm->dcel = dcel_new(NULL);
 
 
         /* setup "boot" cosm */
 
+        boot_cosm = cosmos_mknod(cm, cm->aframe, ".cosm", S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
 
-        /**
-          adds ".cosm" to the string db.  uses the hash value to key a branch
-          from cm->aframe.  returns a new aframe.
-         */
-        virt_cosm = cosmos_mknod(cm, cm->init, ".cosm", S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
+
+
+        /* setup user-host-context */
+
+        uhost_cosm = cosmos_mknod(cm, cm->aframe, "demo@localhost", S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
 
 
 
