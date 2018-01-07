@@ -71,7 +71,7 @@ static void snafu_lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
 		fuse_reply_err(req, ENOENT);
 	else {
 		memset(&e, 0, sizeof(e));
-		e.ino = ino;
+		e.ino = (fuse_ino_t)ino;
 		e.attr_timeout = 1.0;
 		e.entry_timeout = 1.0;
 		cosmos_stat(cm, (cosmos_id_t)(e.ino), &e.attr);
@@ -204,7 +204,7 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
 static struct snafu_vol {
         cosmos_id_t root_ino;
         struct cosmos *cosmos_db;
-}
+};
 
 static struct cosmos *snafu_init()
 {
@@ -221,7 +221,8 @@ static struct cosmos *snafu_init()
 
         };
 
-        cm = cosmos_init(modc, mod_path);
+        //cm = cosmos_init(modc, mod_path);
+        cm = cosmos_db_new();
         return cm;
 }
 

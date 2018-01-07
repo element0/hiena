@@ -156,8 +156,8 @@ slib:
 	gcc $(dbugopts) -c slib.c -o $(out-o)/slib.o
 
 
-snafufs:
-	gcc $(dbugopts) snafufs.c `pkg-config fuse --cflags --libs` -o $(out-bin)/snafufs
+snafufs:  cosmos-fs
+	gcc $(dbugopts) $(out-o)/cosmos_{db,fs}.o $(out-o)/{access_frame.o,btree_cpp.o,hash.o} snafufs.c `pkg-config fuse --cflags --libs` -o $(out-bin)/snafufs -lstdc++
 
 
 hiena-obs: btrees btree_cpp dcel dsource context-frame hash map-anchor mapcel mapcel-dir mapcel-svc mapcel-fh mfrag mfrag-fh mfrag-svc ptr-stack frag frag-fh frag-curs frag-svc dcel-svc dcel-mapsvc
