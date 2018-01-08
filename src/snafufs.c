@@ -62,9 +62,9 @@ static void snafu_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info 
         memset(&stbuf, 0, sizeof(stbuf));
 
 
-        if( ino == 0 )
+        if( ino == 1 )
         {
-                ino = (fuse_ino_t)(snafufs_vol.root_ino);
+                ino = (fuse_ino_t)(snafu_vol.root_ino);
         }
 
         if (cosmos_stat(cm, (cosmos_id_t)ino, &stbuf) == -1)
@@ -135,26 +135,50 @@ static int reply_buf_limited(fuse_req_t req, const char *buf, size_t bufsize, of
 
 static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, struct fuse_file_info *fi)
 {
-        uint64_t DIR;
+        uint64_t dir;
         struct dirent *e;
+        struct access_frame *dir_af;
+        struct dirbuf b;
+        
+        memset(&b, 0, sizeof(b));
 
-        DIR = fi->fh;
-        if( DIR == 0 )
+        /*
+        dir = fi->fh;
+        if( dir == 0 )
         {
-                HIERR("snafu_readdir: err: DIR 0");
+                HIERR("snafu_readdir: err: dir 0");
                 fuse_reply_err(req,ENOTDIR);
 
                 return;
         }
-
-        struct dirbuf b;
-        memset(&b, 0, sizeof(b));
-
-        while((e = cosmos_readdir( (cosmos_dirh_t)DIR )) != NULL)
+        */
+        /*
+        while((e = cosmos_readdir( (cosmos_dirh_t)dir )) != NULL)
         {
                 dirbuf_add(req, &b, e->d_name, e->d_ino);
                 free(e);
         }
+        */
+
+        if( ino == 1 )
+        {
+                dir_af = (struct access_frame *)(snafu_vol.root_ino);
+        } else {
+                dir_af = (struct access_frame *)ino;
+        }
+
+        printf("dir_af %lu\n", dir_af);
+
+        if( dir_af == NULL )
+        {
+                HIERR("snafu_readdir: err: dir_af NULL\n");
+                fuse_reply_err(req,ENOTDIR);
+                return;
+        }
+
+
+        dirbuf_add(req, &b, ".", (ino_t)dir_af);
+        dirbuf_add(req, &b, "..", (ino_t)(dir_af->parent));
 
         reply_buf_limited(req, b.p, b.size, off, size);
 
