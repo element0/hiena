@@ -11,6 +11,7 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
 
         sb->st_mode = S_IFDIR | S_IRWXU | S_IRWXG | S_IRWXO;
         sb->st_ino = (ino_t)id;
+        sb->st_nlink = 1;
 
         return 0;
 }
