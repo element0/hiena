@@ -55,18 +55,23 @@ struct snafu_vol snafu_vol;
 static void snafu_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi)
 {
         struct cosmos *cm;
-	struct stat stbuf;
-
-	memset(&stbuf, 0, sizeof(stbuf));
+        struct stat stbuf;
 
         cm = (struct cosmos *)fuse_req_userdata(req);
 
+        memset(&stbuf, 0, sizeof(stbuf));
 
 
-	if (cosmos_stat(cm, (cosmos_id_t)ino, &stbuf) == -1)
-		fuse_reply_err(req, ENOENT);
-	else
-		fuse_reply_attr(req, &stbuf, 1.0);
+        if( ino == 0 )
+        {
+                ino = (fuse_ino_t)(snafufs_vol.root_ino);
+        }
+
+        if (cosmos_stat(cm, (cosmos_id_t)ino, &stbuf) == -1)
+                fuse_reply_err(req, ENOENT);
+        else
+                fuse_reply_attr(req, &stbuf, 1.0);
+
 }
 
 

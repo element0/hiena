@@ -8,6 +8,10 @@
 int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
 {
         printf("cosmos_stat\n");
+
+        sb->st_mode = S_IFDIR | S_IRWXU | S_IRWXG | S_IRWXO;
+        sb->st_ino = (ino_t)id;
+
         return 0;
 }
 
