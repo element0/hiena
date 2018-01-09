@@ -79,7 +79,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
 
         /* setup "boot" cosm */
 
-        boot_cosm = cosmos_mknod(cm, cm->aframe, ".cosm", S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
+        boot_cosm = cosmos_mkdir(cm, cm->aframe, ".cosm", S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
 
 

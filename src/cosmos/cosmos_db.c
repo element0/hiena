@@ -28,6 +28,11 @@ int cosmos_db_cleanup(struct cosmos *cm)
 }
 
 
+cosmos_id_t cosmos_hash( char *s )
+{
+        return (cosmos_id_t)hash_sdbm(s);
+}
+
 
 
 cosmos_id_t cosmos_string_put(struct cosmos *cm, char *s)

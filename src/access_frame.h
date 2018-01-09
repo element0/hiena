@@ -1,6 +1,7 @@
 #ifndef HIENA_ACCESS_FRAME_H
 #define HIENA_ACCESS_FRAME_H
 
+#include <sys/stat.h>
 #include "cosmos.h"
 /*#include "dcel.h"*/
 
@@ -20,6 +21,10 @@ struct access_frame {
         struct access_frame *(*execfn)(struct access_frame *, int argc, char **);
         struct access_frame *garbage_next;
         struct access_frame *garbage_prev;
+
+        dev_t st_dev;
+        mode_t st_mode;
+        nlink_t st_nlink;
 };
 
 struct access_frame *aframe_new();

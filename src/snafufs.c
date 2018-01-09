@@ -207,6 +207,37 @@ static void snafu_open(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi
                 fuse_reply_open(req, fi);
 }
 
+
+static void snafu_mknod(fuse_req_t req, fuse_ino_t par, const char *name, mode_t mode, dev_t rdev)
+{
+        struct fuse_entry_param e;
+        struct cosmos *cm;
+        cosmos_id_t ino;
+        
+        cm = (struct cosmos *)fuse_req_userdata(req);
+
+        ino = cosmos_mknod(cm, par, name, mode, dev);
+
+
+   if (ino == 0)
+		fuse_reply_err(req, ENOENT);
+	else {
+		memset(&e, 0, sizeof(e));
+		e.ino = (fuse_ino_t)ino;
+		e.attr_timeout = 1.0;
+		e.entry_timeout = 1.0;
+		cosmos_stat(cm, (cosmos_id_t)(e.ino), &e.attr);
+
+		fuse_reply_entry(req, &e);
+	}
+}
+
+ 
+static void snafu_mkdir(fuse_req_t req, fuse_ino_t par, const char *name, mode_t mode)
+{
+        snafu_mknod(req, par, name, mode, 0);
+
+}
    
 
 
@@ -237,6 +268,9 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
         fuse_reply_buf(req, buf, size_read);
 
 }
+
+
+
 
 
 
@@ -276,6 +310,8 @@ static struct fuse_lowlevel_ops snafu_oper = {
 	.readdir  = snafu_readdir,
 	.open     = snafu_open,
 	.read     = snafu_read,
+         .mkdir  = snafu_mkdir,
+         .mknod  = snafu_mknod,
 };
 
 
