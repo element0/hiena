@@ -47,12 +47,12 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         cosmos_id_t xf_id;
         cosmos_id_t root_cosm_id;
         cosmos_id_t root_cosm_link_id;
+        cosmos_id_t boot_cosm;
 
         int i;
         char *cosm_src_path;
         struct cosmos *cm;
         struct access_frame *db_root_af;
-        struct access_frame *boot_cosm;
         struct access_frame *uhost_cosm;
         struct access_frame *cur_path;
         struct access_frame *mod;
@@ -79,7 +79,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
 
         /* setup "boot" cosm */
 
-        boot_cosm = cosmos_mkdir(cm, cm->aframe, ".cosm", S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+        boot_cosm = cosmos_mkdir(cm, (cosmos_id_t)cm->aframe, ".cosm", S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
 
 

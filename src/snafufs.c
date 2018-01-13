@@ -85,7 +85,7 @@ static void snafu_lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
 
         ino = cosmos_lookup(cm, (cosmos_id_t)parent, (char *)name);
 
-   if (ino == 0)
+        if (ino == 0)
 		fuse_reply_err(req, ENOENT);
 	else {
 		memset(&e, 0, sizeof(e));
@@ -163,11 +163,12 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
         if( ino == 1 )
         {
                 dir_af = (struct access_frame *)(snafu_vol.root_ino);
+                printf("snafu_readdir: dir_af %lu root\n", dir_af);
         } else {
                 dir_af = (struct access_frame *)ino;
+                printf("snafu_readdir: dir_af %lu\n", dir_af);
         }
 
-        printf("dir_af %lu\n", dir_af);
 
         if( dir_af == NULL )
         {
@@ -216,7 +217,7 @@ static void snafu_mknod(fuse_req_t req, fuse_ino_t par, const char *name, mode_t
         
         cm = (struct cosmos *)fuse_req_userdata(req);
 
-        ino = cosmos_mknod(cm, par, name, mode, dev);
+        ino = cosmos_mknod(cm, (cosmos_id_t)par, (char *)name, mode, 0);
 
 
    if (ino == 0)
@@ -236,7 +237,6 @@ static void snafu_mknod(fuse_req_t req, fuse_ino_t par, const char *name, mode_t
 static void snafu_mkdir(fuse_req_t req, fuse_ino_t par, const char *name, mode_t mode)
 {
         snafu_mknod(req, par, name, mode, 0);
-
 }
    
 
@@ -278,8 +278,8 @@ static struct cosmos *snafu_init(struct snafu_vol *snafu_vol, char *mountpoint)
 {
         struct cosmos *cm;
         struct access_frame *root, *mount;
-        int modc = 6;
 
+        int modc = 6;
         char *mod_path[] = {
   "/usr/lib/cosmos",
   "/usr/lib/cosmos/svc/file.so",
@@ -293,7 +293,9 @@ static struct cosmos *snafu_init(struct snafu_vol *snafu_vol, char *mountpoint)
         cm = cosmos_init(modc, mod_path);
 
         root = cm->aframe;
-        mount = cosmos_mknod(cm, root, mountpoint, S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
+        mount = (struct access_frame *)cosmos_mkdir(cm, root, mountpoint, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+
+        cosmos_mkdir(cm, mount, "test", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
         snafu_vol->root_ino = mount;
         snafu_vol->cosmos_db = cm;

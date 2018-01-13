@@ -28,4 +28,6 @@ cosmos_id_t cosmos_mknod(struct cosmos *, cosmos_id_t, char *, mode_t, dev_t);
 
 cosmos_id_t cosmos_mknod_path(struct cosmos *, cosmos_id_t, char *, mode_t, dev_t);
 
+cosmos_id_t cosmos_mkdir(struct cosmos *, cosmos_id_t, char *, mode_t);
+
 #endif /* !COSMOS_FILE_SYSTEM_H */

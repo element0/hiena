@@ -31,7 +31,7 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *s)
 
         btree_t *br;
         cosmos_id_t strhash;
-        struct access_path *found;
+        cosmos_id_t found;
 
 
         br = par->branch;
@@ -119,8 +119,8 @@ cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *path, mo
 
 
 
-cosmos_id_t cosmos_mkdir(struct cosmos *cm, cosmos_id_t par, const char *name, mode_t mode)
+cosmos_id_t cosmos_mkdir(struct cosmos *cm, cosmos_id_t par, char *name, mode_t mode)
 {
         printf("cosmos_mkdir\n");
-        return cosmos_mknod(cm, par, name, mode, 0);
+        return cosmos_mknod(cm, par, name, mode | S_IFDIR, 0);
 }
