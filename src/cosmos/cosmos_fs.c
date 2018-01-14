@@ -91,6 +91,7 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
         struct access_frame *targ;
 
         br = par->branch;
+
         key = cosmos_string_put(cm, name);
         targ = btree_get(br, (bkey_t)key);
 
