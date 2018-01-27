@@ -18,9 +18,9 @@ static void example_init_seq()
         int modc = 6;
         char *mod_path[] = {
             "/usr/lib/cosmos",
+            "lookup/fudge.so",
             "svc/file.so",
             "xformr/dcelcosm.so",
-            "lookup/fudge.so",
             "svc/dylib.so",
             "svc/ptr.so",
         };
@@ -59,6 +59,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         struct prod_instr *pi;
         struct hiena_dcel *dc;
         struct access_frame *af;
+        void *dl, *fn;
 
 
         /* default access paths */
@@ -73,13 +74,23 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         /* allocate db object */
 
         cm = cosmos_db_new();
+
+        if(cm == NULL)
+        {
+                HIERR("cosmos_init: err: fail to allocation cosmos db");
+                return NULL;
+        }
+
         cm->aframe = aframe_new(); 
+
+        if(cm->aframe == NULL)
+        {
+                HIERR("cosmos_init: err: cm->aframe NULL");
+                cosmos_db_cleanup(cm);
+                return NULL;
+        }
+        
         cm->dcel = dcel_new(NULL);
-
-
-        /* setup "boot" cosm */
-
-        boot_cosm = cosmos_mkdir(cm, (cosmos_id_t)(cm->aframe), ap[0], S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
 
 
@@ -88,13 +99,54 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         uhost_nod = cosmos_mkdir(cm, (cosmos_id_t)(cm->aframe), ap[1], S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
 
-        /* load modules */
+
+        /* setup "boot" cosm */
+
+        boot_cosm = cosmos_mkdir(cm, (cosmos_id_t)(cm->aframe), ap[0], S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
         cosm_src_path = mod_path[0];
 
         chdir(cosm_src_path);
 
-        for(i=1; i<modc; i++)
+
+
+        /* load lookup module */
+
+        cur = cosmos_mknod_path( cm, boot_cosm, mod_path[i], S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
+
+        mod = load_mod( cm, cur, mod_path[1] );
+
+        dc = cur->dcel;
+
+        dl = dcel_get_val( dc );
+        
+        if( dl == NULL )
+        {
+                HIERR("cosmos_init: err: dl, dcel_get_val NULL");
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+
+
+
+        /* link lookup function */
+        
+        fn = dlsym( dl, "lookup_fn" );
+
+        if( fn == NULL )
+        {
+                HIERR("cosmos_init: err: fn NULL");
+        }
+
+        cm->aframe->lookfn = fn;
+
+
+
+        /* load modules */
+
+        for(i=2; i<modc; i++)
         {
                 cur = cosmos_mknod_path( cm, boot_cosm, mod_path[i], S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
 

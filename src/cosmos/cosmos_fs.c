@@ -19,31 +19,37 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
         return 0;
 }
 
-cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *s)
+cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t frame, char *s)
 {
+        (struct access_frame *)frame;
+
+
         printf("cosmos_lookup %s\n", s);
 
-        if(par == NULL)
+        if(frame == NULL)
         {
-                HIERR("cosmos_lookup: err: par NULL");
+                HIERR("cosmos_lookup: err: frame NULL");
                 return 0;
         }
 
-        btree_t *br;
-        cosmos_id_t strhash;
-        cosmos_id_t found;
-
-
-        br = par->branch;
-        if( br == NULL )
+        if( frame->parent == NULL )
         {
-                HIERR("cosmos_lookup: err: br NULL");
+                HIERR("cosmos_lookup: err: frame->parent NULL");
                 return 0;
         }
 
-        strhash = cosmos_hash(s);
 
-        found = (cosmos_id_t)btree_get(br, (bkey_t)strhash);
+        struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
+        struct access_frame *(*ilookfn)(struct cosmos *, struct access_frame *, char *);
+
+        struct access_frame *found;
+        
+
+        lookfn = frame->parent->lookfn;
+
+        ilookfn = lookfn( cm, frame, ".cosm/lookup/lookupfn" );
+
+        found = ilookfn( cm, frame, s );
         
         return found;
 }
