@@ -107,6 +107,7 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
         targ->st_dev = dev;
         targ->st_mode = mode;
         targ->st_nlink = 1;
+        targ->parent = par;
 
         return targ;
 }

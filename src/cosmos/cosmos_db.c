@@ -135,6 +135,23 @@ char *cosmos_path_get( struct cosmos *cm, cosmos_id_t id)
 }
 
 
+struct hiena_dcel *cosmos_dcel_new( struct cosmos *cm )
+{
+        if( cm == NULL )
+        {
+                HIERR("cosmos_dcel_new: err: cm NULL");
+                return NULL;
+        }
+
+        struct hiena_dcel *dc;
+        
+        dc = dcel_new(cm->dcel_garbage);
+        cm->dcel_garbage = dc;
+
+        return dc;
+}
+
+
 
 cosmos_id_t cosmos_dcel_put( struct cosmos *cm, struct hiena_dcel *dc )
 {

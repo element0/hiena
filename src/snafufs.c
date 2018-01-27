@@ -39,7 +39,7 @@
 #include "access_frame.h"
 
 
-/** TODO: snafu_vol
+/** snafu_vol
   @param root_ino snafufs translates ino "0" to this root_ino in the cosmos_db
 
  */
@@ -281,13 +281,12 @@ static struct cosmos *snafu_init(struct snafu_vol *snafu_vol, char *mountpoint)
 
         int modc = 6;
         char *mod_path[] = {
-  "/usr/lib/cosmos",
-  "/usr/lib/cosmos/svc/file.so",
-  "/usr/lib/cosmos/svc/dylib.so",
-  "/usr/lib/cosmos/svc/ptr.so",
-  "/usr/lib/cosmos/xformr/dcelcosm.so",
-  "/usr/lib/cosmos/lookup/fudge.so",
-
+            "/usr/lib/cosmos",
+            "svc/file.so",
+            "svc/dylib.so",
+            "svc/ptr.so",
+            "xformr/dcelcosm.so",
+            "lookup/fudge.so",
         };
 
         cm = cosmos_init(modc, mod_path);
@@ -299,6 +298,26 @@ static struct cosmos *snafu_init(struct snafu_vol *snafu_vol, char *mountpoint)
 
         snafu_vol->root_ino = mount;
         snafu_vol->cosmos_db = cm;
+
+
+        /* mount domain cell */
+
+        dc = cosmos_dcel_new(cm);
+
+        pi = prod_instr_new();
+
+        char *mntpt = strndup(mountpoint, strlen(mountpoint));
+
+        char *argv[] = {
+                mntpt,
+        };
+
+        sourcer = cosmos_lookup("/.cosm/svc/file/sourcer");
+
+        pi->fn = sourcer;
+        pi->aframe = NULL;
+        pi->argc = 1;
+        pi->argv = argv;
 
         return cm;
 }

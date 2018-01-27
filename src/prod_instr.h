@@ -12,8 +12,9 @@ typedef uintptr_t prodfn_guid_t;
 
 
 struct prod_instr {
-    struct access_frame *fn_aframe;
-    PRODFN_T(fn);
+    struct access_frame *fn;
+    PRODFN_T(fnptr);
+
     struct access_frame *aframe;
     int argc;
     void **argv;

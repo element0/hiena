@@ -1,0 +1,22 @@
+
+
+#include "btree_cpp.h"
+#include "hash.h"
+
+
+/** @file hiopto.c
+    optomization support.
+    macro and global hit counter for functions.
+
+    to get the hit count you have to
+ */
+
+
+btree_t hiopto_ct;
+void *hiopto_key;
+
+#define HIOPTOCT(fnname) hiopto_key = hash_sdbm(fnname); \
+btree_put(hiopto_ct, hiopto_key, btree_get(hiopto_ct, hiopto_key)++);
+
+#define GETHIOPTOCT(fnname) hiopto_key = hash_sdbm(fnname); \
+btree_get(hiopto_ct, hiopto_key);

@@ -18,7 +18,10 @@ struct access_frame {
         struct access_frame *parent;
         btree_t *branch;
         btree_t *lookup_cache;
+
+        struct access_frame *(lookfn)(struct cosmos *, struct access_frame *, char *);
         struct access_frame *(*execfn)(struct access_frame *, int argc, char **);
+
         struct access_frame *garbage_next;
         struct access_frame *garbage_prev;
 

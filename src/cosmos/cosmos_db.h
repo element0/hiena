@@ -39,6 +39,8 @@ char *cosmos_path_get( struct cosmos *, cosmos_id_t );
 
 cosmos_id_t cosmos_hash( char * );
 
+struct hiena_dcel *cosmos_dcel_new( struct cosmos * );
+
 
 /* maybe not */
 cosmos_id_t cosmos_dcel_put( struct cosmos *, struct hiena_dcel * );

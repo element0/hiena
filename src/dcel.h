@@ -47,6 +47,7 @@ struct hiena_dcel {
         int dirty;
 
         ptr_stack_t undo;
+      
 };
 
 struct hiena_dcel *dcel_new( struct hiena_dcel * );
