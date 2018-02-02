@@ -72,9 +72,10 @@ size_t cosmos_read(void *buf, size_t size, size_t num, cosmos_fh_t fh)
         return 0;
 }
 
-cosmos_id_t cosmos_ln(struct cosmos *cm, cosmos_id_t id, cosmos_id_t id2)
+cosmos_id_t cosmos_ln(struct cosmos *cm, cosmos_id_t id, cosmos_id_t par, char *name)
 {
         printf("cosmos_ln\n");
+
         return 0;
 }
 

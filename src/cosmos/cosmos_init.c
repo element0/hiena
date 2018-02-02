@@ -54,6 +54,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         struct cosmos *cm;
         struct access_frame *db_root_af;
 
+        struct access_frame *tmp;
         struct access_frame *cur;
         struct access_frame *mod;
         struct prod_instr *pi;
@@ -62,16 +63,12 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         void *dl, *fn;
 
 
-        /* default access paths */
-
-        char *ap[]={
-                ".cosm",
-                "demo@localhost",
-        };
 
 
 
-        /* allocate db object */
+
+
+        /* init db object */
 
         cm = cosmos_db_new();
 
@@ -94,29 +91,51 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
 
 
 
-        /* setup user-host-context */
+
+        /* default access paths */
+
+        char *ap[]={
+                ".cosm",
+                "demo@localhost",
+        };
+
+        boot_cosm = cosmos_mkdir(cm, (cosmos_id_t)(cm->aframe), ap[0], S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
         uhost_nod = cosmos_mkdir(cm, (cosmos_id_t)(cm->aframe), ap[1], S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
 
 
-        /* setup "boot" cosm */
 
-        boot_cosm = cosmos_mkdir(cm, (cosmos_id_t)(cm->aframe), ap[0], S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
-        cosm_src_path = mod_path[0];
+        /* initial modules */
 
+        /* .cosm/lookup/fudge.so.dlopen.dlsym/lookup_fn */
+
+        i = 0;
+        cosm_src_path = mod_path[i+++];
         chdir(cosm_src_path);
 
+        tmp = cosmos_mknod( cm, boot_cosm, mod_path[i],
+S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0 );
+
+        mod = load_mod( cm, boot_cosm, mod_path[i++] );
+
+        cosmos_ln( cm, mod, tmp, "dlopen" );
+
+        /* need to set mode above */
+
+        tmp = cosmos_mkdir( cm, mod, "dlsym",
+S_IFDIR | S_IRWXU | S_IRGRP | 0S_IXGRP | S_IROTH | S_IXOTH );
+
+        tmp = cosmos_mknod( cm, tmp, "lookup_fn",
+S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0 );
 
 
-        /* load lookup module */
 
-        cur = cosmos_mknod_path( cm, boot_cosm, mod_path[i], S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
 
-        mod = load_mod( cm, cur, mod_path[1] );
+        /* link lookup function */
 
-        dc = cur->dcel;
+        dc = mod->dcel;
 
         dl = dcel_get_val( dc );
         
@@ -128,10 +147,6 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
                 return NULL;
         }
 
-
-
-
-        /* link lookup function */
         
         fn = dlsym( dl, "lookup_fn" );
 
@@ -141,6 +156,78 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         }
 
         cm->aframe->lookfn = fn;
+
+        /* todo:  link fn to tmp */
+
+
+
+        /* load base svc mod */
+
+        /* .cosm/svc/file.so.dlopen.dlsym/sourcer_fn */
+
+        tmp = cosmos_mknod_path( cm, boot_cosm, mod_path[i], S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
+
+
+        cm->base_svc = tmp;
+
+        mod = load_mod( cm, cur, mod_path[i++] );
+
+        cosmos_ln( cm, mod, tmp, "dlopen" );
+
+        /* need to set mode above */
+
+        tmp = cosmos_mkdir( cm, mod, "dlsym",
+S_IFDIR | S_IRWXU | S_IRGRP | 0S_IXGRP | S_IROTH | S_IXOTH );
+
+        tmp = cosmos_mknod( cm, tmp, "lookup_fn",
+S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0 );
+
+
+
+        dc = mod->dcel;
+        dl = dcel_get_val( dc );
+       
+        if( dl == NULL )
+        {
+                HIERR("cosmos_init: err: loading base svc: dl, dcel_get_val NULL");
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+        
+        fn = dlsym( dl, "sourcer_fn" );
+
+        if( fn == NULL )
+        {
+                HIERR("cosmos_init: err: sourcer_fn NULL");
+        }
+
+        /* todo:  link fn to aframe */
+
+
+        
+
+
+        /* init host cosm */
+
+        // create .cosm with dcel with file svc
+
+        pi = prod_instr_new();
+        pi->fnptr = fn;
+
+        
+
+        ...
+
+        /* init user-host cosm */
+
+        create userhost aframe
+        create .cosm stub
+        cascade with parent cosm
+        ...
+
+
 
 
 

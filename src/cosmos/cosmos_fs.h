@@ -22,7 +22,7 @@ cosmos_fh_t cosmos_open(struct cosmos *, cosmos_id_t );
 
 size_t cosmos_read(void *, size_t, size_t, cosmos_fh_t);
 
-cosmos_id_t cosmos_ln(struct cosmos *, cosmos_id_t, cosmos_id_t);
+cosmos_id_t cosmos_ln(struct cosmos *, cosmos_id_t, cosmos_id_t, char *newname);
 
 cosmos_id_t cosmos_mknod(struct cosmos *, cosmos_id_t, char *, mode_t, dev_t);
 

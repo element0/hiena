@@ -19,6 +19,7 @@ struct cosmos {
         void *cosmsvc;
         void *lookup;
         struct access_frame *init;
+        struct access_frame *base_svc;
 
         /* runtime */
         btree_t *strings;

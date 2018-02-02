@@ -11,9 +11,8 @@ daemon runs init procedure.
 
 init procedure creates cosmos db and loads essential modules:
 
-  file source
+  file sourcer
   lookup
-  dcel-cosmos xformr
 
 now the daemon is able to take requests
 
@@ -28,6 +27,8 @@ check
 fork daemon
 
 
+
+
 load modules
 ------------
 
@@ -37,12 +38,13 @@ for each path
 load_mod
         dlopen path
         attach dl to dcel
-        assign dl_service to dcel
-        store dcel in cosmosdb
-        attach dl to 
+        stick dcel in aframe
+        create aframe path
+        link aframe to 
 
-builtin
-        dl_service
+        store dcel in cosmosdb
+        attach d
+
 
 
 
@@ -70,6 +72,8 @@ makes...
     aframe
       .cosm
         dcel
+
+
 
 
 create user-host-context root
