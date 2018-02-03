@@ -32,6 +32,16 @@ static void example_init_seq()
 
 
 
+struct cosmos *cosmos_get_db() {
+        return NULL;
+}
+
+struct cosmos *cosmos_create_db() {
+
+        return NULL;
+}
+
+
 struct cosmos *cosmos_init(int modc, char *mod_path[])
 {
         if( modc < 3
@@ -53,7 +63,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
         char *cosm_src_path;
         struct cosmos *cm;
         struct access_frame *db_root_af;
-
+ 
         struct access_frame *tmp;
         struct access_frame *cur;
         struct access_frame *mod;
