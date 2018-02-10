@@ -9,6 +9,7 @@
 #include "cosmos_fs.h"
 #include "cosmos_xformr.h"
 #include "load_module.h"
+#include <errno.h>
 
 
 /* EXAMPLE:
@@ -35,10 +36,24 @@ static int cosmos_init_modules(struct cosmos *cm, int modc, char *mod_path[]) {
            the args */
 
 
+        char *buf[PATH_MAX];
+        char *dsav;
+
+
+        dsav = getcwd(&buf, PATH_MAX);
+
+        if( dsav == NULL )
+        {
+                if( errno == ERANGE )
+                        HIERR("cosmos_init_modules: err: getcwd ERANGE");
+                else
+                        HIERR("cosmos_init_modules: err: getcwd NULL");
+                
+                return -1;
+        }
 
 
         chdir(mod_path[0]);
-
 
 
 
@@ -68,7 +83,7 @@ static int cosmos_init_modules(struct cosmos *cm, int modc, char *mod_path[]) {
         }
 
 
-
+        chdir( dsav );
 
         return 0;
 }
