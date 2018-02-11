@@ -61,7 +61,7 @@ static int cosmos_init_modules(struct cosmos *cm, int modc, char *mod_path[]) {
 
 
 
-        if( cosmos_loadmod(cm, "init/lookup", mod_path[1]) == -1)
+        if( cosmos_loadmod(cm, "init/lookup", mod_path[2]) == -1)
         {
                 HIERR("cosmos_init_modules: err: lookup not loaded");
 
@@ -75,7 +75,7 @@ static int cosmos_init_modules(struct cosmos *cm, int modc, char *mod_path[]) {
 
 
 
-        if( cosmos_loadmod(cm, "init/filesvc", mod_path[2]) == -1)
+        if( cosmos_loadmod(cm, "init/filesvc", mod_path[1]) == -1)
         {
                 HIERR("cosmos_init_modules: err: filesvc not loaded");
 
@@ -155,15 +155,6 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
 
         cm->aframe = aframe_new(); 
 
-        if(cm->aframe == NULL)
-        {
-                HIERR("cosmos_init: err: cm->aframe NULL");
-                cosmos_db_cleanup(cm);
-                return NULL;
-        }
-
-
-
         cmroot = cm->aframe;
 
         if( cmroot == NULL )
@@ -218,12 +209,7 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
 
 
 
-        filesvc = cosmos_simple_lookup( cm, cmroot, "init/filesvc" );
-
-
-
-
-        hostcosm->dcel = dsource(filesvc, 1, mod_path[0]);
+        cosmos_bind(cm, hostcosm, "/init/filesvc", mod_path[0]);
 
         
 
@@ -233,8 +219,21 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
 
 
 
-        cosmos_mkdir( cm, (cosmos_id_t)(cm->aframe), "demo@localhost", mode);
+        userhost = cosmos_mkdir( cm, cmroot, "demo@localhost", mode);
 
+        if(hostcosm == NULL)
+        {
+                HIERR("cosmos_create_db: err: can't init userhost");
+
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+
+
+
+        cosmos_bind(cm, userhost, "/init/filesvc", "/");
 
 
 

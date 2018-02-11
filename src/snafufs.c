@@ -142,6 +142,8 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
         
         memset(&b, 0, sizeof(b));
 
+
+
         /*
         dir = fi->fh;
         if( dir == 0 )
@@ -152,6 +154,9 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
                 return;
         }
         */
+
+
+
         /*
         while((e = cosmos_readdir( (cosmos_dirh_t)dir )) != NULL)
         {
@@ -159,6 +164,10 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
                 free(e);
         }
         */
+
+
+
+
 
         if( ino == 1 )
         {
@@ -170,10 +179,14 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
         }
 
 
+
+
+
         if( dir_af == NULL )
         {
-                HIERR("snafu_readdir: err: dir_af NULL\n");
+                HIERR("snafu_readdir: err: dir_af NULL");
                 fuse_reply_err(req,ENOTDIR);
+
                 return;
         }
 
@@ -182,6 +195,7 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
         dirbuf_add(req, &b, "..", (ino_t)(dir_af->parent));
 
         reply_buf_limited(req, b.p, b.size, off, size);
+
 
         free(b.p);
 }
@@ -279,45 +293,40 @@ static struct cosmos *snafu_init(struct snafu_vol *snafu_vol, char *mountpoint)
         struct cosmos *cm;
         struct access_frame *root, *mount;
 
-        int modc = 6;
+        int modc = 3;
         char *mod_path[] = {
             "/usr/lib/cosmos",
             "svc/file.so",
-            "svc/dylib.so",
-            "svc/ptr.so",
-            "xformr/dcelcosm.so",
             "lookup/fudge.so",
         };
 
+
+
         cm = cosmos_init(modc, mod_path);
 
-        root = cm->aframe;
-        mount = (struct access_frame *)cosmos_mkdir(cm, root, mountpoint, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-
-        cosmos_mkdir(cm, mount, "test", S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-
-        snafu_vol->root_ino = mount;
         snafu_vol->cosmos_db = cm;
 
 
-        /* mount domain cell */
 
-        dc = cosmos_dcel_new(cm);
+        cmroot = cm->aframe;
+        
 
-        pi = prod_instr_new();
 
-        char *mntpt = strndup(mountpoint, strlen(mountpoint));
+        uroot = cosmos_simple_lookup(cm, cmroot, "demo@localhost");
 
-        char *argv[] = {
-                mntpt,
-        };
 
-        sourcer = cosmos_lookup("/.cosm/svc/file/sourcer");
 
-        pi->fn = sourcer;
-        pi->aframe = NULL;
-        pi->argc = 1;
-        pi->argv = argv;
+        mount = cosmos_mkdir_path(cm, uroot, mountpoint, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
+
+
+
+        snafu_vol->root_ino = mount;
+
+
+
+        cosmos_bind(cm, mount, "file", mountpoint);
+
+
 
         return cm;
 }
@@ -344,7 +353,7 @@ int main(int argc, char *argv[])
         struct fuse_chan *ch;
         char *mountpoint;
         struct cosmos *cm;
-	int err = -1;
+        int err = -1;
         int cmdline_err;
 
         cmdline_err = fuse_parse_cmdline(&args, &mountpoint, NULL, NULL);
