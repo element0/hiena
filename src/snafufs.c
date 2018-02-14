@@ -4,12 +4,18 @@
  */
 
 
+
+
 /*
   FUSE: Filesystem in Userspace
   Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
   This program can be distributed under the terms of the GNU GPL.
   See the file COPYING.
 */
+
+
+
+
 
 /** @file
  *
@@ -22,6 +28,10 @@
  * ## Source code ##
  * \include hello_ll.c
  */
+
+
+
+
 
 #define FUSE_USE_VERSION 30
 
@@ -39,21 +49,31 @@
 #include "access_frame.h"
 
 
-/** snafu_vol
-  @param root_ino snafufs translates ino "0" to this root_ino in the cosmos_db
+
+
+
+/**  snafu_vol
+
+  @param  root_ino   snafufs maps ino "1" to root_ino in the cosmos_db
 
  */
+
+
 struct snafu_vol {
-        cosmos_id_t root_ino;
         struct cosmos *cosmos_db;
+        cosmos_id_t root_ino;
 };
 
 
 struct snafu_vol snafu_vol;
 
 
+
+
+
 static void snafu_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi)
 {
+        (cosmos_id_t)ino;
         struct cosmos *cm;
         struct stat stbuf;
 
@@ -63,16 +83,19 @@ static void snafu_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info 
 
 
         if( ino == 1 )
-        {
-                ino = (fuse_ino_t)(snafu_vol.root_ino);
-        }
+                ino = snafu_vol.root_ino;
 
-        if (cosmos_stat(cm, (cosmos_id_t)ino, &stbuf) == -1)
+
+        if (cosmos_stat(cm, ino, &stbuf) == -1)
                 fuse_reply_err(req, ENOENT);
         else
                 fuse_reply_attr(req, &stbuf, 1.0);
 
 }
+
+
+
+
 
 
 static void snafu_lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
@@ -86,16 +109,26 @@ static void snafu_lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
         ino = cosmos_lookup(cm, (cosmos_id_t)parent, (char *)name);
 
         if (ino == 0)
-		fuse_reply_err(req, ENOENT);
-	else {
+        {
+                fuse_reply_err(req, ENOENT);
+                return;
+        }
+
+
+
 		memset(&e, 0, sizeof(e));
-		e.ino = (fuse_ino_t)ino;
+
 		e.attr_timeout = 1.0;
 		e.entry_timeout = 1.0;
-		cosmos_stat(cm, (cosmos_id_t)(e.ino), &e.attr);
+
+		cosmos_stat(cm, ino, &e.attr);
+
+        if (ino == snafu_vol.root_ino) ino = 1;
+
+		e.ino = (fuse_ino_t)ino;
 
 		fuse_reply_entry(req, &e);
-	}
+
 }
 
 
@@ -135,122 +168,148 @@ static int reply_buf_limited(fuse_req_t req, const char *buf, size_t bufsize, of
 
 static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, struct fuse_file_info *fi)
 {
+        (cosmos_id_t)ino;
+
         uint64_t dir;
         struct dirent *e;
-        struct access_frame *dir_af;
         struct dirbuf b;
+
+        struct cosmos_fh dh;
+        struct access_frame *af;
         
         memset(&b, 0, sizeof(b));
 
 
 
-        /*
-        dir = fi->fh;
-        if( dir == 0 )
-        {
-                HIERR("snafu_readdir: err: dir 0");
-                fuse_reply_err(req,ENOTDIR);
 
-                return;
-        }
+        if( ino == 1 ) ino = snafu_vol.root_ino;
+
+
+
+        /*
+        dh = fi->fh;
         */
 
 
 
-        /*
-        while((e = cosmos_readdir( (cosmos_dirh_t)dir )) != NULL)
+        dh = cosmos_diropen(cm, ino);
+        if( dh == NULL )
+        {
+                HIERR("snafu_readdir: err: dh NULL");
+
+               return;
+        }
+
+        
+
+
+
+        while((e = cosmos_readdir(dh) != NULL)
         {
                 dirbuf_add(req, &b, e->d_name, e->d_ino);
+
                 free(e);
         }
-        */
 
 
+        af = (struct access_frame *)ino;
 
 
-
-        if( ino == 1 )
-        {
-                dir_af = (struct access_frame *)(snafu_vol.root_ino);
-                printf("snafu_readdir: dir_af %lu root\n", dir_af);
-        } else {
-                dir_af = (struct access_frame *)ino;
-                printf("snafu_readdir: dir_af %lu\n", dir_af);
-        }
-
-
-
-
-
-        if( dir_af == NULL )
-        {
-                HIERR("snafu_readdir: err: dir_af NULL");
-                fuse_reply_err(req,ENOTDIR);
-
-                return;
-        }
-
-
-        dirbuf_add(req, &b, ".", (ino_t)dir_af);
-        dirbuf_add(req, &b, "..", (ino_t)(dir_af->parent));
+        dirbuf_add(req, &b, ".", (ino_t)ino);
+        dirbuf_add(req, &b, "..", (ino_t)(af->parent));
 
         reply_buf_limited(req, b.p, b.size, off, size);
 
 
         free(b.p);
+
+        cosmos_closedir(dh);
 }
 
 
 static void snafu_open(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi)
 {
-        void *FILE;
+        (cosmos_id_t)ino;
+
+        void *fh;
         struct cosmos *cm;
-        
-        cm = (struct cosmos *)fuse_req_userdata(req);
 
-        FILE = cosmos_open( cm, (cosmos_id_t)ino );
 
-        fi->fh = (uint64_t)FILE;
-
-        if (ino == 0)
+        if (ino == 1)
                 fuse_reply_err(req, EISDIR);
 
         else if ((fi->flags & 3) != O_RDONLY)
+        {
                 fuse_reply_err(req, EACCES);
+                return;
+        }
 
-        else
-                fuse_reply_open(req, fi);
+
+
+        cm = (struct cosmos *)fuse_req_userdata(req);
+
+        fh = cosmos_open(cm, ino);
+
+        fi->fh = (uint64_t)fh;
+
+        fuse_reply_open(req, fi);
 }
 
 
 static void snafu_mknod(fuse_req_t req, fuse_ino_t par, const char *name, mode_t mode, dev_t rdev)
 {
+        (cosmos_id_t)par;
+
         struct fuse_entry_param e;
         struct cosmos *cm;
         cosmos_id_t ino;
         
         cm = (struct cosmos *)fuse_req_userdata(req);
 
-        ino = cosmos_mknod(cm, (cosmos_id_t)par, (char *)name, mode, 0);
+        ino = cosmos_mknod(cm, par, (char *)name, mode, 0);
 
 
-   if (ino == 0)
-		fuse_reply_err(req, ENOENT);
-	else {
+        if (ino == 0)
+                fuse_reply_err(req, ENOENT);
+        else
+        {
 		memset(&e, 0, sizeof(e));
 		e.ino = (fuse_ino_t)ino;
 		e.attr_timeout = 1.0;
 		e.entry_timeout = 1.0;
-		cosmos_stat(cm, (cosmos_id_t)(e.ino), &e.attr);
+		cosmos_stat(cm, ino, &e.attr);
 
 		fuse_reply_entry(req, &e);
-	}
+        }
 }
 
  
 static void snafu_mkdir(fuse_req_t req, fuse_ino_t par, const char *name, mode_t mode)
 {
-        snafu_mknod(req, par, name, mode, 0);
+        (cosmos_id_t)par;
+
+        struct fuse_entry_param e;
+        struct cosmos *cm;
+        cosmos_id_t ino;
+
+        cm = (struct cosmos *)fuse_req_userdata(req);
+
+        ino = cosmos_mkdir(cm, par, name, mode);
+
+
+
+        if (ino == 0)
+                fuse_reply_err(req, ENOENT);
+        else
+        {
+		memset(&e, 0, sizeof(e));
+		e.ino = (fuse_ino_t)ino;
+		e.attr_timeout = 1.0;
+		e.entry_timeout = 1.0;
+		cosmos_stat(cm, ino, &e.attr);
+
+		fuse_reply_entry(req, &e);
+        }
 }
    
 
@@ -259,7 +318,7 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
 {
         void *buf;
         size_t size_read;
-        void *FILE;
+        cosmos_fh_t fh;
 
         if(fi == NULL)
         {
@@ -268,16 +327,16 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
                 return;
         }
 
-        FILE = (void *)fi->fh;
+        fh = (cosmos_fh_t)fi->fh;
         
-        if(FILE == 0)
+        if(fh == 0)
         {
                 HIERR("snafu_read: err: FILE NULL");
                 fuse_reply_err(req, EACCES);
                 return;
         }
 
-        size_read = cosmos_read(&buf, size, 1, (cosmos_fh_t)FILE);
+        size_read = cosmos_read(&buf, size, 1, fh);
 
         fuse_reply_buf(req, buf, size_read);
 
