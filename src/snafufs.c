@@ -100,13 +100,14 @@ static void snafu_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info 
 
 static void snafu_lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
 {
+        (cosmos_id_t)parent;
         struct fuse_entry_param e;
         cosmos_id_t ino;
         struct cosmos *cm;
 
         cm = (struct cosmos *)fuse_req_userdata(req);
 
-        ino = cosmos_lookup(cm, (cosmos_id_t)parent, (char *)name);
+        ino = cosmos_lookup(cm, parent, (char *)name);
 
         if (ino == 0)
         {
