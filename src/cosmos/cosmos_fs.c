@@ -111,12 +111,85 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t frame, char *s)
 
 
 
-
-
-struct dirent *cosmos_readdir( cosmos_dirh_t dir )
+cosmos_dirh_t cosmos_diropen( struct cosmos *cm, cosmos_id_t af )
 {
+        (struct access_frame *)af;
+
+        if( cm == NULL )
+        {
+                HIERR("cosmos_diropen input cm NULL");
+                return NULL;
+        }
+
+        void *dh;
+        struct hiena_dcel *dc;
+        btree_curs *curs;
+
+        if( af == NULL )
+        {
+                HIERR("cosmos_diropen input af is NULL");
+                return NULL;
+        }
+
+        dc = af->dcel;
+
+        if( dc == NULL )
+        {
+                HIERR("cosmos_diropen af->dcel is NULL");
+                return NULL;
+        }
+
+        index = dc->dir;
+
+        if( index == NULL )
+        {
+                HIERR("cosmos_diropen dc->dir NULL");
+                return NULL;
+        }
+
+        curs = btree_get_curs( index );
+
+        if( curs == NULL )
+        {
+                HIERR("cosmos_diropen curs NULL");
+                return NULL;
+        }
+
+        return (cosmos_dirh_t)curs;
+}
+
+
+
+struct dirent *cosmos_readdir( cosmos_dirh_t dh )
+{
+        /* from cosmos_readdir.md:
+
+           for each in dcel's dname index
+           apply aframe remappings
+           expand string
+           add to directory list
+         
+         */
+
+        struct dirent *e;
+        btree_curs *curs;
+        bval_t strid;
+
+        curs = dh;
+
+        if( curs == NULL )
+        {
+                HIERR("cosmos_readdir curs NULL");
+                return NULL;
+        }
+
+        e = malloc(sizeof(*e));
+
+        strid = btree_curs_value(curs);
+
         printf("cosmos_readdir\n");
-        return NULL;
+
+        return e;
 }
 
 

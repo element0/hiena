@@ -11,6 +11,12 @@ typedef void * cosmos_dirh_t;
 typedef void * cosmos_fh_t;
 
 
+struct cosmos_dirh {
+        struct cosmos *cm;
+        cosmos_id_t id;
+        btree_curs curs;
+};
+
 
 int cosmos_stat(struct cosmos *, cosmos_id_t, struct stat *);
 

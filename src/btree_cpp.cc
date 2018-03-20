@@ -4,6 +4,7 @@
 namespace btree_cpp {
 
 typedef void* bkey_t;
+typedef unsigned long bval_t;
 typedef btree::btree_map<bkey_t,void *> hbtree;
 
 

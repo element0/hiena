@@ -205,7 +205,7 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
 
 
 
-        while((e = cosmos_readdir(dh) != NULL)
+        while((e = cosmos_readdir(dh)) != NULL)
         {
                 dirbuf_add(req, &b, e->d_name, e->d_ino);
 
