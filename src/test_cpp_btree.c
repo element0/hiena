@@ -39,6 +39,22 @@ int main( int argc, char *argv[] )
 
         curs = btree_get_curs(obj_map);
 
+        i = 0;
+
+        v = btree_curs_value( curs );
+        printf("btree_curs_value: %lu\n", (unsigned long)v);
+
+        while( btree_curs_incr( curs ) != NULL )
+        {
+                v = btree_curs_value( curs );
+                printf("btree_curs_value: %lu\n", (unsigned long)v);
+        }
+
+
+        btree_curs_cleanup(curs);
+
+
+
 
         btree_cleanup(obj_map);
 

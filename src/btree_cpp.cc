@@ -8,8 +8,9 @@ typedef btree::btree_map<bkey_t,void *> hbtree;
 
 
 class IterWrapper {
-    hbtree *bt;
-    hbtree::iterator it;
+    public:
+        hbtree *bt;
+        hbtree::iterator it;
 };
 
 
@@ -84,6 +85,12 @@ hbtree_curs *btree_get_curs(hbtree *bt)
 {
         hbtree_curs *curs;
 
+        if( bt == nullptr )
+        {
+                printf("bt == nullptr\n");
+                return NULL;
+        }
+
 
         curs = new IterWrapper;
         curs->bt = bt;
@@ -91,6 +98,45 @@ hbtree_curs *btree_get_curs(hbtree *bt)
 
         return curs;
 }
+
+
+
+void *btree_curs_incr( hbtree_curs *curs )
+{
+        if( curs == nullptr )
+        {
+                printf("curs == nullptr\n");
+                return NULL;
+        }
+
+        if( curs->bt == nullptr )
+        {
+                printf("curs->bt == nullptr\n");
+                return NULL;
+        }
+        
+        if( curs->it == curs->bt->end() )
+        {
+                printf("curs->it == curs->bt->end()\n");
+                return NULL;
+        }
+
+        curs->it++;
+
+        return curs;
+}
+
+void *btree_curs_value( hbtree_curs *curs )
+{
+        if( curs == nullptr )
+        {
+                printf("curs == nullptr\n");
+                return NULL;
+        }
+
+        return curs->it->second;
+}
+
 
 int btree_curs_cleanup( hbtree_curs *curs )
 {
