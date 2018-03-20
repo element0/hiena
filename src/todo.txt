@@ -1,7 +1,11 @@
-2017-12-08  0806
+2018-02-20  0802
 
 wip:  snafufs.c
 
+to prototype:
+RESTful: aframe_value(), dcel_value()
+
+vs. locking io: aframe_val_lock(), dcel_val_lock()
 
 
 2017-11-29  1951

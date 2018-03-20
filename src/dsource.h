@@ -4,6 +4,6 @@
 #include "access_frame.h"
 #include "dcel.h"
 
-struct hiena_dcel *dsource( struct access_frame *cx, int argc, void **argv);
+struct hiena_dcel *dsource( struct access_frame *, int argc, void **argv);
 
 #endif

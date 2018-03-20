@@ -2,6 +2,7 @@
 #define HIENA_BTREE_CPP_H
 
 typedef struct hbtree btree_t;
+typedef struct hbtree_curs btree_curs;
 typedef void* bkey_t;
 
 

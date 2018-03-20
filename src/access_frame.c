@@ -30,3 +30,16 @@ int aframe_cleanup( struct access_frame *af )
 
         return 0;
 }
+
+
+void **aframe_val_ptr(struct access_frame *af)
+{
+        struct hiena_dcel *dc;
+
+
+        dc = af->dcel;
+        iov = dcel_val_ptr(dc);
+
+
+        return iov;
+}

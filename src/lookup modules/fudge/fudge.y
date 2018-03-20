@@ -93,7 +93,7 @@ yyerror(char const *s)
     fprintf(stderr, "fudge err: %s\n", s);
 }
 
-struct hiena_dcel *fudge_parse(struct lookup_hdl *h)
+struct access_frame *fudge_parse( struct lookup_hdl *h )
 {
     yyscan_t scanner;
     yylex_init_extra( h, &scanner );

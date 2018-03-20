@@ -28,12 +28,11 @@ struct hiena_frag {
     off_t end_off;
 
 
-   /* buffer */
+   /* iovec buffer */
     void *buf;
     size_t len;
 
    /* convenience */
-    /* size_t len; */
     struct map_anchor *head_anchor;
     struct map_anchor *tail_anchor;
 

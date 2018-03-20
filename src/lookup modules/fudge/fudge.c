@@ -3,6 +3,31 @@
 #include "../../dcel.h"
 #include "fudge.h"
 
+
+
+struct access_frame *cosmos_lookup_fn ( struct cosmos *cm, struct access_frame *af, char *rqstr )
+{
+        struct lookup_hdl *h;
+        struct hiena_dcel *dc;
+        struct access_frame *res;
+
+        h = lookup_hdl_new();
+
+        h->cosmos = cm;
+        h->aframe = af;
+        h->str = rqstr;
+
+
+        dc = fudge_parse( h );
+
+
+        return res;
+}
+
+
+
+
+
 struct hiena_dcel *fudge_seg( struct hiena_dcel *dc, char *s )
 {
         if( dc == NULL

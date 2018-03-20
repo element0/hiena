@@ -9,6 +9,7 @@ int main( int argc, char *argv[] )
         const bkey_t maxi = 10;
         bkey_t k, v, kp;
         unsigned long i,j;
+        btree_curs *curs;
         
         for (i=0; i<maxi; i++)
         {
@@ -34,6 +35,10 @@ int main( int argc, char *argv[] )
         v = btree_value_at_key_or_nearest_lesser(obj_map, k, &kp );
 
         printf("btree_value_at_key_or_nearest_lesser 5:%lu\n",(unsigned long)v);
+
+
+        curs = btree_get_curs(obj_map);
+
 
         btree_cleanup(obj_map);
 

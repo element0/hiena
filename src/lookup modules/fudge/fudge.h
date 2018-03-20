@@ -12,5 +12,7 @@ int fudge_parse(struct lookup_hdl *);
 
 char *fudge_expand(struct lookup_hdl *, char *);
 
+struct access_frame *cosmos_lookup_fn(struct cosmos *, struct access_frame *, char *);
+
 
 #endif  /* ! _HIENA_FUDGE_H_ */

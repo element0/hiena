@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <sys/uio.h>
 #include "dcel.h"
 #include "hierr.h"
 #include "frag.h"
@@ -90,3 +91,15 @@ int dcel_save_undo( struct hiena_dcel *dc )
 
         return 0;
 }
+
+
+struct iovec *dcel_val_ptr(struct hiena_dcel *dc)
+{
+        struct iovec *iov;
+
+        iov = (struct iovec *)&(dc->frag->buf);
+
+        return iov;
+}
+
+

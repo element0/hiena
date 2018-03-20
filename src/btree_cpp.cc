@@ -7,6 +7,14 @@ typedef void* bkey_t;
 typedef btree::btree_map<bkey_t,void *> hbtree;
 
 
+class IterWrapper {
+    hbtree *bt;
+    hbtree::iterator it;
+};
+
+
+typedef IterWrapper hbtree_curs;
+
 
 extern "C" {
 #include <stdlib.h>
@@ -71,6 +79,28 @@ void btree_print(hbtree *bt)
                 std::cout << it->first << ":" << (long unsigned int)(it->second) << "\n";
         }
 }
+
+hbtree_curs *btree_get_curs(hbtree *bt)
+{
+        hbtree_curs *curs;
+
+
+        curs = new IterWrapper;
+        curs->bt = bt;
+        curs->it = bt->begin();
+
+        return curs;
+}
+
+int btree_curs_cleanup( hbtree_curs *curs )
+{
+        if( curs == NULL )
+                return -1;
+
+        delete curs;
+        return 0;
+}
+
 
 // purpose of btree_value_at_key_or_nearestreturn_lesser is to discover a fragment that contains the key within its bounds.  considering the keys are the start boundary.
 // the cpp STL map interface (used by cpp_btree) provides a 'lower_bound()' which finds iterator at key or nearest greater.

@@ -14,6 +14,12 @@ and the full pathname resolves to an access frame pointer.
 
 types of modules
 ----------------
+modules must implement one or more of the following interfaces.
+
+cosmos_lookup_fn()
+cosmos_source_fn()
+cosmos_bind_fn()
+cosmos_grind_fn()
 
 
 

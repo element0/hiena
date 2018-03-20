@@ -2,10 +2,12 @@
 #include "dcel.h"
 #include "access_frame.h"
 #include "prod_instr.h"
-#include "cosmos/cosmos_obj.h"
+#include "cosmos/cosmos_db.h"
+#include "cosmos/cosmos_fs.h"
 
 
-struct hiena_dcel *prod_exec( struct prod_instr *pi )
+
+struct hiena_dcel *prod_exec( struct cosmos *cm, struct prod_instr *pi )
 {
         if( pi == NULL )
         {
@@ -13,27 +15,21 @@ struct hiena_dcel *prod_exec( struct prod_instr *pi )
                 return NULL;
         }
 
-        struct hiena_dcel *dc;
-        prodfn_guid_t *fnid;
-        PRODFN_T(fn);
 
-        struct cosmos *cm;
-        struct context_frame *cx;
+        struct access_frame *func;
+        struct access_frame *af;
         int argc;
         void **argv;
+        struct access_frame *res;
+        struct hiena_dcel *dc;
 
-        fnid = pi->prodfn_guid;
-        fn = pi->prod_fn;
-        cx = pi->context_frame;
+
+        func = pi->fn;
+        fn = pi->fnptr;
+        af = pi->access_frame;
         argc = pi->argc;
         argv = pi->argv;
 
-        cm = cx->cosmos_obj;
-
-        if( fn == NULL )
-        {
-                fn = cosmos_prodfn_get(cm, prodfn_guid);
-        }
 
         if( fn == NULL )
         {
@@ -43,7 +39,27 @@ struct hiena_dcel *prod_exec( struct prod_instr *pi )
                 return NULL;
         }
 
-        dc = fn(cx, argc, argv);
+
+        res = cosmos_exec(cm, af, func, argc, argv);
+
+        dc = res->dc;
+
+        if( dc == NULL )
+        {
+
+                HIERR("prod_exec: err: couldn't generate dcel");
+
+                return NULL;
+        }
+
+        /* uncomment if you don't
+           want to cache result */
+        /*
+        cosmos_unlink(res);
+        */
+
+        dcel_retain(dc);
+        dc->prod_instr = pi;
 
         return dc;
 }

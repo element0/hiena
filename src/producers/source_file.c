@@ -1,20 +1,21 @@
 #include <stdlib.h>
-#include "dcel.h"
-#include "frag.h"
-#include "mfrag.h"
-#include "prod_instr.h"
-#include "access_frame.h"
-#include "file_svc.h"
-#include "hierr.h"
+#include "../dcel.h"
+#include "../frag.h"
+#include "../mfrag.h"
+#include "../access_frame.h"
+#include "../file_svc.h"
+#include "../hierr.h"
 
 /**
- * accepts only one source arg.
+ * accepts only one arg, an address.
+ *
  *
  */
 
-struct hiena_dcel *dsource( struct access_frame *af, int argc, void **argv)
+struct hiena_dcel *cosmos_source_fn( struct access_frame *af, int argc, void **argv)
 {
         /* af ignored */
+
 
         if( argc != 1 )
         {
@@ -22,50 +23,51 @@ struct hiena_dcel *dsource( struct access_frame *af, int argc, void **argv)
                 return NULL;
         }
 
+
         if( argv == NULL )
         {
                 HIERR("prod_fn dsource: argv NULL");
                 return NULL;
         }
 
+
         struct hiena_dcel *dc;
         struct hiena_frag *f;
         struct hiena_mfrag *mf;
-        void *srca;
-        struct prod_instr *pi;
+        void *addr;
+
+
 
         f = frag_new();
-
         if( f == NULL )
         {
-                HIERR("dsource: frag_new NULL");
+                HIERR("source_file: frag_new NULL");
                 return NULL;
         }
 
-        mf = mfrag_new();
 
+        mf = mfrag_new();
         if( mf == NULL )
         {
-                HIERR("dsource: mfrag_new NULL");
+                HIERR("source_file: mfrag_new NULL");
                 frag_cleanup(f);
                 return NULL;
         }
 
-        srca = argv[0];
 
-        mfrag_set_addr( mf, srca );
-
+        addr = argv[0];
+        mfrag_set_addr( mf, addr );
         mfrag_set_svc( mf, &file_svc_ops );
+        mfrag_set_bounds( mf, 0, get_filesize( (char *)addr ) );
 
-        mfrag_set_bounds( mf, 0, get_filesize( (char *)srca ) );
 
         frag_set_mfrag( f, mf );
 
+
         dc = malloc(sizeof(*dc));
         memset(dc, 0, sizeof(*dc));
-
         dc->frag = f;
 
-        return dc;
 
+        return dc;
 }

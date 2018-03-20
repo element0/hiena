@@ -13,17 +13,34 @@ path string
 output:
 
 access frame
+modifies branches
+
 
 
 procedure:
 
-3 steps.
+1. look in the branches
+2. look in the remap
+3. run the lookup function
 
+
+a)
+get string id
+get branch at string id
+else (b)
+
+b)
+get remap entry by string id
+else (c)
+
+c)
 get parent access frame's lookup module.
 
-use it to lookup current frame's internal lookup module from the .cosm branch.
+use it to lookup current frame's internal lookup module from the cur frame's ".cosm" branch.
 
-use the internal lookup module to lookup path string.
+use the internal lookup module to lookup path string in cur frame.
+
+put result at branch at string id
 
 
 

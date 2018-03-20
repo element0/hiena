@@ -6,6 +6,8 @@
 production instruction implementation
 ======================
 
+- producer modules
+
 - rationale
 
 - production instructions and scanner mapping
@@ -17,19 +19,36 @@ production instruction implementation
 - implementation
 
 
+
+producer modules
+----------------
+
+a producer module has:
+
+    - a production function
+    - stream service functions
+    - sync check functions
+
+the service functions overload the standard dcel service functions.
+
+ie.  bind-cascade module overloads dcel_write().  (bind-cascade creates a product of dcel 1 and 2, the result is dcel 3.  but writes must happen to dcel 2 or the cascade is not a cascade.)
+
+
+
 rationale
 ---------
 
 A production instruction's purpose is 
-- distributed processing
-- rebuild after a cache destroyed
+- generate dcel
+- distributable processing
+- rebuild cache
 - data binding
 
 
-Not to rebuild/sync a dcel when the underlying domain changes.  That  is a function of sync.
+The production instruction belongs to a target dcel.  It has a pointer to a source dcel.  It produces the target dcel.
 
+A production instruction has sync check functions that can be called by cosmos.
 
-The production instruction has a pointer to a source dcel.  It belongs to a target dcel.  It produces the target dcel.
 
 If the source is dirty, it must be synced and the production instruction re-run.
 
@@ -38,6 +57,7 @@ The sync algo may alter the production instruction and or dcel.
 If the production fails, the target is obsolete.  If it succeeds, the result is compared to the target; merged if different, discarded if same.
 
 all productions must fit this model.
+
 
 
 ## example ##

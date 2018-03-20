@@ -5,6 +5,10 @@
 #include "../btree_cpp.h"
 #include "../hierr.h"
 
+
+
+
+
 int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
 {
         (struct access_frame *)id;
@@ -19,12 +23,59 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
         return 0;
 }
 
+
+
+
 cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t frame, char *s)
 {
         (struct access_frame *)frame;
 
+        struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
 
-        printf("cosmos_lookup %s\n", s);
+        struct access_frame *(*ilookfn)(struct cosmos *, struct access_frame *, char *);
+
+        struct access_frame *found;
+        cosmos_id_t strid;
+        cosmos_id_t strid2;
+        char *ssav;
+
+
+
+        strid = cosmos_string_id(s);
+
+
+        printf("cosmos_lookup (before remap) %s\n", s);
+
+
+
+        /* look in branches */
+
+        found = aframe_get_branch(frame, strid);
+
+        if( found != NULL )
+                return (cosmos_id_t)found;
+
+
+
+        /* look in remap */
+
+        strid2 = aframe_get_remap_targ(frame, strid);
+
+        if( strid2 != 0 )
+        {
+                ssav = s;
+                stridsav = strid;
+                s = cosmos_get_string(cm, strid2);
+                strid = strid2;
+        }
+
+
+
+
+        /* run lookup module */
+
+
+        printf("cosmos_lookup (after remap) %s\n", s);
 
         if(frame == NULL)
         {
@@ -39,20 +90,28 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t frame, char *s)
         }
 
 
-        struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
-        struct access_frame *(*ilookfn)(struct cosmos *, struct access_frame *, char *);
 
-        struct access_frame *found;
         
 
         lookfn = frame->parent->lookfn;
 
-        ilookfn = lookfn( cm, frame, ".cosm/lookup/lookupfn" );
+        ilookfn = lookfn( cm, frame, ".cosm/lookup/cosmos_lookup_fn" );
+
+        frame->lookfn = ilookfn;
+
 
         found = ilookfn( cm, frame, s );
         
-        return found;
+        
+        aframe_set_branch(frame, strid, found);
+
+
+        return (cosmos_id_t)found;
 }
+
+
+
+
 
 struct dirent *cosmos_readdir( cosmos_dirh_t dir )
 {
@@ -60,11 +119,18 @@ struct dirent *cosmos_readdir( cosmos_dirh_t dir )
         return NULL;
 }
 
+
+
+
+
 cosmos_fh_t cosmos_open(struct cosmos *cm, cosmos_id_t id)
 {
         printf("cosmos_open\n");
         return 0;
 }
+
+
+
 
 size_t cosmos_read(void *buf, size_t size, size_t num, cosmos_fh_t fh)
 {
@@ -72,12 +138,17 @@ size_t cosmos_read(void *buf, size_t size, size_t num, cosmos_fh_t fh)
         return 0;
 }
 
+
+
+
+
 cosmos_id_t cosmos_ln(struct cosmos *cm, cosmos_id_t id, cosmos_id_t par, char *name)
 {
         printf("cosmos_ln\n");
 
         return 0;
 }
+
 
 
 
@@ -120,11 +191,16 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
 }
 
 
+
+
+
 cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *path, mode_t mode, dev_t dev)
 {
         printf("cosmos_mknod_path\n");
         return 0;
 }
+
+
 
 
 

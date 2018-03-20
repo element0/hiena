@@ -47,9 +47,9 @@ fudge-loop takes a dcel and a string, parses the string into segments, passes ea
 fudge with snafu
 ----------------
 
-the snafu file system takes a url, a mountpoint, a lookup module; generates a source production instruction, executes it, uses the resulting dcel as file system root, stores root dcel in inode database, mounts the file system to mountpoint.
+the snafu file system takes a url, a mountpoint, a lookup module; generates a source production instruction, executes it, uses the resulting dcel as file system root, stores root dcel in aframe database, mounts the file system to mountpoint.
 
-takes lookup request as inode and lookup string; retrieves dcel from inode, passes dcel and string to lookup module, stores resultant dcel in inode database.
+takes lookup request as ino and lookup string; retrieves dcel from inode, passes dcel and string to lookup module, stores resultant dcel in inode database.
 
 (fudge conforms to lookup module interface and is loaded by snafu)
 

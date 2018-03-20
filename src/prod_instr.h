@@ -12,13 +12,15 @@ typedef uintptr_t prodfn_guid_t;
 
 
 struct prod_instr {
-    struct access_frame *fn;
+    struct access_frame *module;
+    struct access_frame *fnaf;
     PRODFN_T(fnptr);
 
     struct access_frame *aframe;
     int argc;
     void **argv;
 };
+
 
 struct hiena_dcel *prod_exec( struct prod_instr * );
 

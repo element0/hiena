@@ -1,6 +1,7 @@
-#include <libgen.h>     // basename()
-#include <unistd.h>     // chdir()
+#include <libgen.h>    // basename()
+#include <unistd.h>    // chdir()
 #include <sys/stat.h>
+#include <dlfcn.h>
 #include "../hierr.h"
 #include "../prod_instr.h"
 #include "../dcel.h"
@@ -35,6 +36,7 @@ static int cosmos_init_modules(struct cosmos *cm, int modc, char *mod_path[]) {
            cosmos_init has checked
            the args */
 
+        struct access_frame *af;
 
         char *buf[PATH_MAX];
         char *dsav;
@@ -56,23 +58,42 @@ static int cosmos_init_modules(struct cosmos *cm, int modc, char *mod_path[]) {
         chdir(mod_path[0]);
 
 
-
-        cosmos_ll_mknod_path(cm, "init/lookup");
-
+        af = cm->aframe;
 
 
-        if( cosmos_loadmod(cm, "init/lookup", mod_path[2]) == -1)
+        cosmos_ll_mknod_path(cm, af, "init/lookup");
+
+
+
+        if(( lookmod = cosmos_loadmod(cm, "init/lookup", mod_path[2])) == -1)
         {
                 HIERR("cosmos_init_modules: err: lookup not loaded");
 
                 return -1;
         }
 
+        
+        af = cm->proto;
+        if(af == NULL)
+        {
+                HIERR("cosmos_init_modules: err: cm->proto NULL");
+
+                return -1;
+        }
+
+
+        if((af->lookfn = dlsym((void *)aframe_val_ptr(lookmod), "cosmos_lookup_fn")) == NULL )
+        {
+                HIERR("cosmos_init_modules: err: proto->lookfn NULL");
+
+                return -1;
+        }
 
 
 
-        cosmos_ll_mknod_path(cm, "init/filesvc");
+        af = cm->aframe;
 
+        cosmos_ll_mknod_path(cm, af, "init/filesvc");
 
 
         if( cosmos_loadmod(cm, "init/filesvc", mod_path[1]) == -1)
@@ -147,6 +168,23 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
         
 
 
+        /* cosmos proto aframe */
+
+
+
+        cm->proto = aframe_new();
+
+        if( cm->proto == NULL )
+        {
+                HIERR("cosmos_init: err: can't get cosmos proto aframe");
+
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+
+
 
 
         /* cosmos root aframe */
@@ -165,6 +203,8 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
 
                 return NULL;
         }
+
+        cmroot->parent = cm->proto;
 
 
 
@@ -209,7 +249,7 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
 
 
 
-        cosmos_bind(cm, hostcosm, "/init/filesvc", mod_path[0]);
+        cosmos_bind(cm, hostcosm, cmroot, "init/filesvc", mod_path[0]);
 
         
 
@@ -233,13 +273,12 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
 
 
 
-        cosmos_bind(cm, userhost, "/init/filesvc", "/");
+        cosmos_bind(cm, userhost, cmroot, "init/filesvc", "/");
 
 
 
 
         return cm;
-
 }
 
 
@@ -283,7 +322,6 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
 
 
         return cm;
-
 }
 
 
