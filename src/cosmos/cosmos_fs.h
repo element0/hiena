@@ -9,6 +9,7 @@
 
 
 typedef struct cosmos_dirh *cosmos_dirh_t;
+
 typedef void * cosmos_fh_t;
 
 
@@ -17,11 +18,8 @@ int cosmos_stat(struct cosmos *, cosmos_id_t, struct stat *);
 
 cosmos_id_t cosmos_lookup(struct cosmos *, cosmos_id_t, char *);
 
-struct dirent *cosmos_readdir( cosmos_dirh_t );
-
 cosmos_fh_t cosmos_open(struct cosmos *, cosmos_id_t );
 
-cosmos_dirh_t cosmos_opendir(struct cosmos *, cosmos_id_t);
 
 size_t cosmos_read(void *, size_t, size_t, cosmos_fh_t);
 

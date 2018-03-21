@@ -37,6 +37,9 @@ cosmos-db:      btree_cpp hash
 cosmos-fs:      cosmos-db access-frame
 	gcc $(dbugopts)  -c cosmos/cosmos_fs.c -o $(out-o)/cosmos_fs.o
 
+cosmos-dirh:      cosmos-db access-frame
+	gcc $(dbugopts)  -c cosmos/cosmos_dirh.c -o $(out-o)/cosmos_dirh.o
+
 cosmos-load-mod:        dcel access-frame
 	gcc $(dbugopts)  -c cosmos/load_module.c -o $(out-o)/cosmos_load_module.o
 
