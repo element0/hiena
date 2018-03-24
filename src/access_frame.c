@@ -50,7 +50,6 @@ struct iovec *aframe_val_ptr(struct access_frame *af)
 
 bval_t  aframe_remap_dirent_id( struct access_frame *af, bval_t key )
 {
-        (bkey_t)key;
         bval_t res;
         btree_t *bt;
 
@@ -76,7 +75,7 @@ bval_t  aframe_remap_dirent_id( struct access_frame *af, bval_t key )
 
 
 
-        res = btree_get( bt, key );
+        res = btree_get( bt, (bkey_t)key );
 
         return res;
 }

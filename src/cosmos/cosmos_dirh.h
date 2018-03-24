@@ -7,7 +7,7 @@
 
 
 struct cosmos_dirent {
-        cosmos_id_t ino;
+        cosmos_id_t d_ino;
         char *d_name;
 };
 

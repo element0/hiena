@@ -18,6 +18,7 @@ struct access_frame {
         struct access_frame *parent;
         btree_t *branch;
         btree_t *lookup_cache;
+        btree_t *remap;
 
         struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
         struct access_frame *(*execfn)(struct access_frame *, int argc, char **);

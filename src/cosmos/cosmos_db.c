@@ -36,11 +36,11 @@ cosmos_id_t cosmos_hash( char *s )
 
 
 
-cosmos_id_t cosmos_string_put(struct cosmos *cm, char *s)
+cosmos_id_t cosmos_put_string(struct cosmos *cm, char *s)
 {
         if(cm == NULL)
         {
-                HIERR("cosmos_string_put: err cosmos object NULL");
+                HIERR("cosmos_put_string: err cosmos object NULL");
                 return 0;
         }
         cosmos_id_t id;
@@ -61,27 +61,54 @@ cosmos_id_t cosmos_string_put(struct cosmos *cm, char *s)
 
 
 
-char *cosmos_string_get(struct cosmos *cm, cosmos_id_t id )
+char *cosmos_get_string(struct cosmos *cm, cosmos_id_t id )
 {
         if(cm == NULL)
         {
-                HIERR("cosmos_string_get: err cosmos object NULL");
+                HIERR("cosmos_get_string: err cosmos object NULL");
                 return NULL;
         }
-        char *s;
+
+
+        char *s, *cmstr;
         btree_t *strings;
+
+
 
         strings = cm->strings;
         if( strings == NULL )
         {
-                HIERR("cosmos_string_get: warn cosmos object->strings NULL");
-
+                HIERR("cosmos_get_string: warn cosmos object->strings NULL");
                 return NULL;
         }
 
-        s = btree_get(strings, (bkey_t)id);
+
+
+        cmstr = (char *)btree_get(strings, (bkey_t)id);
+        if( cmstr == NULL )
+        {
+                HIERR("cosmos_get_string: cmstr NULL");
+                return NULL;
+        }
+
+
+        s = strdup( cmstr );
+        if( s == NULL )
+        {
+                HIERR("cosmos_get_string: s NULL");
+                return NULL;
+        }
+
 
         return s;
+}
+
+
+int cosmos_release_string( struct cosmos *cm, cosmos_id_t id, char *s )
+{
+        free(s);
+
+        return 0;
 }
 
 
@@ -130,7 +157,7 @@ char *cosmos_path_get( struct cosmos *cm, cosmos_id_t id)
                 return NULL;
         }
 
-        s = btree_get(paths, (bkey_t)id);
+        s = (char *)btree_get(paths, (bkey_t)id);
 
         return s;
 }

@@ -78,10 +78,15 @@ struct cosmos_dirent *cosmos_readdir( cosmos_dirh_t dh )
         HIERR("cosmos_readdir");
 
 
-        struct cosmo_dirent *e;
-        btree_curs *curs;
+        struct cosmos_dirent *e;
+        cosmos_id_t ino;
+        char *d_name;
+        struct cosmos *cm;
         bval_t dirent_id;
+        bval_t dirent_id_remap;
+        bval_t dirent_id_res;
         struct access_frame *af;
+        btree_curs *curs;
 
 
         if( dh == NULL )
@@ -92,9 +97,6 @@ struct cosmos_dirent *cosmos_readdir( cosmos_dirh_t dh )
 
 
         curs = dh->curs;
-
-
-
         if( curs == NULL )
         {
                 HIERR("cosmos_readdir curs NULL");
@@ -103,8 +105,6 @@ struct cosmos_dirent *cosmos_readdir( cosmos_dirh_t dh )
 
 
         af = dh->aframe;
-
-
         if( af == NULL )
         {
                 HIERR("cosmos_readdir af NULL");
@@ -116,7 +116,6 @@ struct cosmos_dirent *cosmos_readdir( cosmos_dirh_t dh )
 
 
         dirent_id = btree_curs_value(curs);
-
         if( dirent_id == BVAL_NULL )
         {
                 HIERR("cosmos_readdir dirent_id BVAL_NULL");
@@ -125,22 +124,40 @@ struct cosmos_dirent *cosmos_readdir( cosmos_dirh_t dh )
 
 
 
+
         dirent_id_remap = aframe_remap_dirent_id( af, dirent_id );
-
-
         if( dirent_id_remap != BVAL_NULL )
         {
-                dirent_id = dirent_id_remap;
+                dirent_id_res = dirent_id_remap;
+        }else{
+                dirent_id_res = dirent_id;
         }
 
 
 
-        d_name = cosmos_get_string( dirent_id );
+
+        cm = dh->cosmos;
+        if( cm == NULL )
+        {
+                HIERR("cosmos_readdir cm NULL");
+                return NULL;
+        }
+
+
+
+        d_name = (char *)cosmos_get_string( cm, (cosmos_id_t)dirent_id_res );
+        if( d_name == NULL )
+        {
+                HIERR("cosmos_readdir d_name NULL");
+                return NULL;
+        }
+
+
 
         e = malloc(sizeof(*e));
+        e->d_name = d_name;
+        e->d_ino = (cosmos_id_t)dirent_id;
 
-        e->d_name;
-        e->d_ino;
 
         return e;
 }

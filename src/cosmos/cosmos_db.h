@@ -36,9 +36,11 @@ struct cosmos {
 struct cosmos *cosmos_db_new();
 int cosmos_db_cleanup( struct cosmos * );
 
-cosmos_id_t cosmos_string_put(struct cosmos *, char *);
+cosmos_id_t cosmos_put_string(struct cosmos *, char *);
 
-char *cosmos_string_get(struct cosmos *, cosmos_id_t );
+char *cosmos_get_string(struct cosmos *, cosmos_id_t );
+
+int cosmos_release_string( struct cosmos *, cosmos_id_t, char * );
 
 cosmos_id_t cosmos_string_id( char * );
 

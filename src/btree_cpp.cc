@@ -5,7 +5,8 @@ namespace btree_cpp {
 
 typedef void* bkey_t;
 typedef unsigned long bval_t;
-typedef btree::btree_map<bkey_t,void *> hbtree;
+#define BVAL_NULL 0
+typedef btree::btree_map<bkey_t, bval_t> hbtree;
 
 
 class IterWrapper {
@@ -36,22 +37,22 @@ int btree_cleanup( hbtree *bt )
 }
 
 
-void *btree_get(hbtree *bt, bkey_t key)
+bval_t btree_get(hbtree *bt, bkey_t key)
 {
         if( bt == NULL )
-                return NULL;
+                return BVAL_NULL;
 
         hbtree::iterator it;
  
         it = bt->find(key);
         if( it == bt->end() )
         {
-                return NULL;
+                return BVAL_NULL;
         }
         return it->second;
 }
 
-void *btree_put(hbtree *bt, bkey_t key, void *val)
+void *btree_put(hbtree *bt, bkey_t key, bval_t val)
 {
         if( bt == NULL )
                 return nullptr;
@@ -127,12 +128,12 @@ void *btree_curs_incr( hbtree_curs *curs )
         return curs;
 }
 
-void *btree_curs_value( hbtree_curs *curs )
+bval_t btree_curs_value( hbtree_curs *curs )
 {
         if( curs == nullptr )
         {
                 printf("curs == nullptr\n");
-                return NULL;
+                return BVAL_NULL;
         }
 
         return curs->it->second;
@@ -153,11 +154,10 @@ int btree_curs_cleanup( hbtree_curs *curs )
 // the cpp STL map interface (used by cpp_btree) provides a 'lower_bound()' which finds iterator at key or nearest greater.
 // ergo, we could use lower_bound() on a map of end bounds.
 
-void
-*btree_value_at_key_or_nearest_lesser( hbtree *bt, bkey_t k, bkey_t *kres )
+bval_t btree_value_at_key_or_nearest_lesser( hbtree *bt, bkey_t k, bkey_t *kres )
 {
         if( bt == NULL )
-                return NULL;
+                return BVAL_NULL;
 
         hbtree::iterator it;
         
@@ -167,7 +167,7 @@ void
         {
             if( it == bt->begin()
              || it == bt->end() )
-                return NULL;
+                return BVAL_NULL;
             it = --it;
         }
 

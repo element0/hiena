@@ -10,7 +10,7 @@ typedef unsigned long bval_t;
 
 btree_t *btree_new();
 
-void *btree_get(btree_t *, bkey_t key);
+bval_t btree_get(btree_t *, bkey_t key);
 
 void *btree_put(btree_t *, bkey_t key, void *val );
 
