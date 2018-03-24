@@ -172,10 +172,10 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
         (cosmos_id_t)ino;
 
         uint64_t dir;
-        struct dirent *e;
+        struct cosmos_dirent *e;
         struct dirbuf b;
 
-        struct cosmos_fh dh;
+        struct cosmos_dirh *dh;
         struct access_frame *af;
         
         memset(&b, 0, sizeof(b));
@@ -209,7 +209,7 @@ static void snafu_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off
         {
                 dirbuf_add(req, &b, e->d_name, e->d_ino);
 
-                free(e);
+                cosmos_dirent_cleanup(e);
         }
 
 

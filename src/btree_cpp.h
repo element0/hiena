@@ -5,6 +5,7 @@ typedef struct hbtree btree_t;
 typedef struct hbtree_curs btree_curs;
 typedef void* bkey_t;
 typedef unsigned long bval_t;
+#define BVAL_NULL 0
 
 
 btree_t *btree_new();

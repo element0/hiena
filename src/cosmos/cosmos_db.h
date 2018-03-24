@@ -27,6 +27,9 @@ struct cosmos {
         struct access_frame *proto;
         struct access_frame *aframe;
         struct hiena_dcel *dcel;
+
+        /* maybe not */
+        struct hiena_dcel *dcel_garbage;
 };
 
 

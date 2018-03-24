@@ -1,19 +1,29 @@
 #ifndef COSMOS_DIRH_H
 #define COSMOS_DIRH_H
 
+#include "cosmos_db.h"
+#include "../access_frame.h"
+#include "../btree_cpp.h"
+
+
+struct cosmos_dirent {
+        cosmos_id_t ino;
+        char *d_name;
+};
+
 
 struct cosmos_dirh {
         struct cosmos *cosmos;
         struct access_frame *aframe;
-        btree_curs curs;
+        btree_curs *curs;
 };
 
 
-cosmos_dirh_t cosmos_opendir(struct cosmos *, cosmos_id_t);
+struct cosmos_dirh * cosmos_opendir(struct cosmos *, cosmos_id_t);
 
-int cosmos_closedir( cosmos_dirh_t );
+int cosmos_closedir( struct cosmos_dirh *);
 
-struct dirent *cosmos_readdir( cosmos_dirh_t );
+struct cosmos_dirent *cosmos_readdir( struct cosmos_dirh * );
 
 
 

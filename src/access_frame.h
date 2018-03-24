@@ -19,7 +19,7 @@ struct access_frame {
         btree_t *branch;
         btree_t *lookup_cache;
 
-        struct access_frame *(lookfn)(struct cosmos *, struct access_frame *, char *);
+        struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
         struct access_frame *(*execfn)(struct access_frame *, int argc, char **);
 
         struct access_frame *garbage_next;
@@ -37,6 +37,10 @@ int aframe_cleanup( struct access_frame * );
 struct access_frame *aframe_lookup(struct access_frame *, char *);
 
 void **aframe_value(struct access_frame *);
+
+struct iovec *aframe_val_ptr(struct access_frame *);
+
+bval_t  aframe_remap_dirent_id( struct access_frame *, bval_t );
 
 
 

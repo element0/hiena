@@ -2,58 +2,11 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include "../access_frame.h"
+#include "../dcel.h"
 #include "../btree_cpp.h"
 #include "../hierr.h"
 #include "cosmos_db.h"
 #include "cosmos_dirh.h"
-
-
-cosmos_dirh_t cosmos_diropen( struct cosmos *cm, cosmos_id_t af )
-{
-        (struct access_frame *)af;
-
-        if( cm == NULL )
-        {
-                HIERR("cosmos_diropen input cm NULL");
-                return NULL;
-        }
-
-        void *dh;
-        struct hiena_dcel *dc;
-        btree_curs *curs;
-
-        if( af == NULL )
-        {
-                HIERR("cosmos_diropen input af is NULL");
-                return NULL;
-        }
-
-        dc = af->dcel;
-
-        if( dc == NULL )
-        {
-                HIERR("cosmos_diropen af->dcel is NULL");
-                return NULL;
-        }
-
-        index = dc->dir;
-
-        if( index == NULL )
-        {
-                HIERR("cosmos_diropen dc->dir NULL");
-                return NULL;
-        }
-
-        curs = btree_get_curs( index );
-
-        if( curs == NULL )
-        {
-                HIERR("cosmos_diropen curs NULL");
-                return NULL;
-        }
-
-        return (cosmos_dirh_t)curs;
-}
 
 
 
@@ -62,7 +15,7 @@ cosmos_dirh_t cosmos_opendir(struct cosmos *cm, cosmos_id_t af)
         (struct access_frame *)af;
         struct cosmos_dirh *dh;
         struct hiena_dcel *dc;
-        btree_t bt;
+        btree_t *bt;
 
         if( cm == NULL || af == NULL )
         {
@@ -88,7 +41,7 @@ cosmos_dirh_t cosmos_opendir(struct cosmos *cm, cosmos_id_t af)
 
         malloc(sizeof(*dh));
 
-        dh->cosmos_db = cm;
+        dh->cosmos = cm;
         dh->aframe = af;
         dh->curs = btree_get_curs( bt );
 
@@ -109,22 +62,38 @@ int cosmos_closedir( cosmos_dirh_t dh )
 
         return 0;
 }
-struct dirent *cosmos_readdir( cosmos_dirh_t dh )
-{
-        /* from cosmos_readdir.md:
 
-           for each in dcel's dname index
-           apply aframe remappings
-           expand string
-           add to directory list
+
+/* from cosmos_readdir.md:
+
+   for each in dcel's dname index
+       apply aframe remappings
+       expand string
+       add to directory list
          
-         */
+ */
 
-        struct dirent *e;
+struct cosmos_dirent *cosmos_readdir( cosmos_dirh_t dh )
+{
+        HIERR("cosmos_readdir");
+
+
+        struct cosmo_dirent *e;
         btree_curs *curs;
-        bval_t strid;
+        bval_t dirent_id;
+        struct access_frame *af;
 
-        curs = dh;
+
+        if( dh == NULL )
+        {
+                HIERR("cosmos_readdir dh NULL");
+                return NULL;
+        }
+
+
+        curs = dh->curs;
+
+
 
         if( curs == NULL )
         {
@@ -132,11 +101,46 @@ struct dirent *cosmos_readdir( cosmos_dirh_t dh )
                 return NULL;
         }
 
+
+        af = dh->aframe;
+
+
+        if( af == NULL )
+        {
+                HIERR("cosmos_readdir af NULL");
+                return NULL;
+        }
+
+
+
+
+
+        dirent_id = btree_curs_value(curs);
+
+        if( dirent_id == BVAL_NULL )
+        {
+                HIERR("cosmos_readdir dirent_id BVAL_NULL");
+                return NULL;
+        }
+
+
+
+        dirent_id_remap = aframe_remap_dirent_id( af, dirent_id );
+
+
+        if( dirent_id_remap != BVAL_NULL )
+        {
+                dirent_id = dirent_id_remap;
+        }
+
+
+
+        d_name = cosmos_get_string( dirent_id );
+
         e = malloc(sizeof(*e));
 
-        strid = btree_curs_value(curs);
-
-        printf("cosmos_readdir\n");
+        e->d_name;
+        e->d_ino;
 
         return e;
 }

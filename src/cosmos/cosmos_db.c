@@ -6,6 +6,7 @@
 #include "../hash.h"
 #include "../hierr.h"
 #include "../access_frame.h"
+#include "../dcel.h"
 
 struct hiena_dcel;
 

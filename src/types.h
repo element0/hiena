@@ -4,7 +4,7 @@
 
 #include <sys/types.h>
 
-typedef genno_t uint64_t
+typedef uint64_t genno_t;
 
 
 #endif /*! _HIENA_TYPES_H_ */
