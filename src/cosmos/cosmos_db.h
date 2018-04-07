@@ -1,13 +1,16 @@
-#ifndef _COSMOS_COSMOS_DB_H_
-#define _COSMOS_COSMOS_DB_H_
+#ifndef _COSMOS_DB_H_
+#define _COSMOS_DB_H_
 
 #include <stdint.h>
 #include "../btree_cpp.h"
+#include "cosmos_id.h"
+#include "cosmos_string_db.h"
+#include "cosmos_path_node.h"
 
 
 struct hiena_dcel;
 struct access_frame;
-typedef struct access_frame *cosmos_id_t;
+
 
 /**
   @param aframe cosmos db root aframe
@@ -36,21 +39,12 @@ struct cosmos {
 struct cosmos *cosmos_db_new();
 int cosmos_db_cleanup( struct cosmos * );
 
-cosmos_id_t cosmos_put_string(struct cosmos *, char *);
-
-char *cosmos_get_string(struct cosmos *, cosmos_id_t );
-
-int cosmos_release_string( struct cosmos *, cosmos_id_t, char * );
-
-cosmos_id_t cosmos_string_id( char * );
 
 cosmos_id_t cosmos_hash( char * );
 
 cosmos_id_t cosmos_path_put( struct cosmos *, char * );
 
 char *cosmos_path_get( struct cosmos *, cosmos_id_t );
-
-
 
 struct hiena_dcel *cosmos_dcel_new( struct cosmos * );
 
@@ -63,4 +57,4 @@ struct hiena_dcel *cosmos_dcel_get( struct cosmos *, cosmos_id_t );
 
 
 
-#endif /* !_COSMOS_COSMOS_DB_H_ */
+#endif /* !_COSMOS_DB_H_ */
