@@ -37,8 +37,22 @@ struct cosmos {
 
 
 struct cosmos *cosmos_db_new();
+
 int cosmos_db_cleanup( struct cosmos * );
 
+struct access_frame *cosmos_bind(
+    struct cosmos *cm,
+    struct access_frame *targ, 
+    struct access_frame *modroot,
+    char *modpath,
+    char *addr );
+
+struct access_frame *cosmos_bind_uri(
+    struct cosmos *cm,
+    struct access_frame *targ, 
+    struct access_frame *modroot,
+    char *modpath,
+    char *addr );
 
 cosmos_id_t cosmos_hash( char * );
 

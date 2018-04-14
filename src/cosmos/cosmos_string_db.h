@@ -1,18 +1,19 @@
 #ifndef _COSMOS_STRING_DB_H_
 #define _COSMOS_STRING_DB_H_
 
-#include "cosmos_id.h"
+#include <sys/types.h>
 
 struct cosmos;
+typedef uint64_t cosmos_strid_t;
 
 
-cosmos_id_t cosmos_put_string(struct cosmos *, char *);
+cosmos_strid_t cosmos_put_string(struct cosmos *, char *);
 
-char *cosmos_get_string(struct cosmos *, cosmos_id_t );
+char *cosmos_get_string(struct cosmos *, cosmos_strid_t );
 
-cosmos_id_t cosmos_string_id( char * );
+cosmos_strid_t cosmos_string_id( char * );
 
-int cosmos_string_release( struct cosmos *, cosmos_id_t, char * );
+int cosmos_string_release( struct cosmos *, cosmos_strid_t, char * );
 
 
 #endif /* !_COSMOS_STRING_DB_H_ */

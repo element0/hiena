@@ -137,6 +137,7 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
         cosmos_id_t *boot_cosm;
         cosmos_id_t *uhost_nod;
         mode_t mode;
+        char *userhost_str;
 
 
 
@@ -257,19 +258,31 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
 
         /* init user-host cosm */
 
+        userhost_str = user_at_host_string();
 
-
-        userhost = cosmos_mkdir( cm, cmroot, "demo@localhost", mode);
-
-        if(hostcosm == NULL)
+        if( userhost_str == NULL )
         {
-                HIERR("cosmos_create_db: err: can't init userhost");
+                HIERR("cosmos_create_db: err: can't create userhost_str");
 
                 cosmos_db_cleanup(cm);
 
                 return NULL;
         }
 
+
+        userhost = cosmos_mkdir( cm, cmroot, userhost_str, mode);
+
+        if(hostcosm == NULL)
+        {
+                HIERR("cosmos_create_db: err: can't init userhost");
+
+                free(userhost_str);
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+        free(userhost_str);
 
 
 

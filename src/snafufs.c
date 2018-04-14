@@ -345,16 +345,38 @@ static void snafu_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, s
 
 
 
-
-
-
-static struct cosmos *snafu_init(struct snafu_vol *snafu_vol, char *mountpoint)
+static char *user_at_host_string()
 {
+        char *uhstr;
+        return uhstr;
+}
+
+
+
+static char *absolute_mountpoint( mountpoint )
+{
+        return NULL;
+}
+
+
+
+
+static struct snafu_vol *snafu_init(char *mountpoint)
+{
+        char *abs_mountpt;
+        char *mountpt_url;
+        char *userhost_str;
         struct cosmos *cm;
-        struct access_frame *root, *mount;
+        struct access_frame *root;
+        struct access_frame *mount;
+        struct access_frame *bound;
+        mode_t mode;
+        struct snafu_vol *vol;
+
 
         int modc = 3;
-        char *mod_path[] = {
+
+        char *modv[] = {
             "/usr/lib/cosmos",
             "svc/file.so",
             "lookup/fudge.so",
@@ -362,33 +384,144 @@ static struct cosmos *snafu_init(struct snafu_vol *snafu_vol, char *mountpoint)
 
 
 
-        cm = cosmos_init(modc, mod_path);
 
-        snafu_vol->cosmos_db = cm;
+        cm = cosmos_init(modc,modv);
 
+        if(cm == NULL)
+        {
+                HIERR("snafu_init: err cosmos init NULL");
 
-
-        cmroot = cm->aframe;
-        
-
-
-        uroot = cosmos_simple_lookup(cm, cmroot, "demo@localhost");
+                return NULL;
+        }
 
 
 
-        mount = cosmos_mkdir_path(cm, uroot, mountpoint, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH );
 
 
 
-        snafu_vol->root_ino = mount;
+
+
+        mountpt_url = mountpoint_url( abs_mountpoint );
+
+        if(mountpt_url == NULL)
+        {
+                HIERR("snafu_init: err mountpt_url NULL");
+
+                free(abs_mountpt);
+
+                return NULL;
+        }
 
 
 
-        cosmos_bind(cm, mount, "file", mountpoint);
+
+        userhost_str = user_at_host_string();
+
+        if(userhost_str == NULL)
+        {
+                HIERR("snafu_init: err userhost_str NULL");
+
+                cosmos_cleanup(cm);
+
+                return NULL;
+        }
 
 
 
-        return cm;
+
+        mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+
+
+        root = cosmos_mkdir_path(cm, cm->root, userhost_str, mode );
+
+        if(root == NULL)
+        {
+                HIERR("snafu_init: err root NULL");
+
+                cosmos_cleanup(cm);
+                free(userhost_str);
+
+                return NULL;
+        }
+
+        free(userhost_str);
+
+
+
+
+
+        abs_mountpt = absolute_mountpoint( mountpoint );
+
+        if(abs_mountpt == NULL)
+        {
+                HIERR("snafu_init: err absolute mountpoint NULL");
+
+                cosmos_cleanup(cm);
+
+                return NULL;
+        }
+
+
+
+
+        mount = cosmos_mkdir_path(cm, root, abs_mountpt, mode );
+
+        if(mount == NULL)
+        {
+                HIERR("snafu_init: err mount NULL");
+
+                cosmos_cleanup(cm);
+                free(abs_mountpt);
+
+                return NULL;
+        }
+
+
+
+
+
+
+        mountpt_url = mountpoint_url( abs_mountpoint );
+
+        if(mountpt_url == NULL)
+        {
+                HIERR("snafu_init: err mountpt_url NULL");
+
+                cosmos_cleanup(cm);
+                free(abs_mountpt);
+
+                return NULL;
+        }
+
+        free(abs_mountpt);
+
+
+
+
+        bound = cosmos_bind(cm, mount, mountpt_url);
+
+        if( bound == NULL )
+        {
+                HIERR("snafu_init: err bound NULL");
+
+                cosmos_cleanup(cm);
+                free(mountpt_url);
+
+                return NULL;
+        }
+
+        free(mountpt_url);
+
+
+
+        vol = malloc(sizeof(*vol));
+
+        vol->cosmos_db = cm;
+        vol->root_ino = bound;
+
+
+        return vol;
 }
 
 
@@ -412,20 +545,26 @@ int main(int argc, char *argv[])
         struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
         struct fuse_chan *ch;
         char *mountpoint;
-        struct cosmos *cm;
+        struct snafu_vol *vol;
         int err = -1;
         int cmdline_err;
 
         cmdline_err = fuse_parse_cmdline(&args, &mountpoint, NULL, NULL);
         
-        cm = snafu_init(&snafu_vol, mountpoint);
+        vol = snafu_init(mountpoint);
+        if( vol == NULL )
+        {
+                	fuse_opt_free_args(&args);
+
+                return 1;
+        }
 
 	if ( cmdline_err != -1 &&
 	    (ch = fuse_mount(mountpoint, &args)) != NULL) {
 		struct fuse_session *se;
 
-		se = fuse_lowlevel_new(&args, &snafu_oper,
-				       sizeof(snafu_oper), (void *)cm);
+		se = fuse_lowlevel_new(&args, &snafu_oper, sizeof(snafu_oper), (void *)vol->cm);
+
 		if (se != NULL) {
 			if (fuse_set_signal_handlers(se) != -1) {
 				fuse_session_add_chan(se, ch);

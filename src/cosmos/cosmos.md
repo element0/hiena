@@ -1,3 +1,18 @@
+
+cosmos subsystem
+----------------
+
+"cosmos", the "Cascading Operating SysteM OS"
+
+
+provides:
+- file tree
+- cascading os directories
+- domain cells
+
+
+
+
 cosmos
 ------
 

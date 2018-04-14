@@ -17,6 +17,7 @@ init procedure creates cosmos db and loads essential modules:
 now the daemon is able to take requests
 
 
+
 run daemon
 ----------
 
@@ -27,24 +28,51 @@ check
 fork daemon
 
 
+create database
+---------------
+
+    cosmos db
+        strings
+        tree
+
+
+about tree
+----------
+
+tree of access frames.
+
+created by the lookup function, are paths of access frames which reach a dcel.
+
+the access frame from which a request comes from may be matched by possible ACLs in the dcel.
+
+
 
 
 load modules
 ------------
 
-for each path
+
+for each modpath
         load_mod
 
+
 load_mod
-        dlopen path
-        attach dl to dcel
-        stick dcel in aframe
+        dlopen module path
         create aframe path
-        link aframe to 
+        stick dcel in aframe
 
-        store dcel in cosmosdb
-        attach d
+  .c
+        dl = dlopen( modpath );
+        af = cosmos_mkpath(cm, apath_str);
+        aframe_put_value(af, valtype, dl, len);
 
+
+
+to get the module:
+
+    af = cosmos_lookup(cm, apath_str);
+    modptr = aframe_get_value( af );
+    modops = modptr->ops;
 
 
 
@@ -68,86 +96,13 @@ the first time cosmos_init is called, create the host cosm:
 
 makes...
 
-  cosmosdb
-    aframe
+  cosmos_db
+    tree
       .cosm
-        dcel
 
 
 
 
-create user-host-context root
------------------------------
-
-a context is a configuration that might impose different restrictions from another configuration, such as two different desktop environments running on the same host, under the same user.
-
-a context access frame can share the same root dcel as another context, but the local .cosm will differ.
-
-  cosmosdb
-    aframe
-      skinner@badfish
-        context-demo
-          "/"
-            .cosm
-              <demo config>
-        context-fishbowl
-          "/"
-            .cosm
-              <fishbowl config>
-
-a generic default context exists
-
-    cosmosdb
-    aframe
-      skinner@badfish
-        "/"
-
-each time cosmos_init is called, create a user-host-context aframe if needed.
-
-  url: cosmos://user@host/context/
-
-  cosmosdb
-    aframe
-      user@host
-        context
-
-using these calls:
-
-  cosmos_mknod( aframe, null_prodinstr, userhost_str, mode, dev );
-
-  cosmos_mknod( userhost_aframe, null_prodinstr, context_str, mode, dev );
-
-
-
-create volume dcel
-------------------
-(part of snafu but described here)
-
-each time snafufs is run, create a mountpoint aframe:
-
-  url: cosmos://user@host/context/mountpoint
-  url: cosmos://user@host/context/home/user/example_mnt
-
-  cosmosdb
-    aframe
-      user@host
-        context
-          home
-            user
-              example_mnt
-
-
-and create a prod instr.  fn_aframe is derived from context_aframe.
-
-  prod instr
-    context_aframe: &(aframe/user@host/context/home/user/)
-    fn_aframe: &((context_aframe)/.cosm/svc/file/source)
-    fn: &((fn_aframe)/dcel:value)
-    argc: 1
-    argv: { mountfpath }
-
-
-run to create dcel and store dcel at example_mnt
 
 
 
@@ -155,6 +110,9 @@ respond to lookup request
 -------------------------
 
 lookup requests can come from the file system user, or they can be internal, such as a reference within a prod instr.
+
+access paths are created through the lookup process.
+
 
 when snafufs runs lookup on example_mnt aframe
 
