@@ -5,6 +5,7 @@
 #include "../hierr.h"
 #include "cosmos_db.h"
 #include "cosmos_dirh.h"
+#include "cosmos_string_db.h"
 
 
 
@@ -29,48 +30,48 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
 
 
 
-cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t frame, char *s)
+cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *s)
 {
-        (struct access_frame *)frame;
+        (struct access_frame *)par;
 
         struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
 
         struct access_frame *(*ilookfn)(struct cosmos *, struct access_frame *, char *);
 
         struct access_frame *found;
-        cosmos_id_t strid;
-        cosmos_id_t strid2;
+        cosmos_str_id_t strid;
+        cosmos_str_id_t strid2;
         char *ssav;
+        int err;
+
+        if(par == NULL)
+        {
+                HIERR("cosmos_lookup: err: par NULL");
+
+                return COSMOS_ID_NULL;
+        }
 
 
+
+        printf("cosmos_lookup cache branch %s\n", s);
+
+
+
+
+        /* in sync */
+
+            /* look in branches */
 
         strid = cosmos_string_id(s);
 
-
-        printf("cosmos_lookup (before remap) %s\n", s);
-
+        found = aframe_get_branch(par, strid);
 
 
-        /* look in branches */
 
-        found = aframe_get_branch(frame, strid);
+        /* if found */
 
         if( found != NULL )
                 return (cosmos_id_t)found;
-
-
-
-        /* look in remap */
-
-        strid2 = aframe_get_remap_targ(frame, strid);
-
-        if( strid2 != 0 )
-        {
-                ssav = s;
-                stridsav = strid;
-                s = cosmos_get_string(cm, strid2);
-                strid = strid2;
-        }
 
 
 
@@ -78,35 +79,27 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t frame, char *s)
         /* run lookup module */
 
 
-        printf("cosmos_lookup (after remap) %s\n", s);
+        printf("cosmos_lookup deligate func %s\n", s);
 
-        if(frame == NULL)
-        {
-                HIERR("cosmos_lookup: err: frame NULL");
-                return 0;
-        }
 
-        if( frame->parent == NULL )
+        if( par->parent == NULL )
         {
-                HIERR("cosmos_lookup: err: frame->parent NULL");
-                return 0;
+                HIERR("cosmos_lookup: err: par->parent NULL");
+                return COSMOS_ID_NULL;
         }
 
 
+        lookfn = par->parent->lookfn;
 
-        
+        ilookfn = lookfn( cm, par, ".cosm/lookup/cosmos_lookup_fn" );
 
-        lookfn = frame->parent->lookfn;
-
-        ilookfn = lookfn( cm, frame, ".cosm/lookup/cosmos_lookup_fn" );
-
-        frame->lookfn = ilookfn;
+        par->lookfn = ilookfn;
 
 
-        found = ilookfn( cm, frame, s );
+        found = ilookfn( cm, par, s );
         
         
-        aframe_set_branch(frame, strid, found);
+        aframe_set_branch(par, strid, found);
 
 
         return (cosmos_id_t)found;

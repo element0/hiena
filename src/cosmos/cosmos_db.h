@@ -40,19 +40,18 @@ struct cosmos *cosmos_db_new();
 
 int cosmos_db_cleanup( struct cosmos * );
 
-struct access_frame *cosmos_bind(
+cosmos_id_t cosmos_bind(
     struct cosmos *cm,
-    struct access_frame *targ, 
-    struct access_frame *modroot,
-    char *modpath,
-    char *addr );
+    cosmos_id_t dest,
+    char *protocol,
+    char *addr,
+    cosmos_id_t context);
 
-struct access_frame *cosmos_bind_uri(
+cosmos_id_t cosmos_bind_uri(
     struct cosmos *cm,
-    struct access_frame *targ, 
-    struct access_frame *modroot,
-    char *modpath,
-    char *addr );
+    cosmos_id_t targ,
+    char *addr,
+    cosmos_id_t context);
 
 cosmos_id_t cosmos_hash( char * );
 
