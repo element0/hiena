@@ -95,17 +95,17 @@ object relationships
 description of api layers
 -------------------------
 
-`snafu_fs` uses `libcosmos` through the `cosmos.h` API.  It requests and operates on inos.
+`snafu_fs` uses `libcosmos` through the `cosmos.h` API.  It requests and operates on inos.  `cosmos.h` provides a set of file system operations compatible with the FUSE.
 
-`libcosmos` spawns a `cosmosd` for each user as needed.  Its API (`cosmos.h`) provides a set of file system operations compatible with the FUSE API.
+`libcosmos` spawns a `cosmosd` for each user as needed.  
 
 `cosmosd` manages memory objects.  it uses `libcosmos` (`cosmos.h`).
 
 `cosmosd` performs a lookup by running a `lookup_module` from the `access_frame` of the lookup request.
 
-a `lookup_module` uses `libhiena` via a sub API: `lookup_hdl.h`.
+a `lookup_module` uses `libcosmos` via a sub API: `lookup_svc.h`.
 
-`lookup_hdl` creates `production_instructions` or chains of `production_instructions` and sends those to the `production_core`.
+`lookup_svc` creates `production_instructions` or chains of `production_instructions` and sends those to the `production_core`.
 
 the `production_core` factors the instruction to other `production_core grid nodes`.  An un-factorable "prime" instruction is run.
 
