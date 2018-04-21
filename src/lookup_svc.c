@@ -8,14 +8,6 @@
 #include "scanner.h"
 
 
-struct lookup_hdl *lookup_module_init( struct hiena_dcel *dc, struct hiena_slib *slib )
-{
-        struct lookup_hdl *h;
-
-        h = lookup_hdl_init( dc, slib );
-
-        return h;
-}
 
 
 int lookup_set_target( struct lookup_hdl *h, struct hiena_dcel *dc )

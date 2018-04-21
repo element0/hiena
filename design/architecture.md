@@ -36,6 +36,30 @@ item templates
 .cosm directories
 
 
+description of api layers
+-------------------------
+
+`snafu_fs` uses `libcosmos` through the `cosmos.h` API.  It requests and operates on inos.  `cosmos.h` provides a set of file system operations compatible with the FUSE.
+
+`libcosmos` spawns a `cosmosd` for each user as needed.  
+
+`cosmosd` manages memory objects.  it uses `libcosmos` (`cosmos.h`).
+
+`cosmosd` performs a lookup by running a `lookup_module` from the `access_frame` of the lookup request.
+
+a `lookup_module` uses `libcosmos` via a sub API: `lookup_svc.h`.
+
+`lookup_svc` creates `production_instructions` or chains of `production_instructions` and sends those to the `production_core`.
+
+the `production_core` factors the instruction to other `production_core grid nodes`.  An un-factorable "prime" instruction is run.
+
+the `production_core` uses `scanner_modules`, `producer_modules` and `source_modules` from the `access_frame` of the lookup request.  the result is a `dcel`.
+
+the `production_core` envelopes the `dcel` inside a new `access_frame`.
+
+a factored instruction will result in multiple `access_frame` returns.  the `production_core` merges these and returns a single `access_frame`.
+
+
 api layers
 ----------
 
@@ -91,29 +115,6 @@ object relationships
   btree
   ptr_list
 
-
-description of api layers
--------------------------
-
-`snafu_fs` uses `libcosmos` through the `cosmos.h` API.  It requests and operates on inos.  `cosmos.h` provides a set of file system operations compatible with the FUSE.
-
-`libcosmos` spawns a `cosmosd` for each user as needed.  
-
-`cosmosd` manages memory objects.  it uses `libcosmos` (`cosmos.h`).
-
-`cosmosd` performs a lookup by running a `lookup_module` from the `access_frame` of the lookup request.
-
-a `lookup_module` uses `libcosmos` via a sub API: `lookup_svc.h`.
-
-`lookup_svc` creates `production_instructions` or chains of `production_instructions` and sends those to the `production_core`.
-
-the `production_core` factors the instruction to other `production_core grid nodes`.  An un-factorable "prime" instruction is run.
-
-the `production_core` uses `scanner_modules`, `producer_modules` and `source_modules` from the `access_frame` of the lookup request.  the result is a `dcel`.
-
-the `production_core` envelopes the `dcel` inside a new `access_frame`.
-
-a factored instruction will result in multiple `access_frame` returns.  the `production_core` merges these and returns a single `access_frame`.
 
 
 psuedo-code (ox, fudge)
