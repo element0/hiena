@@ -1,6 +1,8 @@
 
 #include "../../lookup_hdl.h"
 #include "../../dcel.h"
+#include "../../access_frame.h"
+#include "../../cosmos.h"
 #include "fudge.h"
 
 

@@ -7,6 +7,8 @@ typedef void* yyscan_t;
 
 #include "../../lookup_hdl.h"
 #include "../../dcel.h"
+#include "../../access_frame.h"
+#include "../../cosmos.h"
 
 int fudge_parse(struct lookup_hdl *);
 

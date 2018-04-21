@@ -95,23 +95,25 @@ object relationships
 description of api layers
 -------------------------
 
-snafu_fs uses libcosmos.  through the cosmos API, it requests inos and operates on inos.
+`snafu_fs` uses `libcosmos` through the `cosmos.h` API.  It requests and operates on inos.
 
-libcosmos spawns a cosmosd for each user as needed.  its API provides lookup requests and file system operations that satisfy the FUSE API.
+`libcosmos` spawns a `cosmosd` for each user as needed.  Its API (`cosmos.h`) provides a set of file system operations compatible with the FUSE API.
 
-cosmosd manages memory objects.  it uses libcosmos.  it creates a localhost-user access_frame which can be used as a boot frame for lookups.
+`cosmosd` manages memory objects.  it uses `libcosmos` (`cosmos.h`).
 
-cosmosd performs a lookup by loading a lookup_module from the access_frame.
+`cosmosd` performs a lookup by running a `lookup_module` from the `access_frame` of the lookup request.
 
-a lookup_module uses libhiena.  it creates production_instructions or chains of production_instructions and sends those to the production_core.
+a `lookup_module` uses `libhiena` via a sub API: `lookup_hdl.h`.
 
-the production_core factors the instruction to other production_core grid nodes.  A un-factorable "prime" instruction is run.
+`lookup_hdl` creates `production_instructions` or chains of `production_instructions` and sends those to the `production_core`.
 
-the production_core uses scanner_modules, producer_modules and source_modules from the access_frame.  the result is a dcel.  
+the `production_core` factors the instruction to other `production_core grid nodes`.  An un-factorable "prime" instruction is run.
 
-the production_core envelopes the dcel inside a new access_frame.
+the `production_core` uses `scanner_modules`, `producer_modules` and `source_modules` from the `access_frame` of the lookup request.  the result is a `dcel`.
 
-a factored instruction will result in multiple access_frame returns.  the production_core merges these and returns an access_frame.
+the `production_core` envelopes the `dcel` inside a new `access_frame`.
+
+a factored instruction will result in multiple `access_frame` returns.  the `production_core` merges these and returns a single `access_frame`.
 
 
 psuedo-code (ox, fudge)
