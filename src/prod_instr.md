@@ -20,6 +20,52 @@ production instruction implementation
 
 
 
+production instruction language: objects
+----------------------------------------
+
+        production_instruction_list := COUNT LENGTH production_instruction...
+
+        production_instruction := CMD_ID arg_list
+
+        arg_list := COUNT arg...
+
+        arg := TYPE LENGTH data...
+
+
+
+
+production instruction functions
+--------------------------------
+
+command interpreter function:
+
+        prod_exec( production_instruction_list )
+
+
+
+production instruction language: commands
+-----------------------------------------
+
+        source
+        select_children
+        sync_and_map
+        bind_merge_all
+        map_all
+        format
+
+
+        select_children parent_cosmos_id regex_str
+        sync_and_map parent_cosmos_id
+
+
+
+command implementation
+----------------------
+
+commands are implemented within modules.  so a `file` module would also have a `sync_and_map` function - which would map a directory to a child list.
+
+
+
 producer modules
 ----------------
 
