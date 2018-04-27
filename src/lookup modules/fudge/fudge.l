@@ -4,6 +4,7 @@
 
 
 %{
+#include "../../lookup_module.h"
 #include "../../lookup_hdl.h"
 #include "fudge.tab.h"
 %}

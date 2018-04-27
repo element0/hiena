@@ -1,8 +1,7 @@
 
 %code requires {
 
-#include "../../lookup_hdl.h"
-#include "../../dcel.h"
+#include "../../lookup_svc.h"
 #include "fudge.h"
 
 typedef void* yyscan_t;
@@ -22,7 +21,7 @@ typedef void* yyscan_t;
 %token COLON
 %token END
 
-%type <struct hiena_dcel *> prod_instr find_child find_prop find_scan fudge_seg fudge
+%type <lookup_target_t *> fudge fudge_seg find_child modifier 
 
 
 %%
@@ -48,7 +47,7 @@ fudge
 path_sep
   : FWD_SLASH
     {
-      look->step_aframe(look);
+      look->step_segment(look);
     }
   ;
 
@@ -58,9 +57,13 @@ fudge_seg
     {
       look->set_target(look, $1);
     }
-  | fudge_seg modifier
+  | fudge_seg find_prop
     {
-      look->set_target(look, $3);
+      look->set_target(look, $2);
+    }
+  | fudge_seg transform
+    {
+      look->set_target(look, $2);
     }
   ;
 
@@ -71,15 +74,16 @@ find_child :
   }
   ;
 
-modifier :
+find_prop :
     COLON IDENTIFIER
   {
     $$ = look->find_prop(look, $2);
   }
-  | DOT IDENTIFIER
+
+transform :
+    DOT IDENTIFIER
   {
-    cmd = fudge_expand(look, $2);
-    $$ = look->grind(look, cmd);
+    $$ = look->tansform(look, $2);
   }
   ;
 
@@ -93,9 +97,10 @@ yyerror(char const *s)
     fprintf(stderr, "fudge err: %s\n", s);
 }
 
-struct access_frame *fudge_parse( struct lookup_hdl *h )
+int fudge_parse( struct lookup_hdl *h )
 {
     yyscan_t scanner;
+
     yylex_init_extra( h, &scanner );
 
     yyset_in( NULL, scanner );

@@ -4,24 +4,25 @@
 
 fudge language - fluent piping
 ------------------------------
-(10/12/2017)
+(rev 4/24/2018)
 
 
-fudge language's use of this
+fudge language
 
-  <dcel>.<scanner_id>
-  <dcel>.<scanner_id>.<formatter_id>
-  <dcel>.<scanner_id>/<child_name>
-  <dcel>.<scanner_id>:<prop_name>
+  <name>.<mod_id>
+  <name>.<mod_id>.<mod_id>
+  <name>.<mod_id>/<name>  //child
+  <name>.<mod_id>:<name>  //prop
 
 ie.
 
   myfile.ox
   myfile.ox.json
   myfile.ox/some_element
-  myfile.ox:outline
+  myfile.ox:ctime
   myfile.ox.div.html
   myfile.ox.div/some_element.html
+
 
 the actual way fudge works is a pipeline of production instructions.
 
@@ -31,16 +32,56 @@ eg.
   <pi><pi><pi><pi><pi><pi>...
 
 
-(reminder, four prod instr types: source, find, bind, grind)
+(reminder, prod instr types:
+source, map, find, bind, transform)
 
+
+modules implement functions for the production types.
+
+
+deciding which function to trigger:
+
+the first function in a lookup should be a map function of the parent "directory".
+
+    map <par mod> <par>
+
+the next function is a 'find'
+
+    find-child <par> <str>
+    - or -
+    find-prop <par> <str>
+
+the following functions can be 'map' or 'transform' until the next path segment.
+
+deciding to map or transform.
+
+    a map can be transformed into a stream.
+
+    a map can be over-mapped
+
+    a stream can be mapped
+
+
+  'file::///dir.ox' should generate a stream from a dir map.
+
+  'file::///file.ox' should generate a map from a stream.
+
+
+   maybe the rule of thumb:
+      
+      1) try mapper
+      2) try transformer
+ 
 
 
 fudge implementation
 --------------------
 
-fudge-segment takes a dcel and a string, generates a production instruction, executes the instruction, returns a dcel.
+fudge-segment() takes a dcel and a string, generates a production instruction, executes the instruction, returns a dcel.
 
 fudge-loop takes a dcel and a string, parses the string into segments, passes each segment to fudge-segment, returns a dcel.
+
+fudge_parse() takes a string, cosmos_db and a cosmos_ino (parent directory) and parses the string into a production instruction chain.
 
 
 

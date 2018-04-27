@@ -1,60 +1,53 @@
 
-#include "../../lookup_hdl.h"
-#include "../../dcel.h"
-#include "../../access_frame.h"
+#include "../../lookup_svc.h"
 #include "../../cosmos.h"
 #include "fudge.h"
 
 
 
-struct access_frame *cosmos_lookup_fn ( struct cosmos *cm, struct access_frame *af, char *rqstr )
+cosmos_id_t cosmos_lookup_fn ( struct cosmos *cm, cosmos_id_t par, char *rqstr )
 {
         struct lookup_hdl *h;
-        struct hiena_dcel *dc;
-        struct access_frame *res;
+        cosmos_id_t res;
+        int err;
 
         h = lookup_hdl_new();
 
         h->cosmos = cm;
-        h->aframe = af;
+        h->aframe = par;
         h->str = rqstr;
 
 
-        dc = fudge_parse( h );
+        err = fudge_parse( h );
 
+        res = (cosmos_id_t)(h->targ);
 
         return res;
 }
 
 
 
+/* fudge_expand() may expand to
+       a sequence of modifiers,
+       in which case it will call
+       look->set_target() for each.
+ */
 
-
-struct hiena_dcel *fudge_seg( struct hiena_dcel *dc, char *s )
-{
-        if( dc == NULL
-         || s == NULL )
-        {
-                return NULL;
-        }
-        
-}
-
-struct hiena_dcel *fudge( struct hiena_dcel *, char *, char * )
-{
-        if( dc == NULL
-         || s == NULL )
-        {
-                return NULL;
-        }
-}
-
-char *fudge_expand(struct lookup_hdl *look, char *s)
+int fudge_expand(yyscan_t scanner, struct lookup_hdl *look, char *s)
 {
         struct cosmos_cosm *cosm;
         struct hiena_dcel *cmdob;
-        char *cmd;
+        char *str;
         
+        /* expand fudge alias */
+            /* lookup cosm */
+        
+        /* parse alias */
+
+        yyparse(scanner, h);
+
+        /* return success */
+
         cosm = look->cosm;
         cmdob = fudge(cosm, "conf/fudge:alias/%s", s);
         cmd = dcel_strcpy(cmdob);

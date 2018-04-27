@@ -23,7 +23,7 @@ int lookup_set_target( struct lookup_hdl *h, struct hiena_dcel *dc )
         return 0;
 }
 
-struct hiena_dcel *lookup_find_child( struct lookup_hdl *h, char *s )
+lookup_target_t *lookup_find_child( struct lookup_hdl *h, char *s )
 {
         if( h == NULL )
         {
@@ -50,7 +50,7 @@ struct hiena_dcel *lookup_find_child( struct lookup_hdl *h, char *s )
 }
 
 
-struct hiena_dcel *lookup_find_prop( struct lookup_hdl *h, char *s )
+lookup_target_t *lookup_find_prop( struct lookup_hdl *h, char *s )
 {
         if( h == NULL )
         {
@@ -76,38 +76,51 @@ struct hiena_dcel *lookup_find_prop( struct lookup_hdl *h, char *s )
         return res;
 }
 
-struct hiena_dcel *lookup_grind( struct lookup_hdl *look, char *str )
+lookup_target_t *lookup_transform( struct lookup_hdl *look, char *str )
 {
         if( look == NULL )
         {
-                HIERR("lookup_grind: err: look NULL");
+                HIERR("lookup_transform: err: lookup handle NULL");
                 return NULL;
         }
 
-        struct cosmos_cosm *cosm;
+        cm = look->cosmos_db;
 
-        struct prod_instr *pi;
-        struct hiena_dcel *dc;
+        if( cm == NULL )
+        {
+                HIERR("lookup_transform: err: cm NULL");
+                return NULL;
+        }
 
-        struct hiena_slib *slib;
-        struct hiena_scanner *hs;
-        struct hiena_dcel *res;
 
-        cosm = look->cosm;
-        dc = look->target;
-        ax = look->aframe;
-        pi = prod_instr_new();
+        cosmos_str_id_t strid;
 
-        slib = look->scanlib;
-        hs = slib_get_scanner(sn,slib);
+        strid = cosmos_string_put( cm, str );
 
-        pi->fn = dgrind;
-        pi->argc = 3;
-        pi->argv[0] = cmdline;
-        pi->argv[1] = ;
-        pi->argv[2] = ;
 
-        res = prod_exec( pi );
+        listA = look->pilist;
+        listB = prod_instr_list_new();
+        listC = prod_instr_list_new();
+        listD = prod_instr_list_new();
+
+        prod_instr_list_add( listA,
+        PI_IFN, listA, listB );
+
+        prod_instr_list_add( listB,
+        PI_IFN, listA, listB );
+
+        prod_instr_list_add( listB,
+        PI_MAP, PI_STACK, strid );
+
+        prod_instr_list_add( listC,
+        PI_TRANS, PI_STACK, strid );
+
+
         
-        return res;
+        listA = look->pilist;
+
+        prod_instr_list_add( listA,
+        PI_IFN, listA, listB );
+
+
 }

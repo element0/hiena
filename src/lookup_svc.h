@@ -5,13 +5,29 @@
 #define _HIENA_LOOKUP_SVC_H_
 
 
-int lookup_set_target( struct lookup_hdl *h, struct hiena_dcel *dc );
+/* lookup_svc.h is a one-stop shop
+   for lookup modules to include.
+   Please #include anything they
+   need here. */
 
-struct hiena_dcel *lookup_find_child( struct lookup_hdl *h, char *dc );
 
-struct hiena_dcel *lookup_find_prop( struct lookup_hdl *h, char *dc );
+#include "lookup_hdl.h"
 
-struct hiena_dcel *lookup_grind( struct lookup_hdl *h, char *dc );
+#define YY_INPUT(buf,result,max_size) \
+    { \
+    static int pos = 0; \
+    int c = yyextra->str[pos++]; \
+    result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+    }
+
+
+int lookup_set_target( struct lookup_hdl *h, lookup_target_t * );
+
+lookup_target_t *lookup_find_child( struct lookup_hdl *, char * );
+
+lookup_target_t *lookup_find_prop( struct lookup_hdl *, char * );
+
+lookup_target_t *lookup_transform( struct lookup_hdl *, char * );
 
 
 #endif /* ! _HIENA_LOOKUP_SVC_H_ */

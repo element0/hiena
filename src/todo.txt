@@ -1,6 +1,15 @@
 
 
 
+
+2018-04-26  0805
+
+WIP:  lookup_svc
+
+ q: when creating a prod instr sequence, can we do if-then statements?  i need to conditionally fire a 'transform' if a 'mapper' fails.
+
+
+
 2018-03-25  1046
 
 snafufs design:

@@ -20,26 +20,146 @@ production instruction implementation
 
 
 
+
+playground
+----------
+
+a dcel is a product of a production instruction.
+
+a dcel has a module, a production function id and an args datagram.
+
+the module has stream functions and mapping functions.  all functions use the datagram to access their arguments.
+
+
+a 'file:///filepath' dcel will reference a 'file' module, sourcer function, "filepath" arg in the datagram.
+
+run 'map $module $target' to build the child and property maps in $target.
+
+run 'find $par rqstr' to return a dcel from the parent's map which matches the rqstring.
+
+(the found dcel is not a product of find, however.  it is a product of the mapper function.)
+
+(different find producers are possible.  a "find-multi" could merge multiple results into one container cel.  a "find-one-or-list" could return a single cel or a container cel if there are multiple matches.)
+
+run 'transform $module $target $args' to run the module on the target decel and generate a derivative cel.
+
+examples:
+
+    d = source "file" $dirpath
+    er = map d "file"
+    f = find d $subfile
+    er = map f "ox"
+    fd = transform f "dir"
+    f2 = find fd $subitem
+    er = map f2 "divine"
+    fh = transform f2 "html"
+
+fudge expression of the above:
+
+    file:///dirpath/subfile.ox.d/subitem.divine.html
+
+
+
+bytecode array (pilist_t) of the above:
+
+    8, 24*uintptr64_t,
+    PCMD_SRC, STR_PTR, STR_PTR
+    PCMD_MAP, COSMOS_ID, STR_PTR
+    pcmd_fnd, cosmos_id, str_ptr
+    pcmd_map, cosmos_id, str_ptr
+    pcmd_xfm, cosmos_id, str_ptr
+    pcmd_fnd, cosmos_id, str_ptr
+    pcmd_map, cosmos_id, str_ptr
+    pcmd_xfm, cosmos_id, str_ptr
+
+
+flow contol
+    pcmd_if, pilist_ptr, pilist_ptr
+    pcmd_ifn, pilist_ptr, pilist_ptr
+
+
+
+true production functions:
+
+'source', 'transform' and 'bind' create cels.
+
+
+
+non-producing functions:
+
+'map' and 'find' find cells.
+
+(map creates multiple subcels at a time, but uses 'source' to generate them.)
+
+
+
+
+
+module connector maps for auto fudge
+------------------------------------
+
+fudge tries to complete a path of transformations between incompatable formats.
+
+this table describes possible transformations:
+ 
+    ox  | divine
+    ox  | dir
+    dir | ox
+    dir | yaml
+    txt | ox
+    txt | html
+    txt | yaml
+    txt | c
+    yaml | dir
+    divine | html
+
+
+a request:
+
+    dir.html
+
+
+would complete by:
+
+    dir.ox.divine.html
+    
+
+
+
 production instruction language: objects
 ----------------------------------------
 
-        production_instruction_list := COUNT LENGTH production_instruction...
-
-        production_instruction := CMD_ID arg_list
-
-        arg_list := COUNT arg...
-
-        arg := TYPE LENGTH data...
+the language objects must be capable of processing by the grid computer.
 
 
+    %type <uintptr_t> cmd arg
+
+        instruction_list := COUNT LENGTH instr...
+
+        instr := cmd arg arg
+ 
+
+        cmd := PI_SRC
+            |  PI_MAP
+            |  PI_TRANS
+            |  PI_FIND
+            |  PI_BIND
+
+        arg := 
+            |  PI_PIPE_IN
+            |  COSMOS_ID
+            |  STR_ID
+            |  DATA_PTR
 
 
-production instruction functions
---------------------------------
+
+
+production instruction core functions
+-------------------------------------
 
 command interpreter function:
 
-        prod_exec( production_instruction_list )
+        prod_exec(instruction_list)
 
 
 
@@ -48,21 +168,22 @@ production instruction language: commands
 
         source
         select_children
-        sync_and_map
-        bind_merge_all
-        map_all
-        format
+        select_properties
+        map
+        bind_merge
+        transform
 
 
+        map parent_cosmos_id
         select_children parent_cosmos_id regex_str
-        sync_and_map parent_cosmos_id
+
 
 
 
 command implementation
 ----------------------
 
-commands are implemented within modules.  so a `file` module would also have a `sync_and_map` function - which would map a directory to a child list.
+commands are implemented within modules.  so the `file` module would have a `map` function which would map a directory to a child list and map file metadata to a properties list.
 
 
 
