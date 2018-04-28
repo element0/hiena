@@ -1,0 +1,24 @@
+
+instruction queue
+-----------------
+
+without considering conditional execution, a grid computer controller can have an instruction queue.
+
+at its most simple form an instruction queue is processed in order from beginning to end.
+
+
+
+conditional execution
+---------------------
+
+in a pipeline, each instruction is contingent on its prior.
+
+if-then-else statements.
+
+switch-case statements.
+
+breaks, returns
+
+branches, jumps
+
+stack frames, registers
