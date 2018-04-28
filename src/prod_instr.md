@@ -6,6 +6,8 @@
 production instruction implementation
 ======================
 
+- playground
+
 - producer modules
 
 - rationale
@@ -45,14 +47,21 @@ run 'transform $module $target $args' to run the module on the target decel and 
 
 examples:
 
-    d = source "file" $dirpath
-    er = map d "file"
-    f = find d $subfile
-    er = map f "ox"
-    fd = transform f "dir"
-    f2 = find fd $subitem
-    er = map f2 "divine"
-    fh = transform f2 "html"
+    [1] = source "file" $dirpath
+    [2] = map [1] "file"
+    [3] = find [2] $subfile
+    [4] = either_or [10] [11]
+    [5] = either_or [12] [13]
+    [6] = find [5] $subitem
+    [7] = map [7] "divine"
+    [8] = transform [8] "html"
+    [9] = END
+
+    [10] = map [3] "ox"
+    [11] = transform [3] "ox"
+    
+    [12] = map [4] "dir"
+    [13] = transform [4] "dir"
 
 fudge expression of the above:
 
@@ -60,9 +69,9 @@ fudge expression of the above:
 
 
 
-bytecode array (pilist_t) of the above:
+bytecode array (`pilist_t`) of the above:
 
-    8, 24*uintptr64_t,
+    8, 24*uintptr_t,
     PCMD_SRC, STR_PTR, STR_PTR
     PCMD_MAP, COSMOS_ID, STR_PTR
     pcmd_fnd, cosmos_id, str_ptr
@@ -78,6 +87,18 @@ flow contol
     pcmd_ifn, pilist_ptr, pilist_ptr
 
 
+instruction processing
+----------------------
+
+evaluate the current instruction.
+if it fails, return error.
+if it is a special RETURN or END symbol, return value.
+
+program stack tracks subroutines.
+
+
+generative vs non-generative functions
+--------------------------------------
 
 true production functions:
 
