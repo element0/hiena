@@ -22,3 +22,32 @@ breaks, returns
 branches, jumps
 
 stack frames, registers
+
+
+
+
+example grid instruction queue:  fudge language
+-----------------------------------------------
+
+fudge:
+
+        file:///path/file.ox.dir/subob.ox.divine.html
+
+queue:
+
+        1 begin
+        2 source "file" "path"
+        3 if 2 then continue; else end
+        4 map 2 "dir"
+        5 if 4 then continue; else end
+        6 findchild 2 "file"
+        7 if 6 then continue; else end
+        8 map 6 "ox"
+        9 if 8 then jump TBD
+
+        10 transcode 6 "ox"
+        11 if 10 then continue; else end
+        12 map 10 "dir"
+        13 
+
+        ///WIP:  two completely different branches of logic emerge at line 9...

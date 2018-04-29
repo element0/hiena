@@ -10,7 +10,7 @@
 
 
 
-int lookup_set_target( struct lookup_hdl *h, struct hiena_dcel *dc )
+int lookup_set_target( struct lookup_hdl *h, lookup_target_t *targ )
 {
         if( h == NULL )
         {
@@ -18,7 +18,7 @@ int lookup_set_target( struct lookup_hdl *h, struct hiena_dcel *dc )
                 return -1;
         }
 
-        h->target = dc;
+        h->target = targ;
 
         return 0;
 }
@@ -78,6 +78,10 @@ lookup_target_t *lookup_find_prop( struct lookup_hdl *h, char *s )
 
 lookup_target_t *lookup_transform( struct lookup_hdl *look, char *str )
 {
+
+        lookup_target_t *res, *cur;
+
+
         if( look == NULL )
         {
                 HIERR("lookup_transform: err: lookup handle NULL");
@@ -93,34 +97,19 @@ lookup_target_t *lookup_transform( struct lookup_hdl *look, char *str )
         }
 
 
-        cosmos_str_id_t strid;
 
-        strid = cosmos_string_put( cm, str );
+        res = prod_exec( cm, PI_MAP, cur, str );
 
+        if( res == PRODUCTION_ERR )
+        {
+                res = prod_exec( cm, PI_TRANS, cur, str );
+        }
 
-        listA = look->pilist;
-        listB = prod_instr_list_new();
-        listC = prod_instr_list_new();
-        listD = prod_instr_list_new();
+        if( res == PRODUCTION_ERR )
+        {
+                HIERR("lookup_transform: err: prod_exec can't map or transform.");
+                return NULL;
+        }
 
-        prod_instr_list_add( listA,
-        PI_IFN, listA, listB );
-
-        prod_instr_list_add( listB,
-        PI_IFN, listA, listB );
-
-        prod_instr_list_add( listB,
-        PI_MAP, PI_STACK, strid );
-
-        prod_instr_list_add( listC,
-        PI_TRANS, PI_STACK, strid );
-
-
-        
-        listA = look->pilist;
-
-        prod_instr_list_add( listA,
-        PI_IFN, listA, listB );
-
-
+        return res; 
 }
