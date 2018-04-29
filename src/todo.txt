@@ -1,12 +1,26 @@
 
 
+2018-04-30  0612
+
+WIP:  dcel dfind_child
+
+  child index needs to be searchable with a regex.
+
+Research results (via google):
+
+  arrays elements itereated through and individually compared with the regex.
+  c++ containers do not have a regex search function.
+  c++ containers DO have a lower_bound search.
+
 
 
 2018-04-26  0805
 
-WIP:  lookup_svc
+DESIGN:  lookup_svc
 
  q: when creating a prod instr sequence, can we do if-then statements?  i need to conditionally fire a 'transform' if a 'mapper' fails.
+
+ a: do not create production instruction sequences.  keep logic inside the c code and fire each production instruction from the c code.
 
 
 
@@ -27,6 +41,7 @@ to prototype:
 RESTful: aframe_value(), dcel_value()
 
 vs. locking io: aframe_val_lock(), dcel_val_lock()
+
 
 
 2017-11-29  1951
