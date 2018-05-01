@@ -1,5 +1,28 @@
 
 
+
+
+lookup system overview
+----------------------
+
+
+dcel child list key
+
+  uintptr_t, uintptr_t
+
+
+first 8 bytes is hash of file basename wout suffix
+
+second 8 is hash of suffix
+
+
+
+
+
+
+
+
+
 cosmos lookup
 -------------
 

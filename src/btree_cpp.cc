@@ -3,8 +3,8 @@
 
 namespace btree_cpp {
 
-typedef void* bkey_t;
-typedef unsigned long bval_t;
+typedef uintptr_t bkey_t;
+typedef uintptr_t bval_t;
 #define BVAL_NULL 0
 typedef btree::btree_map<bkey_t, bval_t> hbtree;
 

@@ -3,8 +3,8 @@
 
 typedef struct hbtree btree_t;
 typedef struct hbtree_curs btree_curs;
-typedef void* bkey_t;
-typedef unsigned long bval_t;
+typedef uintptr_t bkey_t;
+typedef uintptr_t bval_t;
 #define BVAL_NULL 0
 
 
@@ -12,7 +12,7 @@ btree_t *btree_new();
 
 bval_t btree_get(btree_t *, bkey_t key);
 
-void *btree_put(btree_t *, bkey_t key, void *val );
+void *btree_put(btree_t *, bkey_t key, bval_t val );
 
 void btree_print(btree_t *);
 

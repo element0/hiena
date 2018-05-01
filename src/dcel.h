@@ -7,6 +7,7 @@
 #include "btree_cpp.h"
 #include "prod_instr.h"
 #include "ptr_stack.h"
+#include "mapcel.h"
 #include "types.h"
 
 
@@ -68,5 +69,19 @@ struct hiena_dcel *dcel_new( struct hiena_dcel * );
 int dcel_cleanup( struct hiena_dcel * );
 
 struct iovec *dcel_val_ptr(struct hiena_dcel *);
+
+
+struct hiena_dcel *dcel_find_child(struct hiena_dcel *, char *);
+
+struct hiena_dcel *dcel_find_child_by_prefix(struct hiena_dcel *, char *);
+
+struct hiena_dcel *dcel_find_child_by_regex(struct hiena_dcel *, char *);
+
+struct hiena_dcel *dcel_find_child_by_ordinal(struct hiena_dcel *, char *);
+
+
+int dcel_set_child(struct hiena_dcel *, char *, struct hiena_mapcel *);
+
+
 
 #endif /*! _HIENA_DCEL_H_ */

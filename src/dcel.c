@@ -5,6 +5,7 @@
 #include "hierr.h"
 #include "frag.h"
 #include "ptr_stack.h"
+#include "cosmos.h"
 
 struct hiena_dcel *dcel_new( struct hiena_dcel *dcgarbage )
 {
@@ -100,6 +101,103 @@ struct iovec *dcel_val_ptr(struct hiena_dcel *dc)
         iov = (struct iovec *)&(dc->frag->buf);
 
         return iov;
+}
+
+
+
+int dcel_set_child(struct hiena_dcel *dc, char *name, struct hiena_mapcel *mc, struct cosmos *cm)
+{
+        if(dc == NULL)
+        {
+                HIERR("dcel_set_child: err: dc NULL");
+               return -1;
+        }
+
+        if(name == NULL)
+        {
+                HIERR("dcel_set_child: err: name NULL");
+               return -1;
+        }
+
+        if(mc == NULL)
+        {
+                HIERR("dcel_set_child: err: mc NULL");
+               return -1;
+        }
+
+        if(cm == NULL)
+        {
+                HIERR("dcel_set_child: err: mc NULL");
+               return -1;
+        }
+
+
+        char *c, *prefix, *suffix;
+        size_t ct, len;
+        cosmos_strid_t str_id;
+        btree_t *tree, *leaf;
+
+
+
+        /* prefix up to '.' */
+
+        c = name;
+
+        len = strlen(name);
+
+        while( *c != '.' 
+            && *(c++) != '\0'
+            && ct++ <= len );
+
+        prefix = strndup(str, ct);
+
+
+
+        /* suffix incl '.' */
+
+        len = strlen(c);
+
+        if( len > 0 )
+        {
+                suffix = strndup(c, len);
+        }else{
+                suffix = NULL;
+        }
+
+
+
+
+        /* set prefix */
+
+        tree = dc->dir;
+
+        str_id = cosmos_put_string(cm, prefix);
+
+        leaf = (btree_t *)btree_get(tree, str_id);
+
+
+        //----> WIP
+
+        if( leaf == NULL )
+        {
+                leaf = mapcel_dir_new();
+                btree_put(prefix, leaf);
+
+
+        } else {
+                err = mapcel_dir_get(leaf, suffix);
+                if( err != NULL )
+                {
+                        HIERR("dcel_set_child: err: child entry already exists.");
+            
+                        return -1;
+                }
+        }
+
+
+        mapcel_dir_add(leaf, suffix, mc);
+
+        return 0;
 }
 
 
