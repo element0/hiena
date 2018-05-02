@@ -23,8 +23,15 @@ contents
 
 directories and dcels
 ---------------------
+(update 2018/05/03)
 a dcel has a top level mapcel.
-if the top mapcel is a dir, the dcel is a dir.  opendir and readdir will access the directory of the top mapcell.
+if the top mapcel is a dir type, the dcel can be a dir.
+
+the dcel stores the directory index.  the index entries refer to sub-mapcels that have been mapped as dirents.
+
+the directory index is built during the mapping phase.
+
+opendir and readdir access the directory of the dcel.
 
 
 

@@ -104,38 +104,40 @@ struct iovec *dcel_val_ptr(struct hiena_dcel *dc)
 }
 
 
-
-int dcel_set_child(struct hiena_dcel *dc, char *name, struct hiena_mapcel *mc, struct cosmos *cm)
+static int split_prefix( struct dcel_dirent *e )
 {
-        if(dc == NULL)
-        {
-                HIERR("dcel_set_child: err: dc NULL");
-               return -1;
-        }
-
-        if(name == NULL)
-        {
-                HIERR("dcel_set_child: err: name NULL");
-               return -1;
-        }
-
-        if(mc == NULL)
-        {
-                HIERR("dcel_set_child: err: mc NULL");
-               return -1;
-        }
-
-        if(cm == NULL)
-        {
-                HIERR("dcel_set_child: err: mc NULL");
-               return -1;
-        }
-
-
         char *c, *prefix, *suffix;
+        char *name;
         size_t ct, len;
-        cosmos_strid_t str_id;
-        btree_t *tree, *leaf;
+
+        if( e == NULL )
+        {
+                HIERR("dcel::split_prefix: err e NULL");
+                return -1;
+        }
+
+
+        name = e->d_name;
+        prefix = e->prefix;
+        suffix = e->suffix;
+
+        if( name == NULL )
+        {
+                HIERR("dcel::split_prefix: err incoming name NULL");
+                return -1;
+        }
+
+        if( prefix != NULL )
+        {
+                HIERR("dcel::split_prefix: err incoming prefix ptr is not initialized.  please initialize to NULL");
+                return -1;
+        }
+
+        if( suffix != NULL )
+        {
+                HIERR("dcel::split_prefix: err incoming suffix ptr is not initialized.  please initialize to NULL");
+                return -1;
+        }
 
 
 
@@ -149,7 +151,7 @@ int dcel_set_child(struct hiena_dcel *dc, char *name, struct hiena_mapcel *mc, s
             && *(c++) != '\0'
             && ct++ <= len );
 
-        prefix = strndup(str, ct);
+        prefix = strndup(name, ct);
 
 
 
@@ -164,40 +166,123 @@ int dcel_set_child(struct hiena_dcel *dc, char *name, struct hiena_mapcel *mc, s
                 suffix = NULL;
         }
 
+        e->prefix = prefix;
+        e->suffix = suffix;
+
+        return 0;
+}
+
+int dcel_set_child(struct hiena_dcel *dc, char *name, struct hiena_mapcel *mc, struct cosmos *cm)
+{
+        if(dc == NULL)
+        {
+                HIERR("dcel_set_child: err: dc NULL");
+                return -1;
+        }
+
+        if(name == NULL)
+        {
+                HIERR("dcel_set_child: err: name NULL");
+                return -1;
+        }
+
+        if(mc == NULL)
+        {
+                HIERR("dcel_set_child: err: mc NULL");
+                return -1;
+        }
+
+        if(cm == NULL)
+        {
+                HIERR("dcel_set_child: err: mc NULL");
+                return -1;
+        }
+
+        if(dc->dir == NULL)
+        {
+                HIERR("dcel_set_child: err: dc->dir is NULL.");
+
+                return -1;
+        }
 
 
 
-        /* set prefix */
+        struct dcel_dirent e;
+        cosmos_strid_t id;
+        btree_t *tree, *leaf;
+
+
+
+        e.d_name = name;
+        e.suffix = NULL;
+        e.prefix = NULL;
+
+
+
+        split_prefix(&e);
+
+
+
 
         tree = dc->dir;
 
-        str_id = cosmos_put_string(cm, prefix);
+        id = cosmos_put_string(cm, e.prefix);
 
-        leaf = (btree_t *)btree_get(tree, str_id);
+        if( id == COSMOS_STRID_NULL)
+        {
+                HIERR("dcel_set_child: err: prefix string id NULL");
+                goto abort;
+        }
 
 
-        //----> WIP
+
+
+
+        leaf = (btree_t *)btree_get(tree, id);
+
 
         if( leaf == NULL )
         {
-                leaf = mapcel_dir_new();
-                btree_put(prefix, leaf);
+                leaf = btree_new();
+                btree_put(tree, id, (bval_t)leaf);
 
+        }else{
 
-        } else {
-                err = mapcel_dir_get(leaf, suffix);
+                err = btree_get(leaf, suffix);
                 if( err != NULL )
                 {
-                        HIERR("dcel_set_child: err: child entry already exists.");
+                        HIERR("dcel_set_child: err: child entry exists.");
             
-                        return -1;
+                        goto abort;
                 }
         }
 
 
-        mapcel_dir_add(leaf, suffix, mc);
+
+
+        id = cosmos_put_string(cm, e.suffix);
+
+        if( id == COSMOS_STRID_NULL)
+        {
+                HIERR("dcel_set_child: err: suffix string id NULL");
+                goto abort;
+        }
+
+
+
+        btree_put(leaf, id, (bval_t)mc);
+
+
+        free(e.prefix);
+        free(e.suffix);
 
         return 0;
+
+abort:
+        free(e.prefix);
+        free(e.suffix);
+
+        return -1;
 }
 
 

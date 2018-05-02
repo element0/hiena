@@ -5,6 +5,7 @@
 
 struct cosmos;
 typedef uint64_t cosmos_strid_t;
+#define COSMOS_STRID_NULL 0
 
 
 cosmos_strid_t cosmos_put_string(struct cosmos *, char *);

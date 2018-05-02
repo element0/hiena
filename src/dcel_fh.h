@@ -40,6 +40,13 @@ struct dcel_fh {
 
         ptr_stack_t *dir_stack;
 
+
+        /* cosmos db */
+        /* required by directory */
+
+        struct cosmos *cosmos_db;
+
+
 /* depricate? */
 
         btree_t *tmpdir;
