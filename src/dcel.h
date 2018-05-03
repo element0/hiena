@@ -9,6 +9,7 @@
 #include "ptr_stack.h"
 #include "mapcel.h"
 #include "types.h"
+#include "cosmos.h"
 
 
 
@@ -31,35 +32,47 @@
         index[value]
             ptrlist[]
 
+    
+    updated 2018-05-04
  */
 
 struct hiena_dcel {
 
+        /** production */
+        
+        /* svc is in producer module */
+
         struct prod_instr *prod_instr;
-     /* svc is in producer module */
+
+
+        /** stream and map */
 
         struct hiena_frag *frag;
+        struct hiena_mapcel *mapcel;
+        
+        /** map and index */
 
-        void *scanner_id;
-        void *rule_id;
+        /** properties stored in prop index
+          - attr
+          - xattr
+          - scanner_id
+          - rule_id
+          - exec heler reference
+          */
 
-        btree_t *map;
-        btree_t *map_index;
-     /* xattr stored in map_index */
-     /* attr stored in map_index */
-     /* exec helper
-         referenced in map_index */
-        void    *map_index_state;
+        btree_t *prop;  /* index */
+        btree_t *child; /* index */
 
-        btree_t *dir;
-        btree_t *dir_index;
-        void    *dir_index_state;
+        
+        /** production state */
+        void    *prop_index_state;
+        void    *child_index_state;
 
+        /** housekeeping */
         int retain;
         int dirty;
         genno_t gen_no;
         genno_t par_gen_no;
-
         ptr_stack_t undo;
 };
 
@@ -80,7 +93,7 @@ struct hiena_dcel *dcel_find_child_by_regex(struct hiena_dcel *, char *);
 struct hiena_dcel *dcel_find_child_by_ordinal(struct hiena_dcel *, char *);
 
 
-int dcel_set_child(struct hiena_dcel *, char *, struct hiena_mapcel *);
+int dcel_add_child(struct hiena_dcel *, char *, struct hiena_dcel *, struct cosmos *);
 
 
 

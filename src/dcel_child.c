@@ -1,3 +1,6 @@
+
+
+
 static int split_prefix( struct dcel_dirent *e )
 {
         char *c, *prefix, *suffix;
@@ -66,35 +69,35 @@ static int split_prefix( struct dcel_dirent *e )
         return 0;
 }
 
-int dcel_set_child(struct hiena_dcel *dc, char *name, struct hiena_mapcel *mc, struct cosmos *cm)
+int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child, struct cosmos *cm )
 {
-        if(dc == NULL)
+        if(par == NULL)
         {
-                HIERR("dcel_set_child: err: dc NULL");
+                HIERR("dcel_add_child: err: par NULL");
                 return -1;
         }
 
         if(name == NULL)
         {
-                HIERR("dcel_set_child: err: name NULL");
+                HIERR("dcel_add_child: err: name NULL");
                 return -1;
         }
 
-        if(mc == NULL)
+        if(child == NULL)
         {
-                HIERR("dcel_set_child: err: mc NULL");
+                HIERR("dcel_add_child: err: child NULL");
                 return -1;
         }
 
         if(cm == NULL)
         {
-                HIERR("dcel_set_child: err: mc NULL");
+                HIERR("dcel_add_child: err: cm NULL");
                 return -1;
         }
 
-        if(dc->dir == NULL)
+        if(par->dir == NULL)
         {
-                HIERR("dcel_set_child: err: dc->dir is NULL.");
+                HIERR("dcel_add_child: err: par->dir is NULL.");
 
                 return -1;
         }
@@ -118,13 +121,13 @@ int dcel_set_child(struct hiena_dcel *dc, char *name, struct hiena_mapcel *mc, s
 
 
 
-        tree = dc->dir;
+        tree = par->dir;
 
         id = cosmos_put_string(cm, e.prefix);
 
         if( id == COSMOS_STRID_NULL)
         {
-                HIERR("dcel_set_child: err: prefix string id NULL");
+                HIERR("dcel_add_child: err: prefix string id NULL");
                 goto abort;
         }
 
@@ -145,7 +148,7 @@ int dcel_set_child(struct hiena_dcel *dc, char *name, struct hiena_mapcel *mc, s
                 err = btree_get(leaf, suffix);
                 if( err != NULL )
                 {
-                        HIERR("dcel_set_child: err: child entry exists.");
+                        HIERR("dcel_add_child: err: child entry exists.");
             
                         goto abort;
                 }
@@ -158,13 +161,13 @@ int dcel_set_child(struct hiena_dcel *dc, char *name, struct hiena_mapcel *mc, s
 
         if( id == COSMOS_STRID_NULL)
         {
-                HIERR("dcel_set_child: err: suffix string id NULL");
+                HIERR("dcel_add_child: err: suffix string id NULL");
                 goto abort;
         }
 
 
 
-        btree_put(leaf, id, (bval_t)mc);
+        btree_put(leaf, id, (bval_t)child);
 
 
         free(e.prefix);

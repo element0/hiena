@@ -62,6 +62,15 @@ dcel-mapsvc:
 	gcc $(dbugopts) -c dcel_mapsvc.c -o $(out-o)/dcel_mapsvc.o
 
 
+documentation:
+	mkdir -p ../doc
+	doxygen Doxyfile
+
+doc-clean:
+	rm -r ../doc/html
+	rm -r ../doc/latex
+	rm ../doc/doxygen*
+
 dsource:
 	gcc $(dbugopts) -c dsource.c -o $(out-o)/dsource.o
 
