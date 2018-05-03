@@ -1,6 +1,4 @@
 
-
-
 static int split_prefix( struct dcel_dirent *e )
 {
         char *c, *prefix, *suffix;
