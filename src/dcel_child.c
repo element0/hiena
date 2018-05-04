@@ -1,3 +1,4 @@
+#include <errno.h>
 
 static int split_prefix( struct dcel_dirent *e )
 {
@@ -104,7 +105,7 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
 
         struct dcel_dirent e;
         cosmos_strid_t id;
-        btree_t *tree, *leaf;
+        btree_t *tree, *leaf, *err;
 
 
 
@@ -180,6 +181,9 @@ abort:
         return -1;
 }
 
+/** TEMP:  this only returns the first match 
+          if there are multiple children all with the 
+          same name. */
 
 struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct cosmos *cm)
 {
@@ -200,7 +204,19 @@ struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct co
                 HIERR("dcel_find_child: err: cm NULL");
                 return NULL;
         }
+
+        if( par->child == NULL )
+        {
+                HIERR("dcel_find_child: err: par->child NULL");
+                return NULL;
+        }
         
+        struct dcel_dirent e, *child;
+        cosmos_strid_t id;
+        btree_t *prefix_tree, *suffix_tree;
+        int err;
+
+
         e.d_name = name;
         e.suffix = NULL;
         e.prefix = NULL;
@@ -208,6 +224,76 @@ struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct co
         split_prefix(&e);
 
 
+
+        prefix_tree = par->child;
+
+
+        id = cosmos_string_id(cm, e.prefix);
+
+        if( id == COSMOS_STRID_NULL)
+        {
+                HIERR("dcel_find_child: err: prefix string id NULL");
+
+                goto abort;
+        }
+
+
+        suffix_tree = (btree_t *)btree_get(prefix_tree, id);
+
+
+        if( suffix_tree == NULL )
+        {
+                HIERR("dcel_find_child: err: prefix ENOENT.");
+
+                err = ENOENT;
+
+                goto abort;
+        }
+
+
+
+        id = cosmos_string_id(cm, e.suffix);
+
+        if( id == COSMOS_STRID_NULL)
+        {
+                HIERR("dcel_find_child: err: suffix string id NULL");
+
+                goto abort;
+        }
+
+
+
+        child = (struct dcel_dirent *)btree_get(suffix_tree, id);
+
+        if( child == NULL )
+        {
+                HIERR("dcel_find_child: err: child NULL, ENOENT");
+
+                err = ENOENT;
+
+                goto abort;
+        }
+
+        if( child->dcel == NULL )
+        {
+                HIERR("dcel_find_child: err: child->dcel NULL, ENOENT");
+
+                err = ENOENT;
+
+                goto abort;
+        }
+
+
+        free(e.prefix);
+        free(e.suffix);
+
+
+
+        return child->dcel;
+
+abort:
+        free(e.prefix);
+        free(e.suffix);
 
         return NULL;
 }
