@@ -181,3 +181,48 @@ abort:
 }
 
 
+struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct cosmos *cm)
+{
+        if(par == NULL)
+        {
+                HIERR("dcel_find_child: err: par NULL");
+                return NULL;
+        }
+
+        if(name == NULL)
+        {
+                HIERR("dcel_find_child: err: name NULL");
+                return NULL;
+        }
+
+        if(cm == NULL)
+        {
+                HIERR("dcel_find_child: err: cm NULL");
+                return NULL;
+        }
+        
+        e.d_name = name;
+        e.suffix = NULL;
+        e.prefix = NULL;
+
+        split_prefix(&e);
+
+
+
+        return NULL;
+}
+
+struct hiena_dcel *dcel_find_child_by_prefix(struct hiena_dcel *par, char *name, struct cosmos *cm)
+{
+        return NULL;
+}
+
+struct hiena_dcel *dcel_find_child_by_regex(struct hiena_dcel *par, char *restr, struct cosmos *cm)
+{
+        return NULL;
+}
+
+struct hiena_dcel *dcel_find_child_by_ordinal(struct hiena_dcel *, char *, struct cosmos *)
+{
+        return NULL;
+}
