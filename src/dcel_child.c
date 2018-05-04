@@ -119,7 +119,7 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
 
 
 
-        tree = par->dir;
+        tree = par->child;
 
         id = cosmos_put_string(cm, e.prefix);
 
