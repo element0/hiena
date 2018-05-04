@@ -6,10 +6,10 @@ see also "dfind.{c,h,md}"
 lookup interface
 ----------------
 
-  dfind_child_by_prefix()
-  dfind_child()
-  dfind_child_by_regex()
-  dfind_child_by_ordinal()
+  dcel_find_child()
+  dcel_find_child_by_prefix()
+  dcel_find_child_by_regex()
+  dcel_find_child_by_ordinal()
 
 
 find by regex is most expensive op.
