@@ -7,13 +7,15 @@
 
 
 
-dcel_dirsvc
+dcel_dirsvc     {#dcel_dirsvc}
 ===========
 
 
 contents
 --------
 - directories and dcels
+- directory implementation
+- dirents with identical id's
 - directories within map structure
 - opendir algorithm
 - readdir algorithm
@@ -23,16 +25,52 @@ contents
 
 directories and dcels
 ---------------------
+
 (update 2018/05/03)
+
 a dcel has a top level mapcel.
 if the top mapcel is a dir type, the dcel can be a dir.
 
-the dcel stores the directory index.  the index entries refer to sub-mapcels that have been mapped as dirents.
+the dcel stores a directory index.
+the index dirents refer to dcels that have been mapped as dirents.
 
-the directory index is built during the mapping phase.
+the directory index is built during a mapping production.
 
-opendir and readdir access the directory of the dcel.
+opendir() and readdir() use the directory of the dcel.
 
+
+directory implementation
+------------------------
+
+(2018/05/05)
+
+        dcel_t parent
+                btree_t child // prefix
+                        btree_t suffix
+                                dirent_t entry
+
+        entry
+                dcel       // dirent role dcel, has mapcel
+                next       // next directory entry
+                next_type  // next directory entry of same type
+
+Use `entry->next` to list all entries in directory.
+
+Use `entry->next_type` to list all children with identical id's.
+
+
+dirents with identical id's
+---------------------------
+
+(2018/05/05)
+
+Under real-world conditions a scanner will be allowed to map
+multiple dirents that have the exact same `d_name`.
+
+This is not treated as an error.
+
+Each dirent has an ordinal position which differentiates
+itself:  `entry->next_type`
 
 
 directories within map structure
