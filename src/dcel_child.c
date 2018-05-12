@@ -13,6 +13,15 @@
 #include "btree_cpp.h"
 
 
+struct dcel_dirent *dcel_dirent_new()
+{
+        struct dcel_dirent *e;
+        e = malloc(sizeof(*e));
+        memset(e,0,sizeof(*e));
+        return e;
+}
+
+
 static int split_prefix( struct dcel_dirent *e )
 {
         char *c, *prefix, *suffix;
@@ -26,9 +35,13 @@ static int split_prefix( struct dcel_dirent *e )
         }
 
 
+        c = NULL;
         name = e->d_name;
         prefix = e->prefix;
         suffix = e->suffix;
+        ct = 0;
+        len = 0;
+
 
         if( name == NULL )
         {
@@ -57,11 +70,10 @@ static int split_prefix( struct dcel_dirent *e )
         len = strlen(name);
 
         while( *c != '.' 
-            && *(c++) != '\0'
-            && ct++ <= len );
+            && ct++ < len
+            && c++ );
 
         prefix = strndup(name, ct);
-
 
 
         /* suffix incl '.' */
@@ -130,12 +142,8 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
 
 
 
-
+        memset(&e,0,sizeof(e));
         e.d_name = name;
-        e.suffix = NULL;
-        e.prefix = NULL;
-        e.next = NULL;
-        e.next_same = NULL;
 
 
 
@@ -178,23 +186,17 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
 
         if( ce == NULL )
         {
-                ce = malloc(sizeof(*ce));
-                memset(ce,0,sizeof(*ce));
+                ce = dcel_dirent_new();
 
                 btree_put(leaf, (bkey_t)id2,(bval_t)ce);
-
         }
 
         else {
 
                 for(; ce->next_same != NULL; ce = ce->next_same);
 
-                ce->next_same = malloc(sizeof(*ce));
-                memset(ce->next_same,0,sizeof(*ce));
-
-
+                ce->next_same = dcel_dirent_new();
                 ce = ce->next_same;
-
         }
 
 
@@ -281,9 +283,8 @@ struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct co
         int err;
 
 
+        memset(&e,0,sizeof(e));
         e.d_name = name;
-        e.suffix = NULL;
-        e.prefix = NULL;
 
         split_prefix(&e);
 

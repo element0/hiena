@@ -47,7 +47,7 @@ int main()
         if( res == NULL )
         {
                 HIERR("test_dcel_child::main: err: res NULL");
-
+                goto list_children;
         }
 
         e = res->child_list;
@@ -55,18 +55,47 @@ int main()
         if( e == NULL )
         {
                 HIERR("test_dcel_child::main: err: res->child_list NULL");
+                goto list_children;
         }
 
         if( e->dcel != dc2 )
         {
-               HIERR("test_dcel_child::main: err: res->child_list != dc2");
+                HIERR("test_dcel_child::main: err: res->child_list != dc2");
+                goto list_children;
 
         }
         
         else{
-               printf("SUCCESS! res->child_list == dc2\n");
+                printf("SUCCESS! found \"wings\"\n");
         }
 
+        /* lookup another child */
+
+        res = dcel_find_child( dc, "beak", cm );
+        if( res == NULL )
+        {
+                HIERR("test_dcel_child::main: err: res NULL");
+                goto list_children;
+        }
+
+        e = res->child_list;
+
+        if( e == NULL )
+        {
+                HIERR("test_dcel_child::main: err: res->child_list NULL");
+                goto list_children;
+        }
+
+        if( e->dcel != dc3 )
+        {
+                HIERR("test_dcel_child::main: err: res->child_list != dc4");
+                goto list_children;
+
+        }
+        
+        else{
+                printf("SUCCESS! found \"beak\"\n");
+        }
 
         /* lookup another child */
 
@@ -74,7 +103,7 @@ int main()
         if( res == NULL )
         {
                 HIERR("test_dcel_child::main: err: res NULL");
-
+                goto list_children;
         }
 
         e = res->child_list;
@@ -82,21 +111,24 @@ int main()
         if( e == NULL )
         {
                 HIERR("test_dcel_child::main: err: res->child_list NULL");
+                goto list_children;
         }
 
         if( e->dcel != dc4 )
         {
-               HIERR("test_dcel_child::main: err: res->child_list != dc4");
+                HIERR("test_dcel_child::main: err: res->child_list != dc4");
+                goto list_children;
 
         }
         
         else{
-               printf("SUCCESS! found \"down\"\n");
+                printf("SUCCESS! found \"down\"\n");
         }
 
 
 
         /* list children */
+list_children:
 
         for(e = dc->child_list; e != NULL; e = e->next)
         {
