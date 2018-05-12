@@ -84,9 +84,9 @@ int main()
                 HIERR("test_dcel_child::main: err: res->child_list NULL");
         }
 
-        if( e->dcel != dc2 )
+        if( e->dcel != dc4 )
         {
-               HIERR("test_dcel_child::main: err: res->child_list != dc2");
+               HIERR("test_dcel_child::main: err: res->child_list != dc4");
 
         }
         
