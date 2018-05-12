@@ -5,19 +5,17 @@
 
 
 
-
-#include "dcel.h"
-#include "frag_curs.h"
-#include "map_anchor.h"
-
-
+struct hiena_dcel;
+struct dcel_dirent;
 
 
 struct dcel_dirh {
+
+        /** for retain */
         struct hiena_dcel *dcel;
-        struct frag_curs *frag_cursor;
-        struct map_anchor *cur_mapanchor;
-        size_t pos, len, len_rem;
+
+        struct dcel_dirent *cur;
+        struct dcel_dirent *cur_ord;
 };
 
 

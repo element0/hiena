@@ -46,6 +46,7 @@ cosmos-load-mod:        dcel access-frame
 cosmos-init:    cosmos-db cosmos-load-mod
 	gcc $(dbugopts)  -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
 
+
 cosmos-util:    cosmos-db cosmos-init
 	gcc $(dbugopts)  $(out-o)/cosmos_init.o cosmos/cosmos_util.c -o $(out-bin)/cosmos
 
@@ -54,6 +55,9 @@ dcel:   ptr-stack frag
 
 dcel-svc:
 	gcc $(dbugopts) -c dcel_svc.c -o $(out-o)/dcel_svc.o
+
+dcel-child:
+	gcc $(dbugopts) -c dcel_child.c -o $(out-o)/dcel_child.o
 
 dcel-dirsvc:
 	gcc $(dbugopts) -c dcel_dirsvc.c -o $(out-o)/dcel_dirsvc.o
@@ -180,6 +184,10 @@ svc-obs: file-svc
 
 
 tests: out-dirs test-btrees test-dcel-svc test-file-svc test-hiena-fh test-mapcel test-mfrag test-mfrag-fh test-mfrag-svc test-frag test-frag-fh test-frag-svc
+
+
+test-dcel-child: hash access-frame btree_cpp cosmos-db cosmos-fs dcel dcel-child frag ptr-stack mfrag
+	gcc $(dbugopts) $(out-o)/{hash.o,access_frame.o,btree_cpp.o,dcel.o,dcel_child.o,frag.o,ptr_stack.o,mfrag.o} $(out-o)/cosmos_{db,fs}.o test_dcel_child.c -o $(out-test-bin)/dcel_child_test -lstdc++
 
 
 test-dcel-svc: btrees map-anchor mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs frag-svc dcel-svc

@@ -2,19 +2,20 @@
 #define _HIENA_DCEL_H_
 
 /** @file dcel.h
-
+  2018-05-08:  added child_list
   2018-05-04:  Updated methods to require `struct cosmos *`.
  */
 
 #include <sys/uio.h>
 #include "frag.h"
 #include "btree_cpp.h"
-#include "prod_instr.h"
 #include "ptr_stack.h"
 #include "mapcel.h"
 #include "types.h"
 #include "cosmos.h"
 
+
+struct prod_instr;
 
 
 #define dcel_retain( dc ) dc->retain++
@@ -44,10 +45,14 @@ struct hiena_dcel {
         struct hiena_mapcel *mapcel;
         
 
+        /* lists */
+        struct dcel_dirent *child_list;
+        struct dcel_dirent *child_list_last;
+
 
         /* indices */
-        btree_t *prop;
-        btree_t *child;
+        btree_t *prop_index;
+        btree_t *child_index;
 
         
         /** production state */

@@ -1,10 +1,34 @@
 
 
 see also "dfind.{c,h,md}"
+see also "dcel_dirsvc.md"
 
 
-lookup interface
-----------------
+
+lookup vs find
+--------------
+dcel_find returns a list.
+lookup returns an item.
+
+find is internal.
+lookup is externalized via modules.
+
+there is no dcel_lookup method.
+
+
+dcel_find() list type
+---------------------
+(2018-05-06 0718)
+
+list is implemented by a dcel.
+dcel->child[index '\0']->suffix['\0'] is first element.
+
+
+
+
+
+find interface
+--------------
 
   dcel_find_child()
   dcel_find_child_by_prefix()
@@ -25,7 +49,7 @@ storage interface
 the converse of the above:
 
   dcel_mapsvc::new_dirent()
-  dcel_set_child();
+  dcel_add_child();
 
 
 

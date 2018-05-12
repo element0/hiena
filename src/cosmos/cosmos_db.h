@@ -53,7 +53,7 @@ cosmos_id_t cosmos_bind_uri(
     char *addr,
     cosmos_id_t context);
 
-cosmos_id_t cosmos_hash( char * );
+cosmos_strid_t cosmos_hash( char * );
 
 cosmos_id_t cosmos_path_put( struct cosmos *, char * );
 

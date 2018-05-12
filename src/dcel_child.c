@@ -1,4 +1,17 @@
+
+
+/* dcel_child.c
+   2018-05-08 add linked list
+ */
+
 #include <errno.h>
+#include <string.h>
+#include "dcel_dirent.h"
+#include "dcel.h"
+#include "cosmos.h"
+#include "hierr.h"
+#include "btree_cpp.h"
+
 
 static int split_prefix( struct dcel_dirent *e )
 {
@@ -68,6 +81,7 @@ static int split_prefix( struct dcel_dirent *e )
         return 0;
 }
 
+
 int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child, struct cosmos *cm )
 {
         if(par == NULL)
@@ -94,24 +108,34 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
                 return -1;
         }
 
-        if(par->dir == NULL)
+        if(par->child_index == NULL)
         {
-                HIERR("dcel_add_child: err: par->dir is NULL.");
-
-                return -1;
+                par->child_index = btree_new();
         }
 
 
 
-        struct dcel_dirent e;
-        cosmos_strid_t id;
-        btree_t *tree, *leaf, *err;
+        struct dcel_dirent e, *ce;
+        struct dcel_dirent *first, *last;
+        cosmos_strid_t id, id2;
+        btree_t *tree, *leaf;
+
+
+
+
+
+
+        /* set complex index */
+
+
 
 
 
         e.d_name = name;
         e.suffix = NULL;
         e.prefix = NULL;
+        e.next = NULL;
+        e.next_same = NULL;
 
 
 
@@ -120,7 +144,7 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
 
 
 
-        tree = par->child;
+        tree = par->child_index;
 
         id = cosmos_put_string(cm, e.prefix);
 
@@ -130,43 +154,79 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
                 goto abort;
         }
 
+        id2 = cosmos_put_string(cm, e.suffix);
+
+        /* suffix id NULL OK */
 
 
+        ce = NULL;
 
 
-        leaf = (btree_t *)btree_get(tree, id);
-
+        leaf = (btree_t *)btree_get(tree, (bkey_t)id);
 
         if( leaf == NULL )
         {
                 leaf = btree_new();
-                btree_put(tree, id, (bval_t)leaf);
-
-        }else{
-
-                err = btree_get(leaf, suffix);
-                if( err != NULL )
-                {
-                        HIERR("dcel_add_child: err: child entry exists.");
-            
-                        goto abort;
-                }
+                btree_put(tree, (bkey_t)id, (bval_t)leaf);
         }
 
 
+        else {
+                ce = (struct dcel_dirent *)btree_get(leaf, (bkey_t)id2);
+        }
 
 
-        id = cosmos_put_string(cm, e.suffix);
-
-        if( id == COSMOS_STRID_NULL)
+        if( ce == NULL )
         {
-                HIERR("dcel_add_child: err: suffix string id NULL");
-                goto abort;
+                ce = malloc(sizeof(*ce));
+                memset(ce,0,sizeof(*ce));
+
+                btree_put(leaf, (bkey_t)id2,(bval_t)ce);
+
+        }
+
+        else {
+
+                for(; ce->next_same != NULL; ce = ce->next_same);
+
+                ce->next_same = malloc(sizeof(*ce));
+                memset(ce->next_same,0,sizeof(*ce));
+
+
+                ce = ce->next_same;
+
         }
 
 
+        ce->dcel = child;
 
-        btree_put(leaf, id, (bval_t)child);
+
+
+
+
+
+        /* set simple list */
+
+
+
+
+
+        first = par->child_list;
+        if( first == NULL )
+        {
+                par->child_list = ce;
+                first = ce;
+        }
+
+        last = par->child_list_last;
+        if( last != NULL )
+        {
+                last->next = ce;
+        }
+
+        else {
+                last = ce;
+        }
 
 
         free(e.prefix);
@@ -175,15 +235,17 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
         return 0;
 
 abort:
+        HIERR("dcel_add_child: abort");
         free(e.prefix);
         free(e.suffix);
 
         return -1;
 }
 
-/** TEMP:  this only returns the first match 
-          if there are multiple children all with the 
-          same name. */
+
+
+
+/** return a new dcel w list in dcel->child */
 
 struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct cosmos *cm)
 {
@@ -205,12 +267,14 @@ struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct co
                 return NULL;
         }
 
-        if( par->child == NULL )
+        if( par->child_index == NULL )
         {
-                HIERR("dcel_find_child: err: par->child NULL");
+                HIERR("dcel_find_child: err: par->child_index NULL");
                 return NULL;
         }
-        
+
+
+        struct hiena_dcel *dc;
         struct dcel_dirent e, *child;
         cosmos_strid_t id;
         btree_t *prefix_tree, *suffix_tree;
@@ -225,10 +289,10 @@ struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct co
 
 
 
-        prefix_tree = par->child;
+        prefix_tree = par->child_index;
 
 
-        id = cosmos_string_id(cm, e.prefix);
+        id = cosmos_string_id(e.prefix);
 
         if( id == COSMOS_STRID_NULL)
         {
@@ -238,7 +302,7 @@ struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct co
         }
 
 
-        suffix_tree = (btree_t *)btree_get(prefix_tree, id);
+        suffix_tree = (btree_t *)btree_get(prefix_tree, (bkey_t)id);
 
 
         if( suffix_tree == NULL )
@@ -252,18 +316,14 @@ struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct co
 
 
 
-        id = cosmos_string_id(cm, e.suffix);
+        /* (NULL is a valid id) */
 
-        if( id == COSMOS_STRID_NULL)
-        {
-                HIERR("dcel_find_child: err: suffix string id NULL");
-
-                goto abort;
-        }
+        id = cosmos_string_id( e.suffix );
 
 
 
-        child = (struct dcel_dirent *)btree_get(suffix_tree, id);
+
+        child = (struct dcel_dirent *)btree_get(suffix_tree, (bkey_t)id);
 
         if( child == NULL )
         {
@@ -287,9 +347,15 @@ struct hiena_dcel *dcel_find_child(struct hiena_dcel *par, char *name, struct co
         free(e.prefix);
         free(e.suffix);
 
+        dc = dcel_new(cm->dcel_garbage);
 
+        for(;child != NULL && child->dcel != NULL;child = child->next_same)
+        {
+        dcel_add_child(dc, name, child->dcel, cm);
+        }
+        
 
-        return child->dcel;
+        return dc;
 
 abort:
         free(e.prefix);
@@ -308,7 +374,7 @@ struct hiena_dcel *dcel_find_child_by_regex(struct hiena_dcel *par, char *restr,
         return NULL;
 }
 
-struct hiena_dcel *dcel_find_child_by_ordinal(struct hiena_dcel *, char *, struct cosmos *)
+struct hiena_dcel *dcel_find_child_by_ordinal(struct hiena_dcel *par, char *ord, struct cosmos *cm)
 {
         return NULL;
 }

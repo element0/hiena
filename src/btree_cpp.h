@@ -1,6 +1,10 @@
 #ifndef HIENA_BTREE_CPP_H
 #define HIENA_BTREE_CPP_H
 
+
+#include <stdint.h>
+
+
 typedef struct hbtree btree_t;
 typedef struct hbtree_curs btree_curs;
 typedef uintptr_t bkey_t;
@@ -26,8 +30,11 @@ void *btree_curs_incr(btree_curs *);
 
 bval_t btree_curs_value(btree_curs *);
 
-void
-*btree_value_at_key_or_nearest_lesser(btree_t *, bkey_t k, bkey_t *kres );
+
+bval_t btree_first_value( btree_t * );
+
+bval_t
+btree_value_at_key_or_nearest_lesser(btree_t *, bkey_t k, bkey_t *kres );
 
 #endif /* !HIENA_BTREE_CPP_H */
 

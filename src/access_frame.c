@@ -79,3 +79,14 @@ bval_t  aframe_remap_dirent_id( struct access_frame *af, bval_t key )
 
         return res;
 }
+
+
+struct access_frame *aframe_set_branch(struct access_frame *par, cosmos_strid_t id, struct access_frame *branch)
+{
+          return NULL;
+}
+
+struct access_frame *aframe_get_branch(struct access_frame *par, cosmos_strid_t id)
+{
+          return NULL;
+}

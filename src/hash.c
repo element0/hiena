@@ -4,6 +4,10 @@ http://www.cse.yorku.ca/~oz/hash.html
 
 */
 
+/*  dboy tweak 2018-05-11
+    NULL input -> 0
+ */
+
     unsigned long
     hash_djb2(unsigned char *str)
     {
@@ -21,6 +25,12 @@ http://www.cse.yorku.ca/~oz/hash.html
     {
         unsigned long hash = 0;
         int c;
+
+
+        /* dboy tweak */
+        if( str == '\0' )
+                return hash;
+        
 
         while (c = *str++)
             hash = c + (hash << 6) + (hash << 16) - hash;

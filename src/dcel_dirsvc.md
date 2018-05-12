@@ -42,25 +42,32 @@ opendir() and readdir() use the directory of the dcel.
 directory implementation
 ------------------------
 
-(2018/05/05)
+(2018/05/08)
 
-        dcel_t parent
-                btree_t child // prefix
-                        btree_t suffix
-                                dirent_t entry
+    dcel_t parent
+        diren_t child list  
+        btree_t child index
 
-        entry
-                dcel       // dirent role dcel, has mapcel
-                next       // next directory entry
-                next_type  // next directory entry of same type
+
+    child index // prefix index
+        btree_t suffix index
+            dirent_t entry stack
+
+
+    dirent_t
+        dcel // dirent role w mapcel
+            next  // next directory entry
+            next_stack  // next directory entry of same name
+
 
 Use `entry->next` to list all entries in directory.
 
-Use `entry->next_type` to list all children with identical id's.
+Use `entry->next_stack` to list all children with identical names.
 
 
-dirents with identical id's
----------------------------
+
+dirents with identical names
+----------------------------
 
 (2018/05/05)
 

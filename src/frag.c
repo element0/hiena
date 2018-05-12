@@ -315,7 +315,7 @@ int frag_put_anchor( struct hiena_frag *f, size_t pos, struct map_anchor *ma )
                 return -1;
         }
 
-        er = btree_put( b, (void *)pos, (void *)ma );
+        er = btree_put( b, (bkey_t)pos, (bval_t)ma );
 
         return 0;
 }
@@ -339,7 +339,7 @@ struct map_anchor *frag_get_anchor( struct hiena_frag *f, size_t pos )
                 return NULL;
         }
 
-        ma = (struct map_anchor *)btree_get(b,(void *)pos);
+        ma = (struct map_anchor *)btree_get(b,(bkey_t)pos);
 
         
 

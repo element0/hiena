@@ -33,16 +33,12 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
 cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *s)
 {
         (struct access_frame *)par;
-
         struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
-
-        struct access_frame *(*ilookfn)(struct cosmos *, struct access_frame *, char *);
-
         struct access_frame *found;
-        cosmos_str_id_t strid;
-        cosmos_str_id_t strid2;
+        cosmos_strid_t strid;
         char *ssav;
         int err;
+
 
         if(par == NULL)
         {
@@ -91,14 +87,8 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *s)
 
         lookfn = par->parent->lookfn;
 
-        ilookfn = lookfn( cm, par, ".cosm/lookup/cosmos_lookup_fn" );
+        found = lookfn(cm, par, s);
 
-        par->lookfn = ilookfn;
-
-
-        found = ilookfn( cm, par, s );
-        
-        
         aframe_set_branch(par, strid, found);
 
 
@@ -159,13 +149,13 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
         }
 
         btree_t *br;
-        cosmos_id_t key;
+        cosmos_strid_t key;
         struct access_frame *targ;
 
         br = par->branch;
 
-        key = cosmos_string_put(cm, name);
-        targ = btree_get(br, (bkey_t)key);
+        key = cosmos_put_string(cm, name);
+        targ = (struct access_frame *)btree_get(br, (bkey_t)key);
 
         if( targ != NULL )
         {
@@ -174,7 +164,7 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
         }
 
         targ = aframe_new();
-        btree_put(br, (bkey_t)key, (void *)targ);
+        btree_put(br, (bkey_t)key, (bval_t)targ);
 
         targ->st_dev = dev;
         targ->st_mode = mode;

@@ -6,7 +6,6 @@
 
 
 
-#include <dirent.h>
 #include "dcel_dirh.h"
 #include "dcel.h"
 

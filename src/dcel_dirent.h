@@ -17,9 +17,9 @@ struct dcel_dirent
 
         struct dcel_dirent *next;
 
-        /** next homogenous dirent (of the same type) */
+        /** next dirent with the same d_name */
 
-        struct dcel_dirent *next_homo;
+        struct dcel_dirent *next_same;
 };
 
 #endif /* HIENA_DCEL_DIRENT_H */

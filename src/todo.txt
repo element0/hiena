@@ -6,11 +6,8 @@ WIP: dcel child directory system
     - lookup
     - creation
 
-  creation trace from dcel_mapsvc
-
-  lookup trace from cosmos_lookup
-
-
+    use out/test-bin/dcel_child_test
+    to debug.
 
 
 2018-04-30  0612

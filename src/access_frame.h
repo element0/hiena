@@ -37,6 +37,10 @@ int aframe_cleanup( struct access_frame * );
 
 struct access_frame *aframe_lookup(struct access_frame *, char *);
 
+struct access_frame *aframe_set_branch(struct access_frame *, cosmos_strid_t, struct access_frame *);
+
+struct access_frame *aframe_get_branch(struct access_frame *, cosmos_strid_t);
+
 void **aframe_value(struct access_frame *);
 
 struct iovec *aframe_val_ptr(struct access_frame *);

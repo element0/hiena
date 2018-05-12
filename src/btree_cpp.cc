@@ -1,4 +1,5 @@
 #include "cpp-btree/btree_map.h"
+#include <stdint.h>
 
 
 namespace btree_cpp {
@@ -149,6 +150,17 @@ int btree_curs_cleanup( hbtree_curs *curs )
         return 0;
 }
 
+bval_t btree_first_value( hbtree *bt )
+{
+        if( bt == NULL )
+                return BVAL_NULL;
+
+        hbtree::iterator it;
+        
+        it = bt->begin();
+
+        return it->second;
+}
 
 // purpose of btree_value_at_key_or_nearestreturn_lesser is to discover a fragment that contains the key within its bounds.  considering the keys are the start boundary.
 // the cpp STL map interface (used by cpp_btree) provides a 'lower_bound()' which finds iterator at key or nearest greater.
