@@ -68,6 +68,35 @@ int main()
         }
 
 
+        /* lookup another child */
+
+        res = dcel_find_child( dc, "down", cm );
+        if( res == NULL )
+        {
+                HIERR("test_dcel_child::main: err: res NULL");
+
+        }
+
+        e = res->child_list;
+
+        if( e == NULL )
+        {
+                HIERR("test_dcel_child::main: err: res->child_list NULL");
+        }
+
+        if( e->dcel != dc2 )
+        {
+               HIERR("test_dcel_child::main: err: res->child_list != dc2");
+
+        }
+        
+        else{
+               printf("SUCCESS! found \"down\"\n");
+        }
+
+
+
+        /* list children */
 
         for(e = dc->child_list; e != NULL; e = e->next)
         {

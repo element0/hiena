@@ -5,6 +5,8 @@
 WIP: dcel child directory system
     - lookup
     - creation
+    
+    - dcel_child::find function not working
 
     use out/test-bin/dcel_child_test
     to debug.
