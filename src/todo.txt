@@ -1,6 +1,9 @@
 2018-05-13  0623
 
-TODO: dcel_readdir
+DONE! dcel_dirsvc
+    - opendir()
+    - readdir()
+    - closedir()
 
 
 2018-05-01  0758

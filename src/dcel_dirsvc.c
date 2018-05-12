@@ -99,7 +99,7 @@ struct dcel_dirent  *dcel_dirsvc_read( struct dcel_dirh *dh )
 }
 
 
-struct dcel_mapsvc_ops dcel_dirsvc = {
+struct dcel_dirsvc_ops dcel_dirsvc = {
         .opendir = dcel_dirsvc_open,
         .closedir = dcel_dirsvc_close,
         .readdir = dcel_dirsvc_read, 

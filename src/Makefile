@@ -178,7 +178,7 @@ snafufs:  cosmos-fs cosmos-init
 
 hiena-obs: btrees btree_cpp dcel dsource context-frame hash map-anchor mapcel mapcel-dir mapcel-svc mapcel-fh mfrag mfrag-fh mfrag-svc ptr-stack frag frag-fh frag-curs frag-svc dcel-svc dcel-mapsvc
 
-hiena-obs-broken: dcel-dirsvc
+hiena-obs-broken: 
 
 svc-obs: file-svc 
 
@@ -189,6 +189,8 @@ tests: out-dirs test-btrees test-dcel-svc test-file-svc test-hiena-fh test-mapce
 test-dcel-child: hash access-frame btree_cpp cosmos-db cosmos-fs dcel dcel-child frag ptr-stack mfrag
 	gcc $(dbugopts) $(out-o)/{hash.o,access_frame.o,btree_cpp.o,dcel.o,dcel_child.o,frag.o,ptr_stack.o,mfrag.o} $(out-o)/cosmos_{db,fs}.o test_dcel_child.c -o $(out-test-bin)/dcel_child_test -lstdc++
 
+test-dcel-dirsvc: hash access-frame btree_cpp cosmos-db cosmos-fs dcel dcel-child frag ptr-stack mfrag dcel-dirsvc
+	gcc $(dbugopts) $(out-o)/{hash.o,access_frame.o,btree_cpp.o,dcel.o,dcel_child.o,dcel_dirsvc.o,frag.o,ptr_stack.o,mfrag.o} $(out-o)/cosmos_{db,fs}.o test_dcel_dirsvc.c -o $(out-test-bin)/dcel_dirsvc_test -lstdc++
 
 test-dcel-svc: btrees map-anchor mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs frag-svc dcel-svc
 	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o} dcel_svc_test.c -o $(out-test-bin)/dcel_svc_test

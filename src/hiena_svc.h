@@ -23,7 +23,7 @@ struct hiena_svc
 struct svc_item {
         void *dl;
         struct hiena_svc *svc;
-}
+};
 
 struct svc_item *svc_item_new( void *dl );
 
