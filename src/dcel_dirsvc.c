@@ -86,7 +86,7 @@ struct dcel_dirent  *dcel_dirsvc_read( struct dcel_dirh *dh )
 
         cur = dh->cur;
 
-        if( cur = NULL )
+        if( cur == NULL )
         {
                 HIERR("dcel_dirsvc_read: alert: cur NULL:  EOF");
 

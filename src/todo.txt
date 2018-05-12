@@ -1,15 +1,15 @@
+2018-05-13  0623
+
+TODO: dcel_readdir
 
 
 2018-05-01  0758
+2018-05-13  0622
 
-WIP: dcel child directory system
-    - lookup
-    - creation
-    
-    - dcel_child::find function not working
+DONE! dcel child directory system
+    - dcel_add_child()
+    - dcel_find_child()
 
-    use out/test-bin/dcel_child_test
-    to debug.
 
 
 2018-04-30  0612
