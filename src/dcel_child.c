@@ -198,6 +198,7 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
         }
 
 
+        ce->d_name = name;
         ce->dcel = child;
 
 
@@ -216,6 +217,7 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
         {
                 par->child_list = ce;
                 first = ce;
+                ce->next = NULL;
         }
 
         last = par->child_list_last;
@@ -223,10 +225,8 @@ int dcel_add_child( struct hiena_dcel *par, char *name, struct hiena_dcel *child
         {
                 last->next = ce;
         }
+        par->child_list_last = ce;
 
-        else {
-                last = ce;
-        }
 
 
         free(e.prefix);
