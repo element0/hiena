@@ -55,7 +55,7 @@ int lookup_hdl_cleanup(struct lookup_hdl *h)
 {
         if( h == NULL )
         {
-                 HIERR("lookup_hdl_cleanup: err: h NULL");
+                HIERR("lookup_hdl_cleanup: err: h NULL");
                 return -1;
         }
         free(h);

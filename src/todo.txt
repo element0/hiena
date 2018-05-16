@@ -5,12 +5,15 @@
 
 WIP:  prod_exec.md
 
+    - test lookup_svc
+
+
 fn stack:
       cosmos_lookup
       lookup module
-      lookup_svc::lookup_find_child
-      prod_fns::prod_find_child
-      dcel::dcel_find_child
+OK    lookup_svc::lookup_find_child
+OK    prod_fns::prod_find_child
+OK    dcel::dcel_find_child
 
 
 

@@ -6,5 +6,11 @@
 
 cosmos_id_t prod_find_child(cosmos_id_t, char *, struct cosmos *);
 
+cosmos_id_t prod_find_prop(cosmos_id_t, char *, struct cosmos *);
+
+cosmos_id_t prod_map(cosmos_id_t, char *, struct cosmos *);
+
+cosmos_id_t prod_transform(cosmos_id_t, char *, struct cosmos *);
+
 
 #endif /*! HIENA_PRODUCER_FUNCS_H */

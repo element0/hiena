@@ -4,9 +4,6 @@
 #include "lookup_hdl.h"
 #include "hierr.h"
 #include "prod_fns.h"
-#include "slib.h"
-#include "scanner.h"
-
 
 
 
@@ -38,7 +35,7 @@ lookup_target_t *lookup_find_child( struct lookup_hdl *h, char *name )
         struct access_frame *res;
 
 
-        par = (cosmos_id_t)(h->targ);
+        par = (cosmos_id_t)(h->target);
         cm = h->cosmos;
 
 
@@ -48,7 +45,7 @@ lookup_target_t *lookup_find_child( struct lookup_hdl *h, char *name )
 }
 
 
-lookup_target_t *lookup_find_prop( struct lookup_hdl *h, char *s )
+lookup_target_t *lookup_find_prop( struct lookup_hdl *h, char *name )
 {
         if( h == NULL )
         {
@@ -62,7 +59,7 @@ lookup_target_t *lookup_find_prop( struct lookup_hdl *h, char *s )
         struct access_frame *res;
 
 
-        par = (cosmos_id_t)(h->targ);
+        par = (cosmos_id_t)(h->target);
         cm = h->cosmos;
 
 
@@ -76,7 +73,8 @@ lookup_target_t *lookup_find_prop( struct lookup_hdl *h, char *s )
 lookup_target_t *lookup_transform( struct lookup_hdl *look, char *str )
 {
 
-        lookup_target_t *res, *cur;
+        struct cosmos *cm;
+        cosmos_id_t res, cur;
 
 
         if( look == NULL )
@@ -85,7 +83,7 @@ lookup_target_t *lookup_transform( struct lookup_hdl *look, char *str )
                 return NULL;
         }
 
-        cm = look->cosmos_db;
+        cm = look->cosmos;
 
         if( cm == NULL )
         {
@@ -95,14 +93,14 @@ lookup_target_t *lookup_transform( struct lookup_hdl *look, char *str )
 
 
 
-        res = prod_exec( cm, PI_MAP, cur, str );
+        res = prod_map( cur, str, cm );
 
-        if( res == PRODUCTION_ERR )
+        if( res == COSMOS_ID_NULL )
         {
-                res = prod_exec( cm, PI_TRANS, cur, str );
+                res = prod_transform( cur, str, cm );
         }
 
-        if( res == PRODUCTION_ERR )
+        if( res == COSMOS_ID_NULL )
         {
                 HIERR("lookup_transform: err: prod_exec can't map or transform.");
                 return NULL;

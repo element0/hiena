@@ -8,6 +8,7 @@
 #include "access_frame.h"
 
 typedef struct access_frame lookup_target_t;
+#define LOOKUP_TARGET_NULL NULL
 
 typedef void lookup_result_t;
 
@@ -33,6 +34,10 @@ struct lookup_hdl
 
 
 };
+
+struct lookup_hdl *lookup_hdl_new();
+int lookup_hdl_init( struct lookup_hdl *h, struct hiena_dcel *dc, struct hiena_slib *slib );
+int lookup_hdl_cleanup(struct lookup_hdl *h);
 
 
 
