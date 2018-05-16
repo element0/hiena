@@ -1,23 +1,10 @@
 #ifndef HIENA_PRODUCER_FUNCS_H
 #define HIENA_PRODUCER_FUNCS_H
 
-#include "context_frame.h"
-#include "dcel.h"
+#include "cosmos.h"
 
 
-/* the four producer functions */
-
-
-
-
-
-struct hiena_dcel *dsource( struct context_frame *, int, void **);
-
-struct hiena_dcel *dbind( struct context_frame *, int, void **);
-
-struct hiena_dcel *dfind( struct context_frame *, int, void **);
-
-struct hiena_dcel *dgrind( struct context_frame *, int, void **);
+cosmos_id_t prod_find_child(cosmos_id_t, char *, struct cosmos *);
 
 
 #endif /*! HIENA_PRODUCER_FUNCS_H */

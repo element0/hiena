@@ -3,7 +3,7 @@
 #include "dcel.h"
 #include "lookup_hdl.h"
 #include "hierr.h"
-#include "dfind.h"
+#include "prod_fns.h"
 #include "slib.h"
 #include "scanner.h"
 
@@ -23,7 +23,7 @@ int lookup_set_target( struct lookup_hdl *h, lookup_target_t *targ )
         return 0;
 }
 
-lookup_target_t *lookup_find_child( struct lookup_hdl *h, char *s )
+lookup_target_t *lookup_find_child( struct lookup_hdl *h, char *name )
 {
         if( h == NULL )
         {
@@ -31,21 +31,19 @@ lookup_target_t *lookup_find_child( struct lookup_hdl *h, char *s )
                 return NULL;
         }
 
-        struct prod_instr *pi;
-        struct hiena_dcel *dc;
-        struct hiena_dcel *res;
 
-        pi = prod_instr_new();
-        dc = h->target;
 
-        pi->fn = dfind_child;
-        pi->argc = 2;
-        pi->argv = malloc(sizeof(void *)*2);
-        pi->argv[0] = (void *)dc;
-        pi->argv[1] = (void *)s;
+        cosmos_id_t par;
+        struct cosmos *cm;
+        struct access_frame *res;
 
-        res = prod_exec( pi );
-        
+
+        par = (cosmos_id_t)(h->targ);
+        cm = h->cosmos;
+
+
+        res = (struct access_frame *)prod_find_child(par,name,cm);
+
         return res;
 }
 
@@ -58,20 +56,19 @@ lookup_target_t *lookup_find_prop( struct lookup_hdl *h, char *s )
                 return NULL;
         }
 
-        struct prod_instr *pi;
-        struct hiena_dcel *dc;
-        struct hiena_dcel *res;
 
-        pi = prod_instr_new();
-        dc = h->target;
+        cosmos_id_t par;
+        struct cosmos *cm;
+        struct access_frame *res;
 
-        pi->fn = dfind_prop;
-        pi->argc = 2;
-        pi->argv = malloc(sizeof(void *)*2);
-        pi->argv[0] = (void *)dc;
-        pi->argv[1] = (void *)s;
 
-        res = prod_exec( pi );
+        par = (cosmos_id_t)(h->targ);
+        cm = h->cosmos;
+
+
+        res = (struct access_frame *)prod_find_prop(par,name,cm);
+
+
         
         return res;
 }

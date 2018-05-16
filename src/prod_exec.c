@@ -1,11 +1,3 @@
-#include <stdlib.h>
-#include "dcel.h"
-#include "access_frame.h"
-#include "prod_instr.h"
-#include "cosmos/cosmos_db.h"
-#include "cosmos/cosmos_fs.h"
-
-
 
 struct hiena_dcel *prod_exec( struct cosmos *cm, struct prod_instr *pi )
 {

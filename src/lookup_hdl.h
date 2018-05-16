@@ -5,10 +5,9 @@
 #define _HIENA_LOOKUP_HDL_H_
 
 #include "dcel.h"
-#include "slib.h"
-#include "prod_core.h"
+#include "access_frame.h"
 
-typedef struct hiena_dcel lookup_target_t;
+typedef struct access_frame lookup_target_t;
 
 typedef void lookup_result_t;
 
@@ -30,7 +29,7 @@ struct lookup_hdl
         int (*step_segment)( struct lookup_hdl * );
 
 
-        lookup_result_t *(*exec)( instruction_sequence_t * );
+        lookup_result_t *(*exec)( void * );
 
 
 };

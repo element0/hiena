@@ -103,6 +103,12 @@ hash:
 	gcc $(dbugopts) -c hash.c -o $(out-o)/hash.o
 
 
+lookup-svc:
+	gcc $(dbugopts) -c lookup_svc.c -o $(out-o)/lookup_svc.o
+
+
+
+
 map-anchor:
 	gcc $(dbugopts) -c map_anchor.c -o $(out-o)/map_anchor.o
 
@@ -147,6 +153,10 @@ ox4:
 
 ox-tester:
 	gcc -rdynamic -o ox-tester ox-tester.c -ldl
+
+
+prod-fns:
+	gcc $(dbugopts) -c prod_fns.c -o $(out-o)/prod_fns.o
 
 
 ptr-stack:

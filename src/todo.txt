@@ -1,3 +1,19 @@
+
+
+
+2018-05-15  0804
+
+WIP:  prod_exec.md
+
+fn stack:
+      cosmos_lookup
+      lookup module
+      lookup_svc::lookup_find_child
+      prod_fns::prod_find_child
+      dcel::dcel_find_child
+
+
+
 2018-05-13  0623
 
 DONE! dcel_dirsvc

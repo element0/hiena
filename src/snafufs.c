@@ -1,16 +1,13 @@
 
-/**
-  Hacked and slashed version of hello_ll.c fuse example
- */
-
-
-
 
 /*
   FUSE: Filesystem in Userspace
   Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
   This program can be distributed under the terms of the GNU GPL.
   See the file COPYING.
+
+  SnafuFS:  Situation Normal All Fudged Up Filesystem
+  Copyright (C) 2017-2018  Raygan Henley <raygan@raygan.com>
 */
 
 
@@ -18,15 +15,12 @@
 
 
 /** @file
+ *   Hacked and slashed version of hello_ll.c fuse example
  *
- * minimal example filesystem using low-level API
  *
  * Compile with:
  *
- *     gcc -Wall hello_ll.c `pkg-config fuse3 --cflags --libs` -o hello_ll
- *
- * ## Source code ##
- * \include hello_ll.c
+ *     gcc -Wall snafufs.c `pkg-config fuse3 --cflags --libs` -o snafufs
  */
 
 
