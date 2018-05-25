@@ -18,8 +18,9 @@ int cosmos_stat(struct cosmos *, cosmos_id_t, struct stat *);
 
 cosmos_id_t cosmos_lookup(struct cosmos *, cosmos_id_t, char *);
 
-cosmos_fh_t cosmos_open(struct cosmos *, cosmos_id_t );
+cosmos_fh_t cosmos_open(struct cosmos *, cosmos_id_t);
 
+int cosmos_close(cosmos_fh_t);
 
 size_t cosmos_read(void *, size_t, size_t, cosmos_fh_t);
 

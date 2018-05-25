@@ -32,9 +32,24 @@ some modules do need to cascade:
 high-level interface
 --------------------
 
-a wrapper function (for low-level) returns a struct:
+modules follow the ASH paradigm.
 
-    struct cosmos_module *cosmos_get_module(struct cosmos *, cosmos_id_t, char *MODNAME);
+
+a Address given to a Service function returns a Handle:
+
+    struct cosmos_module *cosmos_open_module(struct cosmos *, cosmos_id_t, char *MODNAME);
+
+
+use the module handle...
+
+    modhdl->source();
+    modhdl->map();
+    modhdl->transform();
+
+
+close the handle when finished
+
+    cosmos_close_module(struct cosmos_module *);
 
 
 
@@ -46,10 +61,10 @@ modules are accessed by cosmos path.
     mod = cosmos_lookup(cm, par, ".cosm/lib/cosmos/modules/MODNAME");
 
 
+    hdl = cosmos_open(cm, hdl);
 
-the value at the module's access frame is a `struct cosmos_module`.
 
-    cosmos_get_value(...)
+    cosmos_close(hdl);
 
 
 
@@ -115,18 +130,15 @@ these are loaded by cosmos init.
 module initialization
 ---------------------
 
-    srcframe = sourcefn file ~
+    cosmroot = sourcefn file ~
 
-    lookup_mod ~/.cosm/lib/cosmos/modules/dylib.so.cosmos_module
+    lookupfn = lookup_mod->lookupfn
 
-    --- 
-
-    par = sourceframe
-    lookupfn par ".cosm/lib/cosmos/modules/dylib_mod.so.cosmos_module"
+    lookupfn cosmroot ".cosm/lib/cosmos/modules/dylib.so.cosmos_module"
     
     ---
 
-    targ = par
+    targ = cosmroot
     
     map targ
 
@@ -152,7 +164,7 @@ module initialization
 
       /* if transform learns that
          targ is already its format,
-         it passes targ through */
+         it passes targ through. */
 
     targ = transform targ "cosmos_module"
 
