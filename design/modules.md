@@ -113,6 +113,36 @@ we use 'cosmos_open' to cause its source root to either remain open or be buffer
 
 
 
+module 'open' cycling
+---------------------
+
+note:  two handle concepts: 1) module handle 2) product handle
+
+
+a dcel's production instruction:
+
+    FN_ID  MOD_ID  MOD_ARGS
+    source file    ~/somedir/somefile.suffix
+
+performing a file operation requires:
+
+    open module handle
+    run 'open' from module handle on args to make product handle
+    run ops from module on product
+    run 'close' from module on product
+
+triggering a module's 'close' operation:
+
+    opening a product handle increments the module's 'open' count
+    closing a product handle triggers the module's 'close' operation
+
+
+
+
+
+
+
+
 runtime loading (MOD: Modules On Demand)
 ---------------
 
