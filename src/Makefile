@@ -2,20 +2,37 @@ SHELL = /bin/bash
 
 out-o = ../out/o
 out-bin = ../out/bin
+out-lib = ../out/lib
+out-modules = $(out-lib)/modules
 out-test-bin = ../out/test-bin
+
+install-lib = ~/.cosm/lib
+install-lib-modules = $(install-lib)/cosmos/modules
+
+src-modules = ./modules
 
 dbugopts = -g
 warnopts = -Wall
+
+devlib = ../out/lib 
 
 
 out-dirs:
 	mkdir -p $(out-o)
 	mkdir -p $(out-bin)
+	mkdir -p $(out-lib)
+	mkdir -p $(out-modules)
 	mkdir -p $(out-test-bin)
 
+install-dirs:
+	mkdir -p $(install-lib)
+	mkdir -p $(install-lib-modules)
 
-all: out-dirs tests utils
 
+all: out-dirs install-dirs tests utils
+
+
+devdirs:  out-dirs
 
 
 access-frame:
@@ -79,21 +96,45 @@ dsource:
 	gcc $(dbugopts) -c dsource.c -o $(out-o)/dsource.o
 
 
+
+
+file-module: file-so
+
+
+
+file-so:  out-dirs
+	gcc -g -shared -fPIC $(src-modules)/file_mod/{file_src.c,file_svc.c,file_module.c} -o $(out-modules)/file.so -L$(out-lib)/libhiena.so
+
+
+test-file-mod: file-so
+	gcc -g test_file_module.c -o file_module_test -ldl
+
+
+
+
 file-svc:
-	gcc $(dbugopts) -c file_svc.c -o $(out-o)/file_svc.o
+	gcc $(dbugopts) -c services/file_svc.c -o $(out-o)/file_svc.o
+
+
+
 
 
 frag:   mfrag
-	gcc $(dbugopts) -c frag.c -o $(out-o)/frag.o
+	gcc $(dbugopts) -fPIC -c frag.c -o $(out-o)/frag.o
 
 frag-fh:
-	gcc $(dbugopts) -c frag_fh.c -o $(out-o)/frag_fh.o
+	gcc $(dbugopts) -fPIC -c frag_fh.c -o $(out-o)/frag_fh.o
 
 frag-curs: frag-fh frag-svc
-	gcc $(dbugopts) -c frag_curs.c -o $(out-o)/frag_curs.o
+	gcc $(dbugopts) -fPIC -c frag_curs.c -o $(out-o)/frag_curs.o
 
 frag-svc:
-	gcc $(dbugopts) -c frag_svc.c -o $(out-o)/frag_svc.o
+	gcc $(dbugopts) -fPIC -c frag_svc.c -o $(out-o)/frag_svc.o
+
+fraglib: frag frag-fh frag-svc
+
+fraglibo = frag{,_fh,_svc}.o
+
 
 
 hpat:
@@ -103,8 +144,19 @@ hash:
 	gcc $(dbugopts) -c hash.c -o $(out-o)/hash.o
 
 
+
+lookup-hdl:
+	gcc $(dbugopts) -c lookup_hdl.c -o $(out-o)/lookup_hdl.o
+
 lookup-svc:
 	gcc $(dbugopts) -c lookup_svc.c -o $(out-o)/lookup_svc.o
+
+
+
+
+libhiena:  devdirs fraglib 
+	gcc $(dbugopts) -shared $(out-o)/$(fraglibo) $(out-o)/$(mfraglibo) -o $(out-lib)/libhiena.so
+
 
 
 
@@ -126,14 +178,30 @@ mapcel-fh:
 	gcc $(dbugopts) -c mapcel_fh.c -o $(out-o)/mapcel_fh.o
 
 
+
+
+
 mfrag:
-	gcc $(dbugopts) -c mfrag.c -o $(out-o)/mfrag.o
+	gcc $(dbugopts) -fPIC -c mfrag.c -o $(out-o)/mfrag.o
 
 mfrag-fh:
-	gcc $(dbugopts) -c mfrag_fh.c -o $(out-o)/mfrag_fh.o
+	gcc $(dbugopts) -fPIC -c mfrag_fh.c -o $(out-o)/mfrag_fh.o
 
 mfrag-svc:
-	gcc $(dbugopts) -c mfrag_svc.c -o $(out-o)/mfrag_svc.o
+	gcc $(dbugopts) -fPIC -c mfrag_svc.c -o $(out-o)/mfrag_svc.o
+
+mfraglib: mfrag mfrag-fh mfrag-svc
+
+mfraglibo = mfrag{,_fh,_svc}.o
+
+
+
+modules:  file-module
+
+
+install-modules:  install-dirs
+	mv $(out-lib)/modules/* $(install-lib-modules)/.
+
 
 
 
@@ -222,12 +290,11 @@ test-cpp-btree-c: btree_cpp
 test-cosmos-fs: cosmos-fs
 	gcc $(dbugopts) $(out-o)/cosmos_{db,fs}.o $(out-o)/{hash,btree_cpp,access_frame}.o cosmos/cosmos_fs_test.c -o $(out-test-bin)/cosmos_fs_test -lstdc++
 
+
+
 test-file-svc:
-	gcc $(dbugopts) hiena_svc.c file_svc_test.c -o $(out-test-bin)/file_svc_test
+	gcc $(dbugopts) hiena_svc.c test_file_svc.c -o $(out-test-bin)/file_svc_test
 
-
-test-hiena-fh:
-	gcc $(dbugopts) hiena_fh_test.c -o $(out-test-bin)/hiena_fh_test
 
 
 test-frag:  
@@ -246,8 +313,16 @@ test-frag-svc:
 	gcc $(dbugopts) btree.c btrees.c mfrag.c mfrag_fh.c mfrag_svc.c frag.c frag_fh.c frag_svc.c frag_svc_test.c -o $(out-test-bin)/frag_svc_test
 
 
-test-lookup-svc: hash access-frame btree_cpp cosmos-db cosmos-fs dcel dcel-child frag ptr-stack mfrag lookup-svc prod-fns
-	gcc $(dbugopts) $(out-o)/{hash.o,access_frame.o,btree_cpp.o,dcel.o,dcel_child.o,frag.o,ptr_stack.o,mfrag.o,lookup_svc.o,prod_fns.o} $(out-o)/cosmos_{db,fs}.o test_lookup_svc.c -o $(out-test-bin)/dcel_lookup_svc -lstdc++
+
+
+test-hiena-fh:
+	gcc $(dbugopts) hiena_fh_test.c -o $(out-test-bin)/hiena_fh_test
+
+
+
+
+test-lookup-svc: hash access-frame btree_cpp cosmos-db cosmos-fs dcel dcel-child frag ptr-stack mfrag lookup-svc lookup-hdl prod-fns
+	gcc $(dbugopts) $(out-o)/{hash.o,access_frame.o,btree_cpp.o,dcel.o,dcel_child.o,frag.o,ptr_stack.o,mfrag.o,lookup_svc.o,lookup_hdl.o,prod_fns.o} $(out-o)/cosmos_{db,fs}.o test_lookup_svc.c -o $(out-test-bin)/lookup_svc_test -lstdc++
 
 test-mapcel:
 	gcc $(dbugopts) btrees.c mapcel.c mapcel_test.c -o $(out-test-bin)/mapcel_test

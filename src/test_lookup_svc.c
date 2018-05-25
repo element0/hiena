@@ -50,32 +50,22 @@ int main()
         /* init access frames */
         
         af = aframe_new();
-        af2 = aframe_new();
-        af3 = aframe_new();
-        af4 = aframe_new();
-
         af->dcel = dc;
 
         /* init lookup hdl */
 
         h = lookup_hdl_new();
         h->cosmos = cm;
-
+        h->target = (cosmos_id_t)af;
+        h->find_child = lookup_find_child;
 
 
 
 
         /* lookup svc test: find child */
 
-        res = lookup_find_child( h, "wings" );
+        res = h->find_child( h, "wings" );
 
-
-        /* note:
-           result is not the same dcel as dc2.
-           result is a container for the find results list.
-
-           res->child_list->dcel should equal dc2.
-         */
 
 
         if( res == NULL )

@@ -33,17 +33,25 @@ create database
 
     cosmos db
         strings
-        tree
+        access tree
 
 
-about tree
-----------
+about access tree
+-----------------
 
 tree of access frames.
 
-created by the lookup function, are paths of access frames which reach a dcel.
+created by the lookup function, paths of access frames which reach a dcel.
 
-the access frame from which a request comes from may be matched by possible ACLs in the dcel.
+the access frame from which a request comes from may be matched by ACLs in the dcel.
+
+
+
+configure
+---------
+
+init_lookup
+init_source
 
 
 
@@ -51,13 +59,23 @@ the access frame from which a request comes from may be matched by possible ACLs
 load modules
 ------------
 
+initial modules:
 
-for each modpath
+        lookup
+        source
+
+
+look in ~/.cosm/lib/cosmos/modules/
+
+
+
+for each
         load_mod
 
 
 load_mod
         dlopen module path
+        dlsym module struct
         create aframe path
         stick dcel in aframe
 

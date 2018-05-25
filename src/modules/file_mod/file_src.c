@@ -1,10 +1,10 @@
 #include <stdlib.h>
-#include "../dcel.h"
-#include "../frag.h"
-#include "../mfrag.h"
-#include "../access_frame.h"
-#include "../file_svc.h"
-#include "../hierr.h"
+#include "../../dcel.h"
+#include "../../frag.h"
+#include "../../mfrag.h"
+#include "../../access_frame.h"
+#include "file_svc.h"
+#include "../../hierr.h"
 
 /**
  * accepts only one arg, an address.

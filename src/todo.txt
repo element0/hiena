@@ -1,18 +1,51 @@
 
 
+2018-05-17  0752
+2018-05-22  0757
+2018-05-23  0801
+
+done:  test_file_module
+       ~/.cosm/lib/cosmos/modules/.
+
+
+WIP:   modules.md
+       module loading
+
+prep:
+      cosmos_init
+      hiena_svc
+
+
+WIP:  source and map
+
+      - prod_source
+      - prod_map
+
+
+WIP:  file module
+
+
+
+stack:
+      cosmos_db_get_mod
+
+
+
+
+
 
 2018-05-15  0804
 
-WIP:  prod_exec.md
-
-    - test lookup_svc
+WIP:  cosmos_lookup
 
 
 fn stack:
       cosmos_lookup
       lookup module
+OK    lookup_hdl::find_child
 OK    lookup_svc::lookup_find_child
 OK    prod_fns::prod_find_child
+*     prod_fns::prod_map
 OK    dcel::dcel_find_child
 
 

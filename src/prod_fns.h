@@ -4,11 +4,13 @@
 #include "cosmos.h"
 
 
+cosmos_id_t prod_src(char *modname, char *addr, struct cosmos *);
+
+cosmos_id_t prod_map(cosmos_id_t, char *, struct cosmos *);
+
 cosmos_id_t prod_find_child(cosmos_id_t, char *, struct cosmos *);
 
 cosmos_id_t prod_find_prop(cosmos_id_t, char *, struct cosmos *);
-
-cosmos_id_t prod_map(cosmos_id_t, char *, struct cosmos *);
 
 cosmos_id_t prod_transform(cosmos_id_t, char *, struct cosmos *);
 

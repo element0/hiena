@@ -4,16 +4,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const int hiena_service_mod = 1;
-
 struct hiena_svc
 {
-	void * (*open)( void *addr, const char *mode);
-	int    (*close)( void *fp );
-	int    (*seek)( void *fp, long offset, int whence );
-	size_t (*read)( void *ptr, size_t size, size_t nmemb, void *fp );
+        void *(*source)( void *addr, void *cosmos_db );
+        void *(*map)( void *target, void *cosmos_db );
+        void *(*transform)( void *target, void *cosmos_db );
+        void * (*open)( void *addr, const char *mode);
+        int    (*close)( void *fp );
+        int    (*seek)( void *fp, long offset, int whence );
+        size_t (*read)( void *ptr, size_t size, size_t nmemb, void *fp );
 	size_t (*write)( void *ptr, size_t size, size_t nmemb, void *fp );
-        int (*getchar)( void * );
+       int (*getchar)( void * );
 };
 
 

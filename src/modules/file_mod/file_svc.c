@@ -1,16 +1,14 @@
-
-
-
-
-
-#ifndef HIENA_FILE_SVC_H
-#define HIENA_FILE_SVC_H
-
-#include "hiena_svc.h"
-
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <sys/stat.h>
+#include "../../hiena_svc.h"
+
+off_t get_filesize( char *n )
+{
+        struct stat sb;
+        stat( n, &sb );
+        return sb.st_size;
+}
+
 
 struct hiena_svc file_svc_ops = {
         .read = (size_t (*)( void *, size_t, size_t, void *))fread,
@@ -20,7 +18,3 @@ struct hiena_svc file_svc_ops = {
         .seek  = (int    (*)( void *, long, int ))fseek,
         .getchar  = (int    (*)( void * ))fgetc,
 };
-
-off_t get_filesize( char * );
-
-#endif /*! HIENA_FILE_SVC_H */

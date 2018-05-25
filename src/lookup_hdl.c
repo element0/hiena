@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lookup_module.h"
+#include "lookup_svc.h"
 #include "lookup_hdl.h"
 #include "dcel.h"
 #include "slib.h"
@@ -22,7 +22,7 @@ struct lookup_hdl *lookup_hdl_new()
 }
 
 
-int lookup_hdl_init( struct lookup_hdl *h, struct hiena_dcel *dc, struct hiena_slib *slib )
+int lookup_hdl_init( struct lookup_hdl *h, cosmos_id_t targ, struct cosmos *cm )
 {
         if( h == NULL )
         {
@@ -30,22 +30,20 @@ int lookup_hdl_init( struct lookup_hdl *h, struct hiena_dcel *dc, struct hiena_s
                 return -1;
         }
 
-        if( slib == NULL )
+        if( cm == NULL )
         {
-                 HIERR("lookup_hdl_init: err: slib NULL");
+                 HIERR("lookup_hdl_init: err: cm NULL");
                 return -1;
         }
 
-        h->target = dc;
-        h->scanlib = slib;
+        h->target = (lookup_target_t *)targ;
+        h->cosmos = cm;
 
         h->set_target = lookup_set_target;
 
         h->find_child = lookup_find_child;
 
         h->find_prop = lookup_find_prop;
-
-        h->grind = lookup_grind;
 
         return 0;
 }

@@ -5,10 +5,42 @@
 #include "hierr.h"
 
 
+
 /*
-    convenience function.  avoids prod instr syntax in the API and hides it during development.
+    convenience functions.  avoids prod instr syntax in the API and hides it during development.
 
  */
+
+cosmos_id_t prod_src(char *modname, char *addr, struct cosmos *)
+{
+
+        prod_mod_t mod;
+        struct access_frame *af;
+
+        mod = cosmos_db_get_mod(cm, modname);
+
+        af->dcel = mod->source(addr);
+
+        return af;
+}
+ 
+
+cosmos_id_t prod_map(cosmos_id_t, char *, struct cosmos *);
+cosmos_id_t prod_map(cosmos_id_t targ, char *modname, struct cosmos *cm)
+{
+        mod = cosmos_db_get_mod(cm, modname);
+
+        af->dcel = mod->map(targ,cm);
+
+        return af;
+}
+
+
+
+
+
+
+
 cosmos_id_t prod_find_child(cosmos_id_t par, char *name, struct cosmos *cm)
 {
         (struct access_frame *)par;
@@ -38,5 +70,19 @@ cosmos_id_t prod_find_child(cosmos_id_t par, char *name, struct cosmos *cm)
         af->dcel = dc2;
      
         return (cosmos_id_t)af;
+}
+
+
+
+cosmos_id_t prod_find_prop(cosmos_id_t par, char *name, struct cosmos *cm)
+{
+        return COSMOS_ID_NULL;
+}
+
+
+
+cosmos_id_t prod_transform(cosmos_id_t targ, char *modname, struct cosmos *cm)
+{
+        return COSMOS_ID_NULL;
 }
 

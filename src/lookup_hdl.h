@@ -6,6 +6,7 @@
 
 #include "dcel.h"
 #include "access_frame.h"
+#include "cosmos.h"
 
 typedef struct access_frame lookup_target_t;
 #define LOOKUP_TARGET_NULL NULL
@@ -36,7 +37,9 @@ struct lookup_hdl
 };
 
 struct lookup_hdl *lookup_hdl_new();
-int lookup_hdl_init( struct lookup_hdl *h, struct hiena_dcel *dc, struct hiena_slib *slib );
+
+int lookup_hdl_init( struct lookup_hdl *h, cosmos_id_t, struct cosmos *cm );
+
 int lookup_hdl_cleanup(struct lookup_hdl *h);
 
 

@@ -27,6 +27,9 @@ products
   <item templates>
 
 
+$HOME/.cosm/lib/cosmos/modules/*.so
+
+
 user generated products
 -----------------------
 scanners
@@ -43,21 +46,29 @@ description of api layers
 
 `libcosmos` spawns a `cosmosd` for each user as needed.  
 
-`cosmosd` manages memory objects.  it uses `libcosmos` (`cosmos.h`).
 
-`cosmosd` performs a lookup by running a `lookup_module` from the `access_frame` of the lookup request.
+`cosmosd` manages memory objects.  it uses `libcosmos` (`cosmos.h`).  it is completely transparent to the user.
+
+
+`cosmos_lookup` performs a lookup by running a `lookup_module` from the `access_frame` of the lookup request.
+
 
 a `lookup_module` uses `libcosmos` via a sub API: `lookup_svc.h`.
 
-`lookup_svc` creates `production_instructions` or chains of `production_instructions` and sends those to the `production_core`.
 
-the `production_core` factors the instruction to other `production_core grid nodes`.  An un-factorable "prime" instruction is run.
+`lookup_svc` creates `production_instructions` and sends those to the `production_exec`.
 
-the `production_core` uses `scanner_modules`, `producer_modules` and `source_modules` from the `access_frame` of the lookup request.  the result is a `dcel`.
 
-the `production_core` envelopes the `dcel` inside a new `access_frame`.
+the `production_exec` factors an instruction to other `production grid nodes`.  An un-factorable "prime" instruction is run.
 
-a factored instruction will result in multiple `access_frame` returns.  the `production_core` merges these and returns a single `access_frame`.
+
+the `production_exec` uses `scanner_modules`, `producer_modules` and `source_modules` from the `access_frame` of the lookup request.  the result is an `access_frame`.
+
+the `access_frame` envelopes a `dcel`.
+
+a factored instruction will result in multiple `access_frame` returns to the `production_exec`.  the `production_exec` merges these and returns a single `access_frame`.
+
+production instructions can use modules from dcel's record.
 
 
 api layers
