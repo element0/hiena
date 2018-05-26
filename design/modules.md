@@ -151,16 +151,21 @@ bootstrapping:
 
 essential modules are needed to access the modules.
 
-    dylib_mod source module
+    file_mod
+    cosmos_module_mod
 
 these are loaded by cosmos init.
 
+the access path cache is primed with a path to the essential modules.
 
 
-module initialization
----------------------
 
-    cosmroot = sourcefn file ~
+
+
+module access
+-------------
+
+    cosmroot = sourcefn file "~"
 
     lookupfn = lookup_mod->lookupfn
 
