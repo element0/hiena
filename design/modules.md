@@ -37,7 +37,9 @@ modules follow the ASH paradigm.
 
 a Address given to a Service function returns a Handle:
 
-    struct cosmos_module *cosmos_open_module(struct cosmos *, cosmos_id_t, char *MODNAME);
+    struct module_handle *cosmos_open_module(struct cosmos *, cosmos_id_t, char *MODNAME);
+
+    /* inputs are used to generate the address */
 
 
 use the module handle...
@@ -49,7 +51,10 @@ use the module handle...
 
 close the handle when finished
 
-    cosmos_close_module(struct cosmos_module *);
+    cosmos_close_module(struct module_handle *);
+
+
+
 
 
 
@@ -65,6 +70,100 @@ modules are accessed by cosmos path.
 
 
     cosmos_close(hdl);
+
+
+
+
+function access frame interface (alternate)
+-------------------------------------------
+
+    struct access_frame *cosmos_open_module_function(struct cosmos *, cosmos_id_t, char *MODNAME, char *FUNCNAME);
+
+    struct access_frame *res = cosmos_exec(func_hdl, argc, argv, env);
+
+    /* where env is a struct access_frame which includes ENV and sandboxed stdio */
+
+    cosmos_close_module_function(struct access_frame *);
+
+
+function access frame implementation
+------------------------------------
+
+lookup access path to function
+
+    lookup ~/.cosm/lib/cosmos/modules/MODNAME.so.cosmos_module/transform
+    -or-
+    lookup ~/.cosm/lib/cosmos/modules/MODNAME.sh/transform
+
+
+breakdown of productions
+
+    dcel *
+    targ = source file "~"
+
+    module_handle *mod
+    mod->map = lookup "~/.cosm/lib/cosmos/modules/file.so/cosmos_map_fn"
+    mod->svc = lookup "~/.cosm/lib/cosmos/modules/file.so/cosmos_service"
+
+    /* we bootstrap the cache with the above paths already pointing to
+       the following dcels */
+
+        dcel:{ fnid:source, mod:module_function, argc:2, argv:{"~/.cosm/lib/cosmos/modules/file.so","cosmos_map_fn"}
+               execfn:internal
+             };
+        dcel:{ fnid:source, mod:module_service, argc:2, argv:{"~/.cosm/lib/cosmos/modules/file.so","cosmos_service"}
+               execfn:
+             };
+
+    /* the following modules are required */
+
+        module:{ name:"module_function" service:{open,exec,close} };
+
+                service:open = {
+                                module_function_handle->internal_hdl = dlopen argv[1];
+                                module_function_handle->function_ptr = dlsym argv[2];
+                                return module_function_handle;
+                        }
+                service:exec = {
+                                return module_function_handle->function_ptr(argc, argv, env_frame);
+                        }
+                service:close = {
+                                dlclose module_function_handle->internal_hdl;
+                                cleanup module_function_handle;
+                        }
+
+        module:{ name:"module_function" service:{open,close} };
+
+                service:open = {
+                                module_function_handle->internal_hdl = dlopen argv[1];
+                                module_function_handle->function_ptr = dlsym argv[2];
+                                return module_function_handle;
+                        }
+                service:exec = {
+                                return module_function_handle->function_ptr(argc, argv, env_frame);
+                        }
+                service:close = {
+                                dlclose module_function_handle->internal_hdl;
+                                cleanup module_function_handle;
+                        }
+
+    
+    
+
+
+
+    cosmos_exectarg->module->map targ
+
+    targ = lookup_child ".cosm"
+
+    targ->module->map targ
+
+    targ = lookup_child "lib"
+
+    ...
+
+    
+
 
 
 
