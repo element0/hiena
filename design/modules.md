@@ -96,9 +96,19 @@ lookup access path to function
     lookup ~/.cosm/lib/cosmos/modules/MODNAME.sh/transform
 
 
-breakdown of productions
+breakdown of productions (elids some access frames for sake of simplicity)
 
-    dcel *
+    par  = aframe:{ lookup_mod:fudge }
+ 
+    home = aframe:{ 
+        lookup_mod:fudge
+        dcel:{ fnid:0, mod:file, argc:1, argv:{"~"} }
+    }
+
+    targ = lookup
+
+    ...
+
     targ = source file "~"
 
     module_handle *mod
