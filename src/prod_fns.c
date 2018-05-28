@@ -13,26 +13,38 @@
 
 cosmos_id_t prod_src(char *modname, char *addr, struct cosmos *)
 {
-
-        prod_mod_t mod;
         struct access_frame *af;
 
-        mod = cosmos_db_get_mod(cm, modname);
+        modid = cosmos_put_str(modname);
 
-        af->dcel = mod->source(addr);
+        args;
+
+        prod_args_add( args, "addr", PI_STR, addr );
+
+        dcel->prodfn_id = PCMD_SRC;
+        dcel->module_id = modid;
+        dcel->args = args;
+
+        af = aframe_new();
+        af->dcel = dcel;
 
         return af;
 }
+
+
  
 
-cosmos_id_t prod_map(cosmos_id_t, char *, struct cosmos *);
 cosmos_id_t prod_map(cosmos_id_t targ, char *modname, struct cosmos *cm)
 {
-        mod = cosmos_db_get_mod(cm, modname);
+        /* WIP */
 
-        af->dcel = mod->map(targ,cm);
+        fnpath = cosmos_calc_fnpath(cm, modname, "cosmos_map_fn");
 
-        return af;
+        fnframe = cosmos_lookup(cm, targ, fnpath);
+
+        res = cosmos_exec(cm, fnframe, targ, NULL);
+
+        return res;
 }
 
 
@@ -81,8 +93,16 @@ cosmos_id_t prod_find_prop(cosmos_id_t par, char *name, struct cosmos *cm)
 
 
 
-cosmos_id_t prod_transform(cosmos_id_t targ, char *modname, struct cosmos *cm)
+cosmos_id_t prod_transform(cosmos_id_t targ, char *modname, prod_args_t *args, struct cosmos *cm)
 {
-        return COSMOS_ID_NULL;
+        /* WIP */
+
+        fnpath = modules_calc_fnpath(cm, targ, modname, "cosmos_map_fn");
+
+        fnframe = cosmos_lookup(cm, targ, fnpath);
+
+        res = cosmos_exec(cm, fnframe, targ, args);
+
+        return res;
 }
 

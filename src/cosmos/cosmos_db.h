@@ -17,6 +17,9 @@ struct access_frame;
   @param dcel   cosmos db root dcel
  */
 struct cosmos {
+        /* config */
+        char *modlibpath;
+
         /* init */
         void *filesvc;
         void *cosmsvc;

@@ -12,6 +12,8 @@
 struct hiena_dcel *cosmos_source_fn( struct access_frame *af, int argc, void **argv, struct cosmos *);
 
 
+char *cosmos_calc_fnpath(cm, targ, modname, "cosmos_map_fn");
+
 
 struct cosmos_module {
         

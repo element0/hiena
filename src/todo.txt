@@ -3,13 +3,18 @@
 2018-05-17  0752
 2018-05-22  0757
 2018-05-23  0801
+2018-05-28  0750
+
+
+WIP:   prod_fns.c
+       modules.md
+       module loading
 
 done:  test_file_module
        ~/.cosm/lib/cosmos/modules/.
 
 
-WIP:   modules.md
-       module loading
+
 
 prep:
       cosmos_init
@@ -27,7 +32,8 @@ WIP:  file module
 
 
 stack:
-      cosmos_db_get_mod
+      prod_fns.c
+      cosmos_db_get_mod()
 
 
 

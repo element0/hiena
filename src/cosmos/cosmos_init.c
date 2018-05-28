@@ -146,12 +146,19 @@ static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
 
         if(cm == NULL)
         {
-                HIERR("cosmos_creste_db: err: fail to allocation cosmos db");
+                HIERR("cosmos_create_db: err: fail to allocate cosmos db");
                 return NULL;
         }
 
 
-        
+
+        /* config */
+
+        if(cosmos_config(cm) == -1)
+        {
+HIERR("cosmos_create_db: err: fail to configure cosmos db");
+                return NULL;
+        }
 
 
 
