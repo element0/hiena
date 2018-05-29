@@ -158,8 +158,13 @@ lookup-svc:
 
 
 
+libcosmos:  devdirs access-frame
+	gcc $(dbugopts) -shared $(out-o)/$(fraglibo) $(out-o)/$(mfraglibo) -o $(out-lib)/libcosmos.so
 
-libhiena:  devdirs fraglib 
+
+
+
+libhiena:  devdirs fraglib mfraglib
 	gcc $(dbugopts) -shared $(out-o)/$(fraglibo) $(out-o)/$(mfraglibo) -o $(out-lib)/libhiena.so
 
 
@@ -296,7 +301,7 @@ test-cosmos-fs: cosmos-fs
 	gcc $(dbugopts) $(out-o)/cosmos_{db,fs}.o $(out-o)/{hash,btree_cpp,access_frame}.o cosmos/cosmos_fs_test.c -o $(out-test-bin)/cosmos_fs_test -lstdc++
 
 
-test-cosmos-module:  cosmos-db cosmos-config cosmos-module ptr-stack
+test-cosmos-module:  libhiena cosmos-db cosmos-config cosmos-module ptr-stack
 	gcc $(dbugopts) $(out-o)/cosmos_{db,config,module}.o $(out-o)/{hash,btree_cpp,dcel,access_frame,ptr_stack}.o cosmos/test_cosmos_module.c -o $(out-test-bin)/cosmos_module_test -L$(out-lib) -lhiena -lstdc++
 
 
@@ -350,6 +355,11 @@ test-mfrag-fh:
 
 test-mfrag-svc:
 	gcc $(dbugopts) mfrag_fh.c mfrag_svc.c mfrag_svc_test.c -o $(out-test-bin)/mfrag_svc_test
+
+
+test-prod-fns: prod-fns libhiena
+	gcc $(dbugopts) $(out-o)/prod_fns.o test_prod_fns.c -o $(out-test-bin)/prod_fns_test -L$(out-lib) -lhiena 
+
 
 
 test_main:  
