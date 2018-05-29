@@ -131,7 +131,7 @@ static struct cosmos *cosmos_get_db() {
 
 
 
-static struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
+struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
 
         struct cosmos *cm;
         cosmos_id_t *boot_cosm;

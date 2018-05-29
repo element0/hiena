@@ -2,13 +2,16 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "cosmos_db.h"
+#include "../hierr.h"
 
 
 char *cosmos_calc_fnpath(struct cosmos *cm, char *modname, char *fnname)
 {
-        char *fnpath;
-        int len;
-        char *modlibpath;
+        char *fnpath, *cur;
+        size_t len;
+        char *modlibpath, *modsuffix;
+        size_t fnpathsize, modlibpathlen, modnamelen, modsuffixlen, fnnamelen;
 
         if( cm == NULL )
         {
@@ -32,14 +35,42 @@ char *cosmos_calc_fnpath(struct cosmos *cm, char *modname, char *fnname)
 
 
         modlibpath = cm->modlibpath;
+        modsuffix = cm->modsuffix;
 
-        fnpath = malloc(sizeof(char)*
-(strlen(modlibpath+1
-+strlen(modname)
-+strlen(modsuffix)+1
-+strlen(fnname)+1)
-);
+        modlibpathlen = cm->modlibpathlen;
+        modsuffixlen = cm->modsuffixlen;
+        modnamelen = strlen(modname);
+        fnnamelen = strlen(fnname);
 
 
-        
+        fnpathsize = sizeof(char)*
+(modlibpathlen+1
++modnamelen
++modsuffixlen+1
++fnnamelen+1);
+
+
+        fnpath = malloc(fnpathsize);
+
+        cur = fnpath;
+
+        strncpy(cur, modlibpath, modlibpathlen);
+        cur += modlibpathlen;
+
+        (cur++)[0] = '/';
+
+        strncpy(cur, modname, modnamelen);
+        cur += modnamelen;
+
+        strncpy(cur, modsuffix, modsuffixlen);
+        cur += modsuffixlen;
+
+        (cur++)[0] = '/';
+
+        strncpy(cur, fnname, fnnamelen);
+        cur += fnnamelen;
+
+        cur[0] = '\0';
+
+        return fnpath;
 }

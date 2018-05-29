@@ -9,10 +9,12 @@
 WIP:   prod_fns.c
        modules.md
        module loading
+       cosmos_config.{c,h}
+
 
 done:  test_file_module
        ~/.cosm/lib/cosmos/modules/.
-
+       cosmos_calc_fnpath()
 
 
 

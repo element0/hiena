@@ -36,9 +36,11 @@ cosmos_id_t prod_src(char *modname, char *addr, struct cosmos *)
 
 cosmos_id_t prod_map(cosmos_id_t targ, char *modname, struct cosmos *cm)
 {
-        /* WIP */
 
         fnpath = cosmos_calc_fnpath(cm, modname, "cosmos_map_fn");
+
+
+        /* WIP */
 
         fnframe = cosmos_lookup(cm, targ, fnpath);
 

@@ -1,4 +1,5 @@
-
+#include <string.h>
+#include "cosmos_db.h"
 #include "cosmos_config.h"
 #include "../hierr.h"
 
@@ -11,6 +12,12 @@ int cosmos_config(struct cosmos *cm)
         }
 
         cm->modlibpath = CM_MODLIBPATH;
+        cm->modlibpathlen = strlen(cm->modlibpath);
+        
+
+        cm->modsuffix = CM_MODSUFFIX;
+        cm->modsuffixlen = strlen(cm->modsuffix);
+
 
         return 0;
 

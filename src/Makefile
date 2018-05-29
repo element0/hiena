@@ -47,6 +47,8 @@ btree_cpp:
 	g++ $(dbugopts) -c -std=c++0x btree_cpp.cc -o $(out-o)/btree_cpp.o
 
 
+cosmos-config:
+	gcc $(dbugopts)  -c cosmos/cosmos_config.c -o $(out-o)/cosmos_config.o
 
 cosmos-db:      btree_cpp hash
 	gcc $(dbugopts)  -c cosmos/cosmos_db.c -o $(out-o)/cosmos_db.o
@@ -59,6 +61,9 @@ cosmos-dirh:      cosmos-db access-frame
 
 cosmos-load-mod:        dcel access-frame
 	gcc $(dbugopts)  -c cosmos/load_module.c -o $(out-o)/cosmos_load_module.o
+
+cosmos-module:
+	gcc $(dbugopts)  -c cosmos/cosmos_module.c -o $(out-o)/cosmos_module.o
 
 cosmos-init:    cosmos-db cosmos-load-mod
 	gcc $(dbugopts)  -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
@@ -291,6 +296,10 @@ test-cosmos-fs: cosmos-fs
 	gcc $(dbugopts) $(out-o)/cosmos_{db,fs}.o $(out-o)/{hash,btree_cpp,access_frame}.o cosmos/cosmos_fs_test.c -o $(out-test-bin)/cosmos_fs_test -lstdc++
 
 
+test-cosmos-module:  cosmos-db cosmos-config cosmos-module ptr-stack
+	gcc $(dbugopts) $(out-o)/cosmos_{db,config,module}.o $(out-o)/{hash,btree_cpp,dcel,access_frame,ptr_stack}.o cosmos/test_cosmos_module.c -o $(out-test-bin)/cosmos_module_test -L$(out-lib) -lhiena -lstdc++
+
+
 
 test-file-svc:
 	gcc $(dbugopts) hiena_svc.c test_file_svc.c -o $(out-test-bin)/file_svc_test
@@ -306,7 +315,7 @@ test-frag-fh:
 
 
 test-frag-curs:  btrees mfrag mfrag-fh mfrag-svc map-anchor frag frag-fh frag-svc frag-curs
-	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_svc.o,frag_curs.o} frag_curs_test.c -o $(out-test-bin)/frag_curs_test
+	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_svc.o,frag_curs.o} frag_curs_test.c -o $(out-test-bin)/frag_curs_test 
 
 
 test-frag-svc:

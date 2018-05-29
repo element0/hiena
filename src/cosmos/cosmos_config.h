@@ -7,6 +7,8 @@
 
 #define CM_MODLIBPATH ".cosm/lib/cosmos/modules"
 
+#define CM_MODSUFFIX ".so"
+
 
 
 int cosmos_config(struct cosmos *);
