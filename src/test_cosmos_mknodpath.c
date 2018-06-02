@@ -10,7 +10,7 @@ int main( int argc, char *argv[] )
         cosmos_id_t cur, protoframe;
         char *pathname;
 
-        cm = cosmos_init(argc, *argv);
+        cm = cosmos_init(argc, argv);
 
         protoframe = cm->proto; 
 

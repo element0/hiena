@@ -2,6 +2,8 @@
 #include <unistd.h>    // chdir()
 #include <sys/stat.h>
 #include <dlfcn.h>
+#include <string.h>
+#include <errno.h>
 #include "../hierr.h"
 #include "../prod_instr.h"
 #include "../dcel.h"
@@ -10,7 +12,7 @@
 #include "cosmos_fs.h"
 #include "cosmos_xformr.h"
 #include "load_module.h"
-#include <errno.h>
+
 
 
 /* EXAMPLE:
@@ -30,84 +32,34 @@ static void example_init_seq()
 */
 
 
-static int cosmos_init_modules(struct cosmos *cm, int modc, char *mod_path[]) {
+static char *user_at_host_string()
+{
+        char *userstr, *hoststr, *res;
+        size_t userstrlen, hoststrlen, reslen, ressize;
+        
 
-        /* call from cosmos_init.
-           cosmos_init has checked
-           the args */
+        userstr = "d";
+        hoststr = "mohost.local";
 
-        struct access_frame *af;
+        userstrlen = strlen(userstr);
+        hoststrlen = strlen(hoststr);
 
-        char *buf[PATH_MAX];
-        char *dsav;
-
-
-        dsav = getcwd(&buf, PATH_MAX);
-
-        if( dsav == NULL )
-        {
-                if( errno == ERANGE )
-                        HIERR("cosmos_init_modules: err: getcwd ERANGE");
-                else
-                        HIERR("cosmos_init_modules: err: getcwd NULL");
-                
-                return -1;
-        }
-
-
-        chdir(mod_path[0]);
-
-
-        af = cm->aframe;
-
-
-        cosmos_ll_mknod_path(cm, af, "init/lookup");
-
-
-
-        if(( lookmod = cosmos_loadmod(cm, "init/lookup", mod_path[2])) == -1)
-        {
-                HIERR("cosmos_init_modules: err: lookup not loaded");
-
-                return -1;
-        }
+        reslen = userstrlen+1+hoststrlen+1;
+        ressize = sizeof(char)*reslen;
+        res = malloc(ressize);
 
         
-        af = cm->proto;
-        if(af == NULL)
-        {
-                HIERR("cosmos_init_modules: err: cm->proto NULL");
+        res = strncat(res,userstr,userstrlen);
+        res = strncat(res,"@",1);
+        res = strncat(res,hoststr,hoststrlen);
+        res[reslen-1] = '\0';
+        
 
-                return -1;
-        }
-
-
-        if((af->lookfn = dlsym((void *)aframe_val_ptr(lookmod), "cosmos_lookup_fn")) == NULL )
-        {
-                HIERR("cosmos_init_modules: err: proto->lookfn NULL");
-
-                return -1;
-        }
-
-
-
-        af = cm->aframe;
-
-        cosmos_ll_mknod_path(cm, af, "init/filesvc");
-
-
-        if( cosmos_loadmod(cm, "init/filesvc", mod_path[1]) == -1)
-        {
-                HIERR("cosmos_init_modules: err: filesvc not loaded");
-
-                return -1;
-        }
-
-
-        chdir( dsav );
-
-        return 0;
+        return res;
 }
+
+
+
 
 
 
@@ -131,11 +83,15 @@ static struct cosmos *cosmos_get_db() {
 
 
 
-struct cosmos *cosmos_create_db(int modc, char *mod_path[]) {
+struct cosmos *cosmos_create_db(int modc, char *mod_path[])
+{
 
         struct cosmos *cm;
-        cosmos_id_t *boot_cosm;
-        cosmos_id_t *uhost_nod;
+        cosmos_id_t boot_cosm;
+        cosmos_id_t uhost_nod;
+        cosmos_id_t cmroot;
+        cosmos_id_t hostcosm;
+        cosmos_id_t userhost;
         mode_t mode;
         char *userhost_str;
 
@@ -199,9 +155,9 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
-        cm->aframe = aframe_new(); 
+        cm->root = aframe_new(); 
 
-        cmroot = cm->aframe;
+        cmroot = cm->root;
 
         if( cmroot == NULL )
         {
@@ -222,7 +178,7 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
-
+/*
 
         if( cosmos_init_modules(cm, modc, mod_path) == -1 )
         {
@@ -233,12 +189,14 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
                 return NULL;
         }
 
-
+*/
         
 
 
         /* init host cosm */
 
+
+/*
 
         mode = S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 
@@ -257,13 +215,14 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
-        cosmos_bind(cm, hostcosm, cmroot, "init/filesvc", mod_path[0]);
+        cosmos_bind(cm, hostcosm, "file", mod_path[0], cmroot);
 
-        
-
+*/
 
 
         /* init user-host cosm */
+
+/*
 
         userhost_str = user_at_host_string();
 
@@ -296,7 +255,7 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
         cosmos_bind(cm, userhost, cmroot, "init/filesvc", "/");
 
 
-
+*/
 
         return cm;
 }
@@ -309,13 +268,14 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 struct cosmos *cosmos_init(int modc, char *mod_path[])
 {
+/*
         if( modc < 3
           || mod_path == NULL )
         {
                 HIERR("cosmos_init: err: modc < 3 || mod_path NULL");
                 return NULL;
         }
-
+*/
 
 
         struct cosmos *cm;
@@ -330,7 +290,7 @@ struct cosmos *cosmos_init(int modc, char *mod_path[])
 
 
 
-        cm = cosmos_create_db();
+        cm = cosmos_create_db(modc, mod_path);
 
 
         if( cm == NULL )

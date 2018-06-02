@@ -29,12 +29,12 @@ struct prod_sequence *prod_seq_new( size_t );
 
 int prod_seq_cleanup( struct prod_sequence * );
 
-prod_seq_add( struct prod_sequence *, void * );
+struct prod_sequence *prod_seq_add( struct prod_sequence *, void * );
 
 
 struct prod_instr {
     int function_id;
-    cosmos_str_id_t module_id;
+    cosmos_strid_t module_id;
     struct prod_sequence **args;
 
     PRODFN_T(fnptr);
@@ -48,21 +48,6 @@ int prod_instr_cleanup( struct prod_instr * );
 
 int prod_instr_add_arg( struct prod_instr *, int, size_t, void * );
 
-
-struct prod_arg {
-        int type;
-        size_t len;
-        void *data;
-};
-
-struct prod_arg *prod_arg_new( int, size_t, void * );
-
-int prod_arg_cleanup( struct prod_arg * );
-
-
-
-
-struct hiena_dcel *prod_exec( struct prod_sequence * );
 
 
 

@@ -2,6 +2,11 @@
 2018-06-01  2028
 
 WIP:  cosmos_init
+      cosmos_lookup
+      cosmos_bind
+
+done:  cosmos_mknod_path()
+
 
 goals:  proto-frame
           lookup module
@@ -15,6 +20,8 @@ goals:  proto-frame
       ino=cosmos_mknkod_path(str)
       cosmos_bind(ino,url)
       cosmos_lookup(ino,str2)
+
+
 
 
 

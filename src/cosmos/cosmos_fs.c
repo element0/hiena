@@ -183,6 +183,25 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
 cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *path, mode_t mode, dev_t dev)
 {
         printf("cosmos_mknod_path\n");
+
+        char *cur, *last;
+        mode_t mode2;
+        cosmos_id_t par2;
+
+        cur = strtok(path, "/");
+        par2 = par;
+
+        while(cur != NULL)
+        {
+                printf("%s\n",cur);
+                last = cur;
+                cur = strtok(NULL, "/");
+                if(cur != NULL)
+                        mode2 = mode | S_IFDIR;
+                par2 = cosmos_mknod(cm, par2, last, mode2, 0);
+
+        }
+
         return 0;
 }
 

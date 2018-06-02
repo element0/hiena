@@ -3,6 +3,6 @@
 
 #include "cosmos_db.h"
 
-struct cosmos *cosmos_init( int, char * );
+struct cosmos *cosmos_init( int, char ** );
 
 #endif /* !COSMOS_INIT_H */
