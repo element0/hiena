@@ -4,18 +4,14 @@
 #include <stdint.h>
 #include "cosmos.h"
 #include "dcel.h"
+#include "prod_args.h"
 
 
 #define PRODFN_T(fnname) struct hiena_dcel *(*fnname)(struct access_frame *, int, void **)
 
 typedef uintptr_t prodfn_guid_t;
 
-enum pi_arg_types {
-        PI_INT,
-        PI_STR,
-        PI_STR_ID,
-        PI_COSMOS_ID
-};
+
 
 
 struct prod_sequence {

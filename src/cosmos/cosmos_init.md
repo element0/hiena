@@ -54,6 +54,17 @@ init_lookup
 init_source
 
 
+cosmos_mknod_path protoframe,
+
+  ".cosm/lib/cosmos/modules/lookup.so/cosmos_lookup_fn"
+
+  ".cosm/lib/cosmos/modules/file.so/cosmos_svc"
+
+
+
+
+
+
 
 
 load modules

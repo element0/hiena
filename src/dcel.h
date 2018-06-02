@@ -15,7 +15,8 @@
 #include "cosmos.h"
 
 
-struct prod_instr;
+struct prod_args;
+
 
 
 #define dcel_retain( dc ) dc->retain++
@@ -36,9 +37,9 @@ struct hiena_dcel {
 
         /* production */
         /* svc is in producer module */
-
-        struct prod_instr *prod_instr;
-
+        int prodfn_id;
+        cosmos_strid_t module_id;
+        struct prod_args *args;
 
         /* stream and map */
         struct hiena_frag *frag;

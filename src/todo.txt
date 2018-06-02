@@ -1,4 +1,23 @@
 
+2018-06-01  2028
+
+WIP:  cosmos_init
+
+goals:  proto-frame
+          lookup module
+          file module
+
+   cosmos_init will prepare the cosmos db state so that the cosmos_bind() and cosmos_lookup() functions will operate correctly.
+
+
+   so the following program  will work:
+
+      ino=cosmos_mknkod_path(str)
+      cosmos_bind(ino,url)
+      cosmos_lookup(ino,str2)
+
+
+
 
 2018-05-17  0752
 2018-05-22  0757
@@ -6,8 +25,7 @@
 2018-05-28  0750
 
 
-WIP:   prod_fns.c
-       modules.md
+WIP:   
        module loading
        cosmos_config.{c,h}
 
@@ -15,7 +33,7 @@ WIP:   prod_fns.c
 done:  test_file_module
        ~/.cosm/lib/cosmos/modules/.
        cosmos_calc_fnpath()
-
+       prod_fns.c
 
 
 prep:

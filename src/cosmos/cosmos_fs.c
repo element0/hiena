@@ -33,7 +33,9 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
 cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *s)
 {
         (struct access_frame *)par;
+
         struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
+
         struct access_frame *found;
         cosmos_strid_t strid;
         char *ssav;

@@ -1,7 +1,8 @@
 #ifndef _COSMOS_STRING_DB_H_
 #define _COSMOS_STRING_DB_H_
 
-#include <sys/types.h>
+#include <stdint.h>
+
 
 struct cosmos;
 typedef uint64_t cosmos_strid_t;

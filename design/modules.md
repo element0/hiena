@@ -10,6 +10,28 @@ modules install under
 
 
 
+playground
+----------
+
+module functions are accessed by cosmos_lookup().
+
+functions are executed by cosmos_exec().
+
+modules are loaded as needed if the 
+function is within a dylib.
+
+
+procedure
+
+- calculate module function path
+
+- lookup module function frame
+
+- execute module function frame
+
+
+
+
 module cascading (via .cosm dirs)
 ----------------
 

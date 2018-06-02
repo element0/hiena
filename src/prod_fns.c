@@ -1,8 +1,10 @@
 #include <stdlib.h>
-#include "dcel.h"
 #include "access_frame.h"
 #include "cosmos.h"
+#include "dcel.h"
 #include "hierr.h"
+#include "prod_args.h"
+#include "prod_types.h"
 
 
 
@@ -11,16 +13,26 @@
 
  */
 
-cosmos_id_t prod_src(char *modname, char *addr, struct cosmos *)
+cosmos_id_t prod_src(char *modname, char *addr_str, struct cosmos *cm)
 {
         struct access_frame *af;
+        cosmos_strid_t modid, label, addr;
+        struct prod_args *args;
+        struct hiena_dcel *dcel;
+
 
         modid = cosmos_put_str(modname);
 
-        args;
+        label = cosmos_put_str("addr");
 
-        prod_args_add( args, "addr", PI_STR, addr );
+        addr = cosmos_put_str(addr_str);
 
+
+        args = prod_args_new();
+        prod_args_add( args, label, PI_STR, (uintptr_t)addr );
+
+
+        dcel = dcel_new(NULL);
         dcel->prodfn_id = PCMD_SRC;
         dcel->module_id = modid;
         dcel->args = args;
@@ -36,15 +48,23 @@ cosmos_id_t prod_src(char *modname, char *addr, struct cosmos *)
 
 cosmos_id_t prod_map(cosmos_id_t targ, char *modname, struct cosmos *cm)
 {
+        cosmos_id_t res, fnframe;
+        char *fnpath;
+
 
         fnpath = cosmos_calc_fnpath(cm, modname, "cosmos_map_fn");
 
 
-        /* WIP */
+
+        /* WIP  headers OK
+                implem. WIP */
+
 
         fnframe = cosmos_lookup(cm, targ, fnpath);
 
-        res = cosmos_exec(cm, fnframe, targ, NULL);
+        res = cosmos_exec(cm, fnframe, targ, 0, NULL);
+
+
 
         return res;
 }
@@ -95,15 +115,16 @@ cosmos_id_t prod_find_prop(cosmos_id_t par, char *name, struct cosmos *cm)
 
 
 
-cosmos_id_t prod_transform(cosmos_id_t targ, char *modname, prod_args_t *args, struct cosmos *cm)
+cosmos_id_t prod_transform(cosmos_id_t targ, char *modname, struct prod_args *args, struct cosmos *cm)
 {
-        /* WIP */
+        char *fnpath;
+        cosmos_id_t fnframe, res;
 
-        fnpath = modules_calc_fnpath(cm, targ, modname, "cosmos_map_fn");
+        fnpath = cosmos_calc_fnpath(cm, modname, "cosmos_transform_fn");
 
         fnframe = cosmos_lookup(cm, targ, fnpath);
 
-        res = cosmos_exec(cm, fnframe, targ, args);
+        res = cosmos_exec(cm, fnframe, targ, args->argc, args->argv);
 
         return res;
 }
