@@ -297,8 +297,15 @@ test-cpp-btree:
 test-cpp-btree-c: btree_cpp
 	gcc $(dbugopts) $(out-o)/btree_cpp.o test_cpp_btree.c -o $(out-test-bin)/cpp_btree_test -lstdc++
 
+
+
+
 test-cosmos-fs: cosmos-fs
 	gcc $(dbugopts) $(out-o)/cosmos_{db,fs}.o $(out-o)/{hash,btree_cpp,access_frame}.o cosmos/cosmos_fs_test.c -o $(out-test-bin)/cosmos_fs_test -lstdc++
+
+
+test-cosmos-mkdnodpath: libhiena cosmos-db cosmos-config cosmos-module ptr-stack cosmos-fs dcel cosmos-init
+	gcc $(dbugopts) $(out-o)/cosmos_{db,fs,config,module,init}.o $(out-o)/{hash,btree_cpp,access_frame,ptr_stack,dcel}.o test_cosmos_mknodpath.c -o $(out-test-bin)/cosmos_mknodpath_test -L$(out-lib) -lhiena -lstdc++
 
 
 test-cosmos-module:  libhiena cosmos-db cosmos-config cosmos-module ptr-stack

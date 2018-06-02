@@ -121,7 +121,7 @@ cosmos_id_t load_mod( struct cosmos *cm, cosmos_id_t par, char *fpath )
           so there might be no mods.
         */
 
-        dc->prod_instr = NULL;
+        //dc->prod_instr = NULL;
 
 
 
