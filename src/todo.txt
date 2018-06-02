@@ -2,10 +2,13 @@
 2018-06-01  2028
 
 WIP:  cosmos_init
-      cosmos_lookup
       cosmos_bind
 
 done:  cosmos_mknod_path()
+      cosmos_lookup()   /* cache only */
+
+todo: cosmos_lookup() delegate function
+      cosmos_init() module paths
 
 
 goals:  proto-frame

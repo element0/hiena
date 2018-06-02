@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <string.h>
 #include "../access_frame.h"
 #include "../btree_cpp.h"
 #include "../hierr.h"
@@ -30,15 +31,17 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
 
 
 
-cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *s)
+cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
 {
         (struct access_frame *)par;
 
         struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
 
-        struct access_frame *found;
-        cosmos_strid_t strid;
-        char *ssav;
+        cosmos_id_t found, last;
+        cosmos_strid_t key;
+        btree_t *br;
+        char *ssav, *s, *cur;
+        size_t slen;
         int err;
 
 
@@ -51,48 +54,64 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *s)
 
 
 
-        printf("cosmos_lookup cache branch %s\n", s);
 
 
+        slen = strlen(pathstr);
+        s = strndup(pathstr,slen);
 
 
-        /* in sync */
+        cur = strtok(s, "/");
+        br = par->branch;
+        last = par;
 
-            /* look in branches */
-
-        strid = cosmos_string_id(s);
-
-        found = aframe_get_branch(par, strid);
-
-
-
-        /* if found */
-
-        if( found != NULL )
-                return (cosmos_id_t)found;
-
-
-
-
-        /* run lookup module */
-
-
-        printf("cosmos_lookup deligate func %s\n", s);
-
-
-        if( par->parent == NULL )
+        while(cur != NULL)
         {
-                HIERR("cosmos_lookup: err: par->parent NULL");
-                return COSMOS_ID_NULL;
+
+                /* in sync */
+                /* look in branches */
+
+                key = cosmos_string_id(cur);
+
+                found = (struct access_frame *)btree_get(br, (bkey_t)key);
+
+                /* if found */
+
+                if( found != NULL )
+                {
+                        printf("cosmos_lookup cache branch %s\n", cur);
+
+                        br = found->branch;
+                        cur = strtok(NULL, "/");
+                        last = found;
+
+                        continue;
+                }
+
+
+                /* run lookup module */
+
+                printf("cosmos_lookup deligate func %s\n", cur);
+
+
+                if( last->parent == NULL )
+                {
+                        HIERR("cosmos_lookup: err: par->parent NULL");
+                        return COSMOS_ID_NULL;
+                }
+
+
+                lookfn = last->parent->lookfn;
+
+                found = lookfn(cm, last, cur);
+
+                br = last->branch;
+                btree_put(br, key, found);
+
+                cur = strtok(NULL, "/");
+                last = found;
         }
 
-
-        lookfn = par->parent->lookfn;
-
-        found = lookfn(cm, par, s);
-
-        aframe_set_branch(par, strid, found);
-
+        free(s);
 
         return (cosmos_id_t)found;
 }
@@ -180,13 +199,17 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
 
 
 
-cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *path, mode_t mode, dev_t dev)
+cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *pathstr, mode_t mode, dev_t dev)
 {
         printf("cosmos_mknod_path\n");
 
-        char *cur, *last;
+        char *path, *cur, *last;
         mode_t mode2;
         cosmos_id_t par2;
+        size_t slen;
+
+        slen = strlen(pathstr);
+        path = strndup(pathstr, slen);
 
         cur = strtok(path, "/");
         par2 = par;
@@ -201,6 +224,8 @@ cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *path, mo
                 par2 = cosmos_mknod(cm, par2, last, mode2, 0);
 
         }
+
+        free(path);
 
         return 0;
 }

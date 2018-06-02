@@ -7,16 +7,21 @@
 int main( int argc, char *argv[] )
 {
         struct cosmos *cm;
-        cosmos_id_t cur, protoframe;
+        cosmos_id_t cur, protoframe, root, res;
         char *pathname;
 
         cm = cosmos_init(argc, argv);
 
-        protoframe = cm->proto; 
+        protoframe = cm->proto;
+        root = cm->root;
 
         pathname = cosmos_calc_fnpath(cm, "lookup", "cosmos_lookup_fn");
 
-        cur = cosmos_mknod_path(cm, protoframe, pathname, 0, 0); 
+        cur = cosmos_mknod_path(cm, root, pathname, 0, 0); 
+
+        res = cosmos_lookup(cm, root, pathname);
+
+        printf("test_cosmos_mknodpath: res %lu\n", (unsigned long)res);
 
         free(pathname);
 

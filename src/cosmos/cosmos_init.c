@@ -64,19 +64,9 @@ static char *user_at_host_string()
 
 
 
-
-
-
-
-
-
-
-
-
 static struct cosmos *cosmos_get_db() {
         return NULL;
 }
-
 
 
 
