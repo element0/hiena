@@ -130,7 +130,7 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
         if( cm->proto == NULL )
         {
-                HIERR("cosmos_init: err: can't get cosmos proto aframe");
+                HIERR("cosmos_init: err: can't create cosmos proto aframe");
 
                 cosmos_db_cleanup(cm);
 
@@ -151,7 +151,7 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
         if( cmroot == NULL )
         {
-                HIERR("cosmos_init: err: can't get cosmos root");
+                HIERR("cosmos_init: err: can't create cosmos root");
 
                 cosmos_db_cleanup(cm);
 
@@ -164,7 +164,32 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
+        /* cosmos openfiles aframe */
+
+        cm->openfiles = aframe_new();
+
+        if( cm->openfiles == NULL )
+        {
+                HIERR("cosmos_init: err: can't create cosmos openfiles aframe");
+
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+
+
+
+
         /* init modules */
+
+
+
+        /* WIP */
+
+        dl = dlopen(lookupmodpath);
+        aframe_set_value(af,dl)
+        cm->openfiles set br "lookup"
 
 
 

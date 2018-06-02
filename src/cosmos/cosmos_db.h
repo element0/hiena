@@ -37,6 +37,7 @@ struct cosmos {
         btree_t *paths;
         struct access_frame *proto;
         struct access_frame *root;
+        struct access_frame *openfiles;
         struct hiena_dcel *dcel;
 
         /* maybe not */
