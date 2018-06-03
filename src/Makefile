@@ -47,6 +47,10 @@ btree_cpp:
 	g++ $(dbugopts) -fPIC -c -std=c++0x btree_cpp.cc -o $(out-o)/btree_cpp.o
 
 
+cosmos-bind:
+	gcc $(dbugopts)  -c cosmos/cosmos_bind.c -o $(out-o)/cosmos_bind.o
+
+
 cosmos-config:
 	gcc $(dbugopts)  -c cosmos/cosmos_config.c -o $(out-o)/cosmos_config.o
 

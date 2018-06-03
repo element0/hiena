@@ -8,6 +8,8 @@
 
 
 /** bind a single external address to a cosmos id 
+
+
  *
  */
 
@@ -19,21 +21,7 @@ cosmos_id_t cosmos_bind(
     cosmos_id_t context)
 
 {
-        cosmos_id_t par;
-        cosmos_id_t cosmdir;
-        cosmos_id_t protdir;
-        cosmos_id_t protmod;
-
-        /* cosmos meta dir name
-           cm->cosmos_dirname */
-
-        /* protocol dir path
-           cm->protocol_dirpath */
-
-        struct prod_instr *pi;
-        
-        /* production function id
-           DCEL_SOURCE */
+        struct hiena_dcel *dc;
 
 
         if( cm == NULL )
@@ -62,60 +50,15 @@ cosmos_id_t cosmos_bind(
 
 
 
-        /* get protocol module */
-
-        par = dest->parent;
-
-        cosmdir = cosmos_lookup(cm, par, cm->cosmos_dirname);
-
-        protdir = cosmos_lookup(cm, cosmdir, cm->protocol_dirpath);
-
-        protmod = cosmos_lookup(cm, protdir, protocol);
-
-
-
-
-
-        /* create prod instr */
-
-        pi = prod_instr_new();
-
-        if(pi == NULL)
-        {
-                HIERR("cosmos_bind: err: can't alloc prod_instr");
-                return NULL;
-        }
-
-        pi->module = protmod;
-        pi->fnid = DCEL_SOURCE;
-        pi->aframe = par;
-
-
-
-
-        /* create dcel
-           set prod instr */
-
         dc = cosmos_new_dcel( cm );
-        dc->prod_instr = pi;
 
+        dc->module = cosmos_string_id( protocol );
+        dc->addr = cosmos_put_string( cm, addr );
 
+        dcel_release( dest->dcel );
 
-
-
-        /* remove existing bind */
-
-        dcel_release( targ->dcel );
-
-
-
-
-
-        /* bind dcel to dest */
-
-        targ->dcel = dc;
+        dest->dcel = dc;
         dcel_retain( dc );
-
 
 
 
