@@ -1,6 +1,7 @@
 #ifndef _COSMOS_DB_H_
 #define _COSMOS_DB_H_
 
+#include <sys/types.h>
 #include <stdint.h>
 #include "../btree_cpp.h"
 #include "cosmos_id.h"

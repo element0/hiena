@@ -188,8 +188,22 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
         /* init lookup fn */
 
-        cm->lookup_dl = dlopen(cm->lookupmodpath,RTLD_LAZY);
-        cm->proto->lookfn = dlsym(cm->lookup_dl,CM_LOOKUP_FN_NAME);
+        printf("lookupmodpath: %s\n",cm->lookupmodpath);
+        cm->lookup_dl = dlopen(cm->lookupmodpath,RTLD_NOW);
+        if(cm->lookup_dl == NULL)
+                printf("%s\n",dlerror());
+
+        if(cm->lookup_dl != NULL)
+        {
+                printf("cm->lookup_dl != NULL\n");
+                cm->proto->lookfn = dlsym(cm->lookup_dl,CM_LOOKUP_FN_NAME);
+                if(cm->proto->lookfn != NULL)
+                {
+                        printf("cm->proto->lookfn: %lu\n", (unsigned long)cm->proto->lookfn);
+                }
+        }else{
+                printf("cm->lookup_dl == NULL\n");
+        }
 
 
 /*

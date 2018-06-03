@@ -18,9 +18,8 @@ int cosmos_config(struct cosmos *cm)
         cm->modsuffix = CM_MODSUFFIX;
         cm->modsuffixlen = strlen(cm->modsuffix);
        
-        cm->lookupmodpath = "~/" CM_MODLIBPATH "/lookup.so";
+        cm->lookupmodpath = "/home/raygan/" CM_MODLIBPATH "/lookup.so";
 
-        printf("lookupmodpath: %s\n",cm->lookupmodpath);
 
 
         return 0;

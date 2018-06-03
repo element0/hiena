@@ -1,8 +1,13 @@
 
 2018-06-01  2028
 
+note:  must begin using libhiena and libcosmos
+
 WIP:  cosmos_init
       cosmos_bind
+      lookup_light.so
+      libhiena
+      libcosmos
 
 done:  cosmos_mknod_path()
       cosmos_lookup()   /* cache only */
