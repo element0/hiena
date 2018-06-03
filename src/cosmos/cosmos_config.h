@@ -6,7 +6,6 @@
 
 
 #define CM_MODLIBPATH ".cosm/lib/cosmos/modules"
-
 #define CM_MODSUFFIX ".so"
 
 

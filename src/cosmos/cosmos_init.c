@@ -187,6 +187,9 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
         /* WIP */
 
+        lookupmodpath = "~/" + CM_MODLIBPATH + "/" + lookup.so;
+        lookupmodurl = "file://" + lookupmodlibpath;
+
         dl = dlopen(lookupmodpath);
         aframe_set_value(af,dl)
         cm->openfiles set br "lookup"
