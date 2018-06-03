@@ -23,6 +23,9 @@ int cosmos_db_cleanup(struct cosmos *cm)
         if(cm == NULL)
                 return 0;
 
+        if(cm->lookup_dl != NULL)
+                dlclose(cm->lookup_dl);
+
         free(cm);
 
         return 0;

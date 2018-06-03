@@ -40,6 +40,10 @@ struct cosmos {
         struct access_frame *openfiles;
         struct hiena_dcel *dcel;
 
+        /* temp */
+        char *lookupmodpath;
+        void *lookup_dl;
+
         /* maybe not */
         struct hiena_dcel *dcel_garbage;
 };

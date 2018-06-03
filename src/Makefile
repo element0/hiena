@@ -305,7 +305,7 @@ test-cosmos-fs: cosmos-fs
 
 
 test-cosmos-mknodpath: libhiena cosmos-db cosmos-config cosmos-module ptr-stack cosmos-fs dcel cosmos-init
-	gcc $(dbugopts) $(out-o)/cosmos_{db,fs,config,module,init}.o $(out-o)/{hash,btree_cpp,access_frame,ptr_stack,dcel}.o test_cosmos_mknodpath.c -o $(out-test-bin)/cosmos_mknodpath_test -L$(out-lib) -lhiena -lstdc++
+	gcc $(dbugopts) $(out-o)/cosmos_{db,fs,config,module,init}.o $(out-o)/{hash,btree_cpp,access_frame,ptr_stack,dcel}.o test_cosmos_mknodpath.c -o $(out-test-bin)/cosmos_mknodpath_test -L$(out-lib) -lhiena -lstdc++ -ldl
 
 
 test-cosmos-module:  libhiena cosmos-db cosmos-config cosmos-module ptr-stack

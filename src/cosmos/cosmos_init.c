@@ -11,6 +11,7 @@
 #include "cosmos_db.h"
 #include "cosmos_fs.h"
 #include "cosmos_xformr.h"
+#include "cosmos_config.h"
 #include "load_module.h"
 
 
@@ -185,15 +186,10 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
-        /* WIP */
+        /* init lookup fn */
 
-        lookupmodpath = "~/" + CM_MODLIBPATH + "/" + lookup.so;
-        lookupmodurl = "file://" + lookupmodlibpath;
-
-        dl = dlopen(lookupmodpath);
-        aframe_set_value(af,dl)
-        cm->openfiles set br "lookup"
-
+        cm->lookup_dl = dlopen(cm->lookupmodpath,RTLD_LAZY);
+        cm->proto->lookfn = dlsym(cm->lookup_dl,CM_LOOKUP_FN_NAME);
 
 
 /*

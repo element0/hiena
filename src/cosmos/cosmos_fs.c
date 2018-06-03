@@ -105,7 +105,7 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
                 found = lookfn(cm, last, cur);
 
                 br = last->branch;
-                btree_put(br, key, found);
+                btree_put(br, (bkey_t)key, (bval_t)found);
 
                 cur = strtok(NULL, "/");
                 last = found;
