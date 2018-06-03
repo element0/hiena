@@ -4,13 +4,14 @@
 
 
 %{
-#include "../../lookup_module.h"
-#include "../../lookup_hdl.h"
+#include "../../../lookup_module.h"
+#include "../../../lookup_hdl.h"
 #include "fudge.tab.h"
 %}
 
 %%
 
+EOF     return END;
 [.]     return DOT;
 [/]+    return FWD_SLASH;
 [:]     return COLON;
@@ -20,7 +21,5 @@
         }
 
 [\n]    return END;
-EOF     return END;
-.       // consume
 
 %%

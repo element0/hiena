@@ -2,15 +2,15 @@ SHELL = /bin/sh
 .SUFFIXES:
 .SUFFIXES: .l .y .c .o .so
 
-fudge.so:
+fudge:
 	bison -Wnone -d fudge.y
 	flex -o fudge.yy.c fudge.l
-	gcc -g -c -fPIC fudge.tab.c fudge.yy.c
+	gcc -g -c -fPIC fudge.yy.c fudge.tab.c
 	gcc -g -shared -o fudge.so fudge.tab.o fudge.yy.o
 	-rm fudge.yy.[o] fudge.tab.[o]
-	mv fudge.so ../../../out/lib/lookup/.
+	mv fudge.so ../../../../out/lib/modules/.
 
-fudge.c:
+fudge-c:
 	bison -Wnone -d fudge.y
 	flex -o fudge.yy.c fudge.l
 

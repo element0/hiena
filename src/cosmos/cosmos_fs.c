@@ -103,6 +103,7 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
                 lookfn = last->parent->lookfn;
 
                 found = lookfn(cm, last, cur);
+                found->lookfn = lookfn;
 
                 br = last->branch;
                 btree_put(br, (bkey_t)key, (bval_t)found);
@@ -191,6 +192,7 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
         targ->st_mode = mode;
         targ->st_nlink = 1;
         targ->parent = par;
+        targ->lookfn = par->lookfn;
 
         return targ;
 }

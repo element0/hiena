@@ -1,14 +1,14 @@
 
 %code requires {
 
-#include "../../lookup_svc.h"
+#include "../../../lookup_svc.h"
 #include "fudge.h"
 
 typedef void* yyscan_t;
 }
 
 %define lr.type ielr
-%define api.pure //full
+%define api.pure
 %locations
 %lex-param {yyscan_t scanner}
 %parse-param {yyscan_t scanner}
@@ -21,21 +21,20 @@ typedef void* yyscan_t;
 %token COLON
 %token END
 
-%type <lookup_target_t *> fudge fudge_seg find_child modifier 
-
-
-%%
+%type <lookup_target_t *> fudge fudge_seg find_child find_prop transform
 
 %code {
         char *cmd;
 }
 
-fudge_good
-  : fudge END
+
+%%
+
+
+fudge_good :
+    fudge END
     {
       look->result = look->target;
-
-      return 0;
     }
   ;
 
@@ -52,8 +51,7 @@ path_sep
   ;
 
 fudge_seg
-  : %empty
-  | find_child
+  : find_child
     {
       look->set_target(look, $1);
     }
