@@ -37,10 +37,13 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
 
         struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
 
+        struct hiena_dcel *dc;
+
         cosmos_id_t found, last;
+        cosmos_id_t mapfn;
         cosmos_strid_t key;
         btree_t *br;
-        char *ssav, *s, *cur;
+        char *ssav, *s, *cur, *fnpath, *modname;
         size_t slen;
         int err;
 
@@ -90,15 +93,18 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
                 /* WIP */
                 /* do we need to run mapper? */
 
+                dc = par->dcel;
+
                 if( dc->child_list == NULL )
                 {
 
 
-                /* run mapper */ 
+                        /* run mapper */ 
+                        modname = cosmos_get_string( cm, dc->module_id );
 
-                fnpath = cosmos_calc_fnpath( cm, modname, "cosmos_map_fn");
+                        fnpath = cosmos_calc_fnpath( cm, modname, "cosmos_map_fn");
 
-                mapfn = cosmos_lookup( cm, par, fnpath );
+                        mapfn = cosmos_lookup( cm, par, fnpath );
 
 
                 }

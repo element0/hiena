@@ -46,7 +46,7 @@ cosmos_id_t cosmos_bind( struct cosmos *cm, cosmos_id_t dest, char *protocol, ch
 
         dc = dcel_new( NULL );
 
-        dc->module_id = cosmos_string_id( protocol );
+        dc->module_id = cosmos_put_string( cm, protocol );
         dc->addr = cosmos_put_string( cm, addr );
 
 
