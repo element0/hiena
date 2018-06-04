@@ -87,6 +87,22 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
                         continue;
                 }
 
+                /* WIP */
+                /* do we need to run mapper? */
+
+                if( dc->child_list == NULL )
+                {
+
+
+                /* run mapper */ 
+
+                fnpath = cosmos_calc_fnpath( cm, modname, "cosmos_map_fn");
+
+                mapfn = cosmos_lookup( cm, par, fnpath );
+
+
+                }
+
 
                 /* run lookup module */
 
@@ -102,8 +118,26 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
 
                 lookfn = last->parent->lookfn;
 
+                if( lookfn == NULL )
+                {
+                        HIERR("cosmos_lookup: err: lookfn NULL");
+                        return COSMOS_ID_NULL;
+                }
+
+
                 found = lookfn(cm, last, cur);
+
+
+                if( found == NULL )
+                {
+                        HIERR("cosmos_lookup: alert: found NULL");
+                        return COSMOS_ID_NULL;
+                }
+
+                /* keep this next assignment as a stub for when we add frame-relative lookup functions */
+
                 found->lookfn = lookfn;
+
 
                 br = last->branch;
                 btree_put(br, (bkey_t)key, (bval_t)found);
@@ -229,7 +263,7 @@ cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *pathstr,
 
         free(path);
 
-        return 0;
+        return par2;
 }
 
 

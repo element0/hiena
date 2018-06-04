@@ -1,9 +1,9 @@
+#include <stdlib.h>
 
-
-#include "../cosmos_db.h"
-#include "../cosmos_fs.h"
+#include "../cosmos.h"
 #include "../access_frame.h"
 #include "../prod_instr.h"
+#include "../hierr.h"
 
 
 
@@ -13,13 +13,7 @@
  *
  */
 
-cosmos_id_t cosmos_bind(
-    struct cosmos *cm,
-    cosmos_id_t dest,
-    char *protocol,
-    char *addr,
-    cosmos_id_t context)
-
+cosmos_id_t cosmos_bind( struct cosmos *cm, cosmos_id_t dest, char *protocol, char *addr, cosmos_id_t context)
 {
         struct hiena_dcel *dc;
 
@@ -50,10 +44,13 @@ cosmos_id_t cosmos_bind(
 
 
 
-        dc = cosmos_new_dcel( cm );
+        dc = dcel_new( NULL );
 
-        dc->module = cosmos_string_id( protocol );
+        dc->module_id = cosmos_string_id( protocol );
         dc->addr = cosmos_put_string( cm, addr );
+
+
+        /* todo: improve dcel_release to dispose of 0-retained objects. */
 
         dcel_release( dest->dcel );
 

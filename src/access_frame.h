@@ -33,6 +33,8 @@ struct access_frame {
 
 struct access_frame *aframe_new();
 
+struct access_frame *aframe_spawn(struct access_frame *);
+
 int aframe_cleanup( struct access_frame * );
 
 struct access_frame *aframe_lookup(struct access_frame *, char *);

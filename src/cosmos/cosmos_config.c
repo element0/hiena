@@ -5,20 +5,48 @@
 
 int cosmos_config(struct cosmos *cm)
 {
+        char *homedir;
+        char *modpath;
+        char *modpath_half;
+
+
+
         if( cm == NULL )
         {
                 HIERR("cosmos_config: cm NULL");
                 return -1;
         }
 
+
+
         cm->modlibpath = CM_MODLIBPATH;
+
         cm->modlibpathlen = strlen(cm->modlibpath);
-        
 
         cm->modsuffix = CM_MODSUFFIX;
+
         cm->modsuffixlen = strlen(cm->modsuffix);
-       
-        cm->lookupmodpath = "/home/raygan/" CM_MODLIBPATH "/lookup.so";
+
+
+
+
+        homedir = getenv("HOME");
+
+        modpath_half = "/" CM_MODLIBPATH "/lookup.so";
+        
+        modpath = malloc(sizeof(char)*(strlen(homedir)+strlen(modpath_half)+1));
+
+        modpath[0] = '\0';
+
+        strncat(modpath, homedir, strlen(homedir));
+
+        strncat(modpath, modpath_half, strlen(modpath_half));
+
+
+
+
+        cm->lookupmodpath = modpath;
+
 
 
 

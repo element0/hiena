@@ -19,10 +19,10 @@ struct prod_args;
 
 
 
-#define dcel_retain( dc ) dc->retain++
+#define dcel_retain( dc ) if(dc != NULL) dc->retain++
 
 
-#define dcel_release( dc ) dc->retain--
+#define dcel_release( dc ) if(dc != NULL) dc->retain--
 
 
 #define dcel_child_val(dc,s,len)\
@@ -39,6 +39,7 @@ struct hiena_dcel {
         /* svc is in producer module */
         int prodfn_id;
         cosmos_strid_t module_id;
+        cosmos_strid_t addr;
         struct prod_args *args;
 
         /* stream and map */

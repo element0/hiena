@@ -20,6 +20,34 @@ struct access_frame *aframe_new()
 }
 
 
+struct access_frame *aframe_spawn(struct access_frame *par)
+{
+        struct access_frame *af;
+
+        if(par == NULL)
+        {
+                HIERR("aframe_spawn: par NULL");
+                return NULL;
+        }
+
+        af = aframe_new();
+        if(af == NULL)
+        {
+                HIERR("aframe_spawn: af NULL");
+                return NULL;
+        }
+
+
+        /* inherit */
+        
+        af->lookfn = par->lookfn;
+        af->parent = par;
+
+        return af;
+}
+
+
+
 int aframe_cleanup( struct access_frame *af )
 {
         if( af == NULL )

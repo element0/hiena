@@ -39,7 +39,7 @@ static char *user_at_host_string()
         size_t userstrlen, hoststrlen, reslen, ressize;
         
 
-        userstr = "d";
+        userstr = getlogin();
         hoststr = "mohost.local";
 
         userstrlen = strlen(userstr);
@@ -142,25 +142,6 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
-        /* cosmos root aframe */
-
-
-
-        cm->root = aframe_new(); 
-
-        cmroot = cm->root;
-
-        if( cmroot == NULL )
-        {
-                HIERR("cosmos_init: err: can't create cosmos root");
-
-                cosmos_db_cleanup(cm);
-
-                return NULL;
-        }
-
-        cmroot->parent = cm->proto;
-
 
 
 
@@ -204,6 +185,26 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
         }else{
                 printf("cm->lookup_dl == NULL\n");
         }
+
+
+
+        /* cosmos root aframe */
+
+
+
+        cm->root = aframe_spawn(cm->proto); 
+
+        cmroot = cm->root;
+
+        if( cmroot == NULL )
+        {
+                HIERR("cosmos_init: err: can't create cosmos root");
+
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
 
 
 /*

@@ -1,29 +1,30 @@
 
+2018-06-04  2248
+2018-06-04  0758
 2018-06-01  2028
 
-note:  must begin using libhiena and libcosmos
 
-WIP:  cosmos_init
+WIP:
+      dcel_find_child()
+      /* trigger the mapper */
+
+
+done:
+      cosmos_init
       cosmos_bind
       lookup_light.so
-      libhiena
-      libcosmos
-
-done:  cosmos_mknod_path()
-      cosmos_lookup()   /* cache only */
-
-todo: cosmos_lookup() delegate function
-      cosmos_init() module paths
+      cosmos_mknod_path()
 
 
-goals:  proto-frame
-          lookup module
-          file module
+goals:
+      proto frame
+      lookup module
+      file module
 
-   cosmos_init will prepare the cosmos db state so that the cosmos_bind() and cosmos_lookup() functions will operate correctly.
+      cosmos_init will prepare the cosmos db state so that cosmos_bind() and cosmos_lookup() will operate correctly.
 
 
-   so the following program  will work:
+      the following program  will work:
 
       ino=cosmos_mknkod_path(str)
       cosmos_bind(ino,url)
