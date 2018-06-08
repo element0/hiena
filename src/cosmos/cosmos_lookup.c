@@ -19,7 +19,7 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr);
 
 
 
-cosmos_id_t cosmos_lookup_cascade(struct cosmos *cm, ptr_stack_t cascades, ptr_stack_t strstate )
+cosmos_id_t cosmos_lookup_bind(struct cosmos *cm, ptr_stack_t cascades, ptr_stack_t strstate )
 {
         cosmos_id_t found, cur;
 
@@ -69,59 +69,91 @@ cosmos_cache_lookup(struct cosmos *cm, cosmos_id_t par, char **cur, ptr_stack_t 
 
 
 
-cosmos_id_t cosmos_lookup_reverse(struct cosmos *cm, cosmos_id_t par, char *pathstr)
+cosmos_id_t cosmos_lookup_cascade(struct cosmos *cm, cosmos_id_t par, char *pathstr)
 {
         (struct access_frame *)par;
-        cosmos_id_t found, last;
-        cosmos_id_t mapfn;
+        cosmos_id_t found;
+
+
+        for(; par != NULL && (found = cosmos_lookup( cm, par, pathstr)) == COSMOS_ID_NULL; par = par->parent);
+
+        return found;
+}
+
+
+
+
+static cosmos_id_t cosmos_lookup_cache(struct cosmos *cm, cosmos_id_t par, char *pathstr)
+{
+        (struct access_frame *)par;
         cosmos_strid_t key;
         btree_t *br;
-        char *ssav, *s, *cur, *fnpath, *modname;
-        size_t slen;
-        int err;
-        ptr_stack_t cascades;
-        ptr_stack_t strstate;
-        char *strtokstate;
 
+        printf("cosmos_lookup_cache for %s\n", cur);
 
+        br = par->branch;
+        key = cosmos_string_id(pathstr);
+
+        return (struct access_frame *)btree_get(br, (bkey_t)key);
+}
+
+static cosmos_id_t cosmos_lookup_map(struct struct cosmos *cm, cosmos_id_t par, char *pathstr)
+{
+        (struct access_frame *)par;
+        struct hiena_dcel *dc;
+        struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
+        
+        
         if(par == NULL)
         {
-                HIERR("cosmos_lookup: err: par NULL");
+                HIERR("cosmos_lookup_map: err: par NULL");
+                return COSMOS_ID_NULL;
+        }
+        
+        /* get lookup function */
 
+        if((lookfn = par->lookfn) == NULL)
+        {
+                if( par->parent == NULL )
+                {
+                        HIERR("cosmos_lookup: err: par->parent NULL");
+                        return COSMOS_ID_NULL;
+                }
+                lookfn = par->parent->lookfn;
+        }
+
+        if( lookfn == NULL )
+        {
+                HIERR("cosmos_lookup_map: err: lookfn NULL");
                 return COSMOS_ID_NULL;
         }
 
 
+        /* lookup in map */
 
-
-        cascades = ptr_stack_new();
-        strstate = ptr_stack_new();
-
-        slen = strlen(pathstr);
-        s = strndup(pathstr,slen);
-
-        cur = strtok_r(s, "/", &strtokstate);
-        br = par->branch;
-        last = par;
-
-        while(cur != NULL)
+        dc = par->dcel;
+        if(dc == NULL)
         {
-
-                /* TODO: sync */
-
-
-                /* begin cache lookup */
-
-                
-
-                        continue;
-                }
-                /* end cache lookup */
+                HIERR("cosmos_lookup_map: alert: dcel NULL");
+                return COSMOS_ID_NULL;
+        }
 
 
+        printf("cosmos_lookup_map run deligate func for %s\n", cur);
+
+        /* TODO:  add sync check */
+        if((found = lookfn(cm, par, pathstr)) == COSMOS_ID_NULL)
+        {
+                modname = cosmos_get_string( cm, dc->module_id );
+                mapfnpath = cosmos_calc_fnpath( cm, modname, CM_MAP_FN_NAME);
+                mapfn = cosmos_lookup_cascade( cm, par, mapfnpath );
+
+                if(cosmos_exec_mapfn(cm, mapfn, par) == 0)
+                        found = lookfn(cm, par, pathstr);
+        }
+        
+        return found;
 }
-
-
 
 
 
@@ -130,18 +162,13 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
 {
         (struct access_frame *)par;
 
-        struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
-
-        struct hiena_dcel *dc;
 
         cosmos_id_t found, last;
-        cosmos_id_t mapfn;
-        cosmos_strid_t key;
-        btree_t *br;
         char *ssav, *s, *cur, *fnpath, *modname, *strtokstate;
         size_t slen;
-        int err;
+
         ptr_stack_t cascades;
+        ptr_stack_t strstate;
 
 
         if(par == NULL)
@@ -158,29 +185,16 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
         slen = strlen(pathstr);
         s = strndup(pathstr,slen);
 
-        br = par->branch;
-        last = par;
 
-        for(cur = strtok_r(s, "/", &strtokstate); cur != NULL; cur = strtok_r(NULL, "/", &strtokstate))
+        for(cur = strtok_r(s, "/", &strtokstate), last = par; cur != NULL; cur = strtok_r(NULL, "/", &strtokstate), last = found)
         {
 
                 /* TODO: sync */
 
 
-                /* lookup cache */
-
-                key = cosmos_string_id(cur);
-
-                found = (struct access_frame *)btree_get(br, (bkey_t)key);
-
-
-                if( found != NULL )
+                if((found = cosmos_lookup_cache(cm,last,cur)) != COSMOS_ID_NULL
+                || (found = cosmos_lookup_map(cm,last,cur)) != COSMOS_ID_NULL)
                 {
-                        printf("cosmos_lookup cache branch %s\n", cur);
-
-                        br = found->branch;
-                        last = found;
-
                         /* journal cascade bind points */
 
                         if(found->cascade != NULL)
@@ -193,64 +207,6 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
                         continue;
                 }
 
-                /* end cache lookup */
-
-
-
-                /* check if we need to run mapper */
-
-
-                dc = par->dcel;
-
-                /* TODO:  add sync check */
-                if( dc != NULL && dc->child_list == NULL )
-                {
-                        /* run mapper */
-
-                        modname = cosmos_get_string( cm, dc->module_id );
-                        fnpath = cosmos_calc_fnpath( cm, modname, CM_MAP_FN_NAME);
-                        mapfn = cosmos_lookup_cascade( cm, last, fnpath );
-
-
-                }
-
-
-                /* run lookup module */
-
-                printf("cosmos_lookup deligate func %s\n", cur);
-
-
-
-                if( last->parent == NULL )
-                {
-                        HIERR("cosmos_lookup: err: par->parent NULL");
-                        return COSMOS_ID_NULL;
-                }
-
-
-
-
-                lookfn = last->parent->lookfn;
-
-                if( lookfn == NULL )
-                {
-                        HIERR("cosmos_lookup: err: lookfn NULL");
-                        return COSMOS_ID_NULL;
-                }
-
-
-                found = lookfn(cm, last, cur);
-
-
-
-                if( found == NULL && cascades != NULL )
-                        found = cosmos_lookup_cascade( cm, cascades, strstate );
-
-
-
-                if( found == NULL )
-                        return COSMOS_ID_NULL;
-
 
 
                 /* keep this next assignment as a stub for when we add frame-relative lookup functions 
@@ -258,12 +214,7 @@ cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
                 found->lookfn = lookfn;
                 */
 
-
-
-                br = last->branch;
                 btree_put(br, (bkey_t)key, (bval_t)found);
-
-                last = found;
         }
 
         free(s);

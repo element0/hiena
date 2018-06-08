@@ -8,8 +8,8 @@
 
 WIP:
       cosmos_lookup.c
+      /*  add results to cache */
       /* implement design from cosmos_lookup.md */
-      /* clarify and improve check for ".cosm" loop on module lookup */
 
 
 hold off:
@@ -22,7 +22,6 @@ done:
       lookup_light.so
       cosmos_mknod_path()
       cosmos_lookup()
-      /* trigger the mapper */
 
 
 

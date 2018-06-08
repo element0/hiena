@@ -80,15 +80,11 @@ cosmos_lookup( par, pathstr )
     
 
 lookup_map( par, pathseg )
-   if par.map OK
-   && r=find child in par.map
-      return r
-   if mapfn = cosmos_lookup_cascade( par.par, pathtomapper )
-   && mapfn( par )
-   && r=find child in par.map
-      return r
-   else
-      return NULL
+   if r=find child in par.map NONE
+      mapfn = cosmos_lookup_cascade( par.par, pathtomapper ) OK
+      if exec_mapfn( mapfn, par )
+        r=find child in par.map
+   return r || NULL
 
 
 cosmos_lookup_cascade( par, pathstr )
