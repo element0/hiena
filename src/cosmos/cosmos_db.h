@@ -54,18 +54,7 @@ struct cosmos *cosmos_db_new();
 
 int cosmos_db_cleanup( struct cosmos * );
 
-cosmos_id_t cosmos_bind(
-    struct cosmos *cm,
-    cosmos_id_t dest,
-    char *protocol,
-    char *addr,
-    cosmos_id_t context);
 
-cosmos_id_t cosmos_bind_uri(
-    struct cosmos *cm,
-    cosmos_id_t targ,
-    char *addr,
-    cosmos_id_t context);
 
 cosmos_strid_t cosmos_hash( char * );
 

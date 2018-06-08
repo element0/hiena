@@ -13,10 +13,14 @@ struct hiena_dcel;
 struct access_frame {
         struct cosmos *cosmos;
         struct hiena_dcel *cosm;
+
         struct hiena_dcel *dcel;
         struct hiena_dcel *env;
         struct access_frame *parent;
+        struct access_frame *cascade;
+
         btree_t *branch;
+
         btree_t *lookup_cache;
         btree_t *remap;
 

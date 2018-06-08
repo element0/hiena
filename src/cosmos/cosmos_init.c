@@ -145,7 +145,7 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
-
+        /* ELIMINATE? */
         /* cosmos openfiles aframe */
 
         cm->openfiles = aframe_new();
@@ -174,6 +174,7 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
         if(cm->lookup_dl == NULL)
                 printf("%s\n",dlerror());
 
+
         if(cm->lookup_dl != NULL)
         {
                 printf("cm->lookup_dl != NULL\n");
@@ -188,6 +189,21 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
+
+        /* init mapper function */
+
+        mapfnpath = CM_MODLIBPATH "/" CM_SOURCE_MODULE_NAME CM_MODSUFFIX "/" CM_MAP_FN_NAME;
+
+
+        mode = S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+
+        cosmos_mknod_path(cm, cm->proto, mapfnpath, mode, 0 );
+
+
+        /* WIP */
+
+
         /* cosmos root aframe */
 
 
@@ -195,6 +211,7 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
         cm->root = aframe_spawn(cm->proto); 
 
         cmroot = cm->root;
+
 
         if( cmroot == NULL )
         {
@@ -206,9 +223,16 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
         }
 
 
+        mode = S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+        rootcosm = cosmos_mkdir( cm, cmroot, ".cosm", mode);
+
+        protocosm = cosmos_lookup( cm, cm->proto, ".cosm" );
+
+        cosmos_cascade_bind( cm, rootcosm, protocosm );
+
 
 /*
-
         if( cosmos_init_modules(cm, modc, mod_path) == -1 )
         {
                 HIERR("cosmos_init: err: can't init modules");

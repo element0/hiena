@@ -1,12 +1,19 @@
 
+2018-06-06  0835
+2018-06-05  0745
 2018-06-04  2248
 2018-06-04  0758
 2018-06-01  2028
 
 
 WIP:
-      dcel_find_child()
-      /* trigger the mapper */
+      cosmos_lookup.c
+      /* implement design from cosmos_lookup.md */
+      /* clarify and improve check for ".cosm" loop on module lookup */
+
+
+hold off:
+      bind implementation
 
 
 done:
@@ -14,6 +21,9 @@ done:
       cosmos_bind
       lookup_light.so
       cosmos_mknod_path()
+      cosmos_lookup()
+      /* trigger the mapper */
+
 
 
 goals:

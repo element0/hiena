@@ -32,7 +32,7 @@ int cosmos_config(struct cosmos *cm)
 
         homedir = getenv("HOME");
 
-        modpath_half = "/" CM_MODLIBPATH "/lookup.so";
+        modpath_half = "/" CM_MODLIBPATH "/" CM_LOOKUP_MODULE_NAME CM_MODSUFFIX;
         
         modpath = malloc(sizeof(char)*(strlen(homedir)+strlen(modpath_half)+1));
 

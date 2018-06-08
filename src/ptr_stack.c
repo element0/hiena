@@ -125,41 +125,34 @@ int ptr_stack_push(ptr_stack_t pp, void *ptr)
 }
 
 
-void *ptr_stack_pop(ptr_stack_t pp)
+void *ptr_stack_pop(ptr_stack_t p)
 {
-        if(pp == NULL)
+        (struct ptr_stack *)p;
+        struct linked_item *top;
+        struct linked_item *prev;
+        void *res;
+
+
+        if(p == NULL)
         {
-                HIERR("ptr_stack_pop: err: pp NULL");
+                HIERR("ptr_stack_pop: err: p NULL");
                 return NULL;
         }
 
-        struct ptr_stack *p;
-        struct linked_item *top;
-        struct linked_item *prev;
-
-        p = (struct ptr_stack *)pp;
 
         top = p->top;
         if( top == NULL )
-        {
-                HIERR("ptr_stack_pop: err: top NULL");
                 return NULL;
-        }
 
+        res = top->ob;
         prev = top->prev;
-                linked_item_cleanup( top );
+        linked_item_cleanup( top );
 
         p->top = prev;
-
         if( prev != NULL )
-        {
                 prev->next = NULL;
 
-                return prev->ob;
-        }else{
-                HIERR("ptr_stack_pop: alert: top->prev NULL");
-                return NULL;
-        }
+        return res;
 }
 
 

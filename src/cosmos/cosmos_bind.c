@@ -7,6 +7,10 @@
 
 
 
+
+
+
+
 /** bind a single external address to a cosmos id 
 
 
@@ -65,3 +69,22 @@ abort:
         return COSMOS_ID_NULL;
 
 }
+
+
+
+
+cosmos_id_t cosmos_cascade_bind( struct cosmos *cm, cosmos_id_t af, cosmos_id_t af2 )
+{
+
+        if( af == NULL )
+        {
+                HIERR("cosmos_cascade_bind: af NULL");
+                return NULL;
+        }
+
+        af->cascade = af2;
+
+        return af;
+}
+
+

@@ -4,6 +4,7 @@
 #include "../access_frame.h"
 #include "../btree_cpp.h"
 #include "../hierr.h"
+#include "../ptr_stack.h"
 #include "cosmos_db.h"
 #include "cosmos_dirh.h"
 #include "cosmos_string_db.h"
@@ -28,134 +29,6 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
         return 0;
 }
 
-
-
-
-cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr)
-{
-        (struct access_frame *)par;
-
-        struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
-
-        struct hiena_dcel *dc;
-
-        cosmos_id_t found, last;
-        cosmos_id_t mapfn;
-        cosmos_strid_t key;
-        btree_t *br;
-        char *ssav, *s, *cur, *fnpath, *modname;
-        size_t slen;
-        int err;
-
-
-        if(par == NULL)
-        {
-                HIERR("cosmos_lookup: err: par NULL");
-
-                return COSMOS_ID_NULL;
-        }
-
-
-
-
-
-        slen = strlen(pathstr);
-        s = strndup(pathstr,slen);
-
-
-        cur = strtok(s, "/");
-        br = par->branch;
-        last = par;
-
-        while(cur != NULL)
-        {
-
-                /* in sync */
-                /* look in branches */
-
-                key = cosmos_string_id(cur);
-
-                found = (struct access_frame *)btree_get(br, (bkey_t)key);
-
-                /* if found */
-
-                if( found != NULL )
-                {
-                        printf("cosmos_lookup cache branch %s\n", cur);
-
-                        br = found->branch;
-                        cur = strtok(NULL, "/");
-                        last = found;
-
-                        continue;
-                }
-
-                /* WIP */
-                /* do we need to run mapper? */
-
-                dc = par->dcel;
-
-                if( dc->child_list == NULL )
-                {
-
-
-                        /* run mapper */ 
-                        modname = cosmos_get_string( cm, dc->module_id );
-
-                        fnpath = cosmos_calc_fnpath( cm, modname, "cosmos_map_fn");
-
-                        mapfn = cosmos_lookup( cm, par, fnpath );
-
-
-                }
-
-
-                /* run lookup module */
-
-                printf("cosmos_lookup deligate func %s\n", cur);
-
-
-                if( last->parent == NULL )
-                {
-                        HIERR("cosmos_lookup: err: par->parent NULL");
-                        return COSMOS_ID_NULL;
-                }
-
-
-                lookfn = last->parent->lookfn;
-
-                if( lookfn == NULL )
-                {
-                        HIERR("cosmos_lookup: err: lookfn NULL");
-                        return COSMOS_ID_NULL;
-                }
-
-
-                found = lookfn(cm, last, cur);
-
-
-                if( found == NULL )
-                {
-                        HIERR("cosmos_lookup: alert: found NULL");
-                        return COSMOS_ID_NULL;
-                }
-
-                /* keep this next assignment as a stub for when we add frame-relative lookup functions */
-
-                found->lookfn = lookfn;
-
-
-                br = last->branch;
-                btree_put(br, (bkey_t)key, (bval_t)found);
-
-                cur = strtok(NULL, "/");
-                last = found;
-        }
-
-        free(s);
-
-        return (cosmos_id_t)found;
-}
 
 
 
