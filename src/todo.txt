@@ -7,6 +7,8 @@
 
 
 WIP:
+      cosmos_exec.c
+          cosmos_exec_mapfn
       cosmos_lookup.c
       /*  add results to cache */
       /* implement design from cosmos_lookup.md */

@@ -65,6 +65,8 @@ cosmos_cache_lookup(struct cosmos *cm, cosmos_id_t par, char **cur, ptr_stack_t 
                         ptr_stack_push(strstate, (void *)ssav);
                 }
         }
+
+        return found;
 }
 
 
