@@ -12,7 +12,7 @@
 
 
 
-
+/* forward declaration */
 cosmos_id_t cosmos_lookup(struct cosmos *cm, cosmos_id_t par, char *pathstr);
 
 

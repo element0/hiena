@@ -3,34 +3,36 @@
 
 
 
-
-
-
-
-
-struct access_frame *cosmos_exec(
-    struct cosmos *cm,
-    struct access_frame *af,
-    struct access_frame *func,
-    int argc,
-    void *argv )
-{
-        struct access_frame *res;
-        char *fnid;
-
-
         /* build result access name
            ex.
                "fnname-arg1-argN"
                "scale-5in-7in"
          */
-        
+
+
+
+
+
+struct access_frame *cosmos_exec_mapfn(
+    struct cosmos *cm,
+    struct access_frame *mapfn_af,
+    struct access_frame *targ_af)
+{
+        struct access_frame *res;
+        char *fnid;
+
+
+        if(mapfn == NULL)
+        {
+                HIERR("cosmos_exec_mapfn: err: mapfn_af NULL");
+                return NULL;
+        }
 
 
 
         /* create result access frame */
 
-        resf = cosmos_mknod(cm, par, fnid, mode, 0);
+        res = cosmos_mknod(cm, par, fnid, mode, 0);
 
 
 
