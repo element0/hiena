@@ -48,6 +48,12 @@ struct access_frame *aframe_set_branch(struct access_frame *, cosmos_strid_t, st
 
 struct access_frame *aframe_get_branch(struct access_frame *, cosmos_strid_t);
 
+/**
+  an aframe, via it's dcel, can refer to an internal location within another resource.
+  some resources will need to be opened before they can be used.  (the resource type
+  and handler module are managed within the dcel.)
+  */
+
 int aframe_open_value(struct access_frame *);
 
 /**
