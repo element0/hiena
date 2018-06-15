@@ -62,11 +62,16 @@ int aframe_cleanup( struct access_frame *af )
 }
 
 
-struct iovec *aframe_val_ptr(struct access_frame *af)
+struct iovec *aframe_get_value_ptr(struct access_frame *af)
 {
         struct hiena_dcel *dc;
         struct iovec *iov;
 
+        if( af == NULL )
+        {
+                HIERR("aframe_remap_dirent_id af NULL");
+                return NULL;
+        }
 
         dc = af->dcel;
         iov = dcel_val_ptr(dc);

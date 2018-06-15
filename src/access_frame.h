@@ -48,9 +48,27 @@ struct access_frame *aframe_set_branch(struct access_frame *, cosmos_strid_t, st
 
 struct access_frame *aframe_get_branch(struct access_frame *, cosmos_strid_t);
 
-void **aframe_value(struct access_frame *);
+int aframe_open_value(struct access_frame *);
+
+/**
+
+DANGEROUS: the returned iovec contains a raw pointer to the internal buffer of the dcel behind the aframe.  This method is included for efficiency, but please be careful.
+
+ */
+struct iovec *aframe_get_value_ptr(struct access_frame *);
+
+/**
+  copies bytes (nmemb*size) from aframe's internal value into ptr.
+ */
+size_t aframe_read_value(void *ptr, size_t size, size_t nmemb, struct access_frame *);
+
+int aframe_close_value(struct access_frame *);
+
+/* retire this and use 'aframe_get_value'
 
 struct iovec *aframe_val_ptr(struct access_frame *);
+
+*/
 
 bval_t  aframe_remap_dirent_id( struct access_frame *, bval_t );
 
