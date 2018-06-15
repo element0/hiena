@@ -1,7 +1,11 @@
 
 
 
+struct access_frame *cosmos_exec( struct cosmos *cm, struct access_frame *mapfn_af, struct access_frame *targ)
+{
 
+        struct access_frame *res;
+        char *fnid;
 
         /* build result access name
            ex.
@@ -9,36 +13,8 @@
                "scale-5in-7in"
          */
 
-
-
-
-
-struct access_frame *cosmos_exec_mapfn(
-    struct cosmos *cm,
-    struct access_frame *mapfn_af,
-    struct access_frame *targ_af)
-{
-        struct access_frame *res;
-        char *fnid;
-
-
-        if(mapfn == NULL)
-        {
-                HIERR("cosmos_exec_mapfn: err: mapfn_af NULL");
-                return NULL;
-        }
-
-
-
-        /* create result access frame */
-
-        res = cosmos_mknod(cm, par, fnid, mode, 0);
-
-
-
-
-        /* exec the func's dcel */
-
+        /*
+        res = cosmos_mknod(cm, targ, fnid, mode, 0);
 
         dc = func->dcel;
 
@@ -47,8 +23,33 @@ struct access_frame *cosmos_exec_mapfn(
         res = exfn(cm, par, dc, argc, argv);
 
         resf->dcel = res;
+        */
+
+
+        return res;
+}
+
+
+
+
+
+struct access_frame *cosmos_exec_mapfn( struct cosmos *cm, struct access_frame *mapfn_af, struct access_frame *targ)
+{
         
+        if(mapfn_af == NULL)
+        {
+                HIERR("cosmos_exec_mapfn: err: mapfn_af NULL");
+                return NULL;
+        }
 
 
-        return resf;
+
+        mapfn = aframe_value(cm, mapfn_af);
+
+
+
+        mapfn(cm, targ, env_af);
+
+
+        return targ;
 }
