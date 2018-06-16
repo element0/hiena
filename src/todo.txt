@@ -8,9 +8,9 @@
 
 WIP:
       mapfn module API
-      aframe_open()
-      aframe_close()
-      aframe_get_value()
+      cosmos_open()
+      cosmos_close()
+      aframe_get_value() ?? cosmos_get_value()?
       cosmos_exec_mapfn
       cosmos_lookup.c
       /*  add results to cache */

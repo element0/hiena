@@ -42,10 +42,11 @@ struct access_frame *cosmos_exec_mapfn( struct cosmos *cm, struct access_frame *
                 return NULL;
         }
 
+        cosmos_fh_t mapfn_h;
 
-        aframe_open(cm, mapfn_af);
+        mapfn_h = cosmos_open(cm, mapfn_af);
 
-        mapfn = aframe_get_value(cm, mapfn_af);
+        mapfn = aframe_get_value(cm, mapfn_h);
 
         /* TODO: fork in case fault */
 
@@ -53,7 +54,7 @@ struct access_frame *cosmos_exec_mapfn( struct cosmos *cm, struct access_frame *
 
         /* TODO: merge fork */
 
-        aframe_close(cm, mapfn_af);
+        cosmos_close(cm, mapfn_h);
 
 
         return targ;
