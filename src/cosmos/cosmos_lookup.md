@@ -1,5 +1,17 @@
 
 
+table of contents
+-----------------
+
+- location
+- lookup axis theory
+- binds vs. cascades
+- cosmos lookup algorithm
+- stream content cache buffer
+
+and older stuff
+
+
 
 location
 --------
@@ -98,6 +110,9 @@ cosmos_lookup_cascade( par, pathstr )
 
    
    
+stream content cache buffer
+---------------------------
+
 
 
 
