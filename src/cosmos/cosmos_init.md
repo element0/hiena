@@ -65,6 +65,37 @@ init_source
 load modules
 ------------
 
+
+most modules are lazy-loaded -- triggered by cosmos_lookup.
+
+a few of these need to have access frames added into the access tree at init time.
+
+        .cosm/lib/cosmos/modules/dlopen
+        .cosm/lib/cosmos/modules/dlsym
+        .cosm/lib/cosmos/modules/file
+
+each module needs a dcel:
+
+    .cosm/lib/cosmos/modules/file
+      dcel:
+      /* node this module_id does not refer to the "file" module,
+         but to the module that loads the file module */
+      - module_id: dlopen
+      - addr: .cosm/lib/cosmos/modules/file
+
+
+a symbol within the module also gets an aframe:
+
+    .cosm/lib/cosmos/modules/file/cosmos_mapfn
+      dcel:
+      - module_id: dlsym
+      - addr: cosmos_mapfn
+
+
+
+
+--- old ---
+
 initial modules:
 
         lookup
