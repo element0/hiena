@@ -28,6 +28,8 @@ int cosmos_config(struct cosmos *cm)
         cm->modsuffixlen = strlen(cm->modsuffix);
 
 
+        cm->modsymbols = cm_mod_symbols;
+
 
 
         homedir = getenv("HOME");

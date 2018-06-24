@@ -24,6 +24,7 @@ struct cosmos {
         size_t modlibpathlen;
         char *modsuffix;
         size_t modsuffixlen;
+        char *modsymbols;
      
 
         /* init */

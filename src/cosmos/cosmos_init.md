@@ -50,14 +50,9 @@ the access frame from which a request comes from may be matched by ACLs in the d
 configure
 ---------
 
-init_lookup
-init_source
+use config.h to set default values, then override those if a config file is present.
 
-
-
-
-
-
+  COSMOS_CONFIG_PATH=".cosm/etc/cosmos:~/.cosm/etc/cosmos:/etc/cosmos"
 
 
 
@@ -65,73 +60,71 @@ init_source
 load modules
 ------------
 
+  COSMOS_MODULE_PATH=".cosm/lib/cosmos:~/.cosm/lib/cosmos:/lib/cosmos"
+
 
 most modules are lazy-loaded -- triggered by cosmos_lookup.
 
-a few of these need to have access frames added into the access tree at init time.
+some modules provide "built-ins" to cosmos.  though not technically built-in, they are loaded for the lifetime of the cosmos db.
 
-        .cosm/lib/cosmos/modules/dlopen
-        .cosm/lib/cosmos/modules/dlsym
-        .cosm/lib/cosmos/modules/file
+these need to have access frames added into the access tree at init time.
 
-each module needs a dcel:
-
-    .cosm/lib/cosmos/modules/file
-      dcel:
-      /* node this module_id does not refer to the "file" module,
-         but to the module that loads the file module */
-      - module_id: dlopen
-      - addr: .cosm/lib/cosmos/modules/file
-
-
-a symbol within the module also gets an aframe:
-
-    .cosm/lib/cosmos/modules/file/cosmos_mapfn
-      dcel:
-      - module_id: dlsym
-      - addr: cosmos_mapfn
+    .cosm/lib/cosmos/modules/dylib
+    .cosm/lib/cosmos/modules/dlsym
+    .cosm/lib/cosmos/modules/lookup
 
 
 
+each aframe has the module functions in its branches:
 
---- old ---
+    dylib/
+        open
+        close
 
-initial modules:
-
-        lookup
-        source
-
-
-cm->openfiles
-
-
-look in ~/.cosm/lib/cosmos/modules/
+    dlsym/
+        open
+        close
 
 
+each branch has a dcel:
 
-for each
+    (dcel):
+        module_id: ""
+        exec_type: builtin
+        value: (fnptr)
+        
+
+
+
+the dylibs are loaded into:
+
+    cm->initmods
+
+
+and the functions are assigned to the branches.
+
+
+cosmos_config provides the list of initial "built-in" modules.  
+
+
+
+    for each
         load_mod
 
 
-load_mod
+    load_mod
         dlopen module path
-        dlsym module struct
-        create aframe path
-        stick dcel in aframe
+        create access frame
+        create branches
 
-  .c
-        dl = dlopen( modpath );
-        af = cosmos_mkpath(cm, apath_str);
-        aframe_put_value(af, valtype, dl, len);
+    create branches
+        for each op
+            create access frame
+            dlsym op
+            assign to frame
+            set exectype to builtin
 
-
-
-to get the module:
-
-    af = cosmos_lookup(cm, apath_str);
-    modptr = aframe_get_value( af );
-    modops = modptr->ops;
-
+    
 
 
 init host cosm

@@ -1,7 +1,21 @@
 cosm directory design
 ---------------------
-(date 2018-01-03)
+(date 2018-06-21)
 
+  .cosm
+      etc
+          cosmos.conf
+      lib
+          cosmos
+              modules
+              init
+                  modules
+                      dylib.so
+                      dlsym.so
+
+
+
+(date 2018-01-03)
 
 various views which may be useful
 
@@ -21,9 +35,9 @@ various views which may be useful
                 lib
 
 
-from an API perspective, function pointers
+example access paths to function pointers
 
-  .cosm/svc/file/source
+  .cosm/svc/file/cosmos_mapfn
 
   .cosm/xform/cosm
 

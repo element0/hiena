@@ -7,7 +7,11 @@
 
 #define CM_METADIR_NAME ".cosm"
 
-#define CM_MODLIBPATH CM_METADIR_NAME "/lib/cosmos/modules"
+#define CM_COSMOSLIBPATH "/lib/cosmos"
+
+#define CM_MODLIBPATH CM_METADIR_NAME CM_COSMOSLIBPATH "/modules"
+
+#define CM_INITMODLIBPATH CM_METADIR_NAME CM_COSMOSLIBPATH "/init/modules"
 
 #define CM_MODSUFFIX ".so"
 
@@ -20,6 +24,10 @@
 #define CM_MAP_FN_NAME "cosmos_map_fn"
 
 
+char *cm_mod_symbols[]={
+    "open",
+    "close",
+};
 
 
 
