@@ -1,5 +1,8 @@
 
 
+test file change <----
+
+
 cosmos init
 -----------
 
@@ -32,27 +35,41 @@ create database
 ---------------
 
     cosmos db
+        lookup dylib
         strings
         access tree
+
 
 
 about access tree
 -----------------
 
-tree of access frames.
+tree of access frames -- paths of access frames which reach a dcel.  analogous to file paths.
 
-created by the lookup function, paths of access frames which reach a dcel.
+tree root created by init.  branches created by lookup function.
 
-the access frame from which a request comes from may be matched by ACLs in the dcel.
+root is an access frame.
+
+  cosmosdb
+    tree    <-- root access frame
+
+
+
+sidenote: access control.
+
+the access frame from which a request comes from ("visitor context") may be matched by ACLs in the dcel.
+
+
 
 
 
 configure
 ---------
 
-use config.h to set default values, then override those if a config file is present.
+use config.h to compile default values, override those if a config file is present:
 
   COSMOS_CONFIG_PATH=".cosm/etc/cosmos:~/.cosm/etc/cosmos:/etc/cosmos"
+
 
 default config:
 
@@ -68,12 +85,11 @@ load and map builtins
 lookup module builtin.
 
   cosmosdb
-    lookup_dylib   // via dlopen()
+    lookup_dylib   // dlopen() here
     tree
-      lookupfn aframe
+      lookupfn  <-- lookupfn aframe
 
 
-using only internal access paths we construct virtual paths to essential "built-ins".
 
 
 
@@ -97,7 +113,11 @@ then maps the operating system into a proto directory:
 
   cosmosdb
     tree
+      hostid
         .os    <- map os dirs here
+
+
+using cosmos_bind(db, 
 
 
 

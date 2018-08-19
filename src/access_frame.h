@@ -24,6 +24,8 @@ struct access_frame {
         btree_t *lookup_cache;
         btree_t *remap;
 
+        
+        struct access_frame *lookupfnid;
         struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
         struct access_frame *(*execfn)(struct access_frame *, int argc, char **);
         int execfnid;
