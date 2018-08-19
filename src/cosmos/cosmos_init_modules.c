@@ -1,7 +1,5 @@
-/* maybe not... */
-
-
-int cosmos_init_modules(struct cosmos *cm, int modc, char *mod_path[]) {
+int cosmos_init_modules(struct cosmos *cm)
+{
 
         /* call from cosmos_init.
            cosmos_init has checked

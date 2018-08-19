@@ -12,6 +12,8 @@ domain cell     {#dcel}
 
 
 
+
+
 # dcel database analogy #   {#database-analogy}
 
 2017-10-07 1745
@@ -27,6 +29,40 @@ ruleid's are column names
 2017-10-08 0730
 
 a domain cell can be visualized as a single row in a table.  the columns of the table are layered and nested and reflect the mappings.
+
+
+dcel production and service module
+----------------------------------
+(see elsewhere Production Instruction)
+
+a dcel has two "halves"
+
+- producer state
+- mapper state
+
+producer state
+- module name
+- prodfn type
+- cmd
+- args
+- producer private state
+
+
+mapper state
+- maps
+- indices
+- buffers
+- open file states
+- analyzer private state
+
+
+producer and mapper functions exist within the module.
+
+file stream operations are provided by the module.
+
+when the mapper is run, the mapper reads and writes the mapper state and when needed, uses the file stream operations from the producer.
+
+
 
 
 

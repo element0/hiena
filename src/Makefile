@@ -297,6 +297,12 @@ test-dcel-svc: btrees map-anchor mfrag mfrag-fh mfrag-svc frag frag-fh frag-curs
 	gcc $(dbugopts) $(out-o)/{btree.o,btrees.o,map_anchor.o,mfrag.o,mfrag_fh.o,mfrag_svc.o,frag.o,frag_fh.o,frag_curs.o,frag_svc.o,dcel_svc.o} dcel_svc_test.c -o $(out-test-bin)/dcel_svc_test
 
 
+
+test-builtins: libcosmos
+	gcc $(dbugopts) test_builtins.c -o $(out-test-bin)/builtins_test -L$(out-lib) -lhiena
+
+
+
 test-btrees: btrees
 	gcc $(dbugopts) btree.o btrees.o btrees_test.c -o $(out-test-bin)/btrees_test
 

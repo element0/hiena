@@ -1,3 +1,23 @@
+2018-07-09  2055
+
+get back on the wagon...
+
+
+Todo: small program to:
+      - init cosmos
+      - init builtins
+      - test builtin
+
+
+product:
+      test_builtins
+
+
+use:
+      cosmos_init()
+
+
+
 
 2018-06-06  0835
 2018-06-05  0745

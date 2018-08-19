@@ -166,7 +166,6 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
         /* init modules */
 
 
-/*
         if( cosmos_init_modules(cm, modc, mod_path) == -1 )
         {
                 HIERR("cosmos_init: err: can't init modules");
@@ -176,7 +175,7 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
                 return NULL;
         }
 
-*/
+
 
 
 

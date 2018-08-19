@@ -54,13 +54,73 @@ use config.h to set default values, then override those if a config file is pres
 
   COSMOS_CONFIG_PATH=".cosm/etc/cosmos:~/.cosm/etc/cosmos:/etc/cosmos"
 
+default config:
+
+  lookup_module=".cosm/lib/cosmos/lookup/lookup.so"
+
+  
+
+
+
+load and map builtins
+---------------------
+
+lookup module builtin.
+
+  cosmosdb
+    lookup_dylib   // via dlopen()
+    tree
+      lookupfn aframe
+
+
+using only internal access paths we construct virtual paths to essential "built-ins".
+
+
+
+
+
+
+
+map operating system into .cosm
+-------------------------------
+
+
+the cosmos db maps the existing file system starting with root.
+
+  cosmosdb
+    tree
+      hostid   <- map root fs here
+
+
+
+then maps the operating system into a proto directory:
+
+  cosmosdb
+    tree
+        .os    <- map os dirs here
+
+
+
+
+map root .cosm directory
+------------------------
+
+the root .cosm:
+
+look for file://.cosm
+
+
+  cosmosdb
+    tree
+      hostid
+        .cosm    <- map cosm here
 
 
 
 load modules
 ------------
 
-  COSMOS_MODULE_PATH=".cosm/lib/cosmos:~/.cosm/lib/cosmos:/lib/cosmos"
+  COSMOS_INIT_MODULES_PATH="/.cosm/lib/cosmos:/lib/cosmos:.cosm/lib/cosmos:~/.cosm/lib/cosmos:"
 
 
 most modules are lazy-loaded -- triggered by cosmos_lookup.
@@ -75,7 +135,7 @@ these need to have access frames added into the access tree at init time.
 
 
 
-each aframe has the module functions in its branches:
+each aframe has module functions in its branches:
 
     dylib/
         open
@@ -89,22 +149,24 @@ each aframe has the module functions in its branches:
 each branch has a dcel:
 
     (dcel):
-        module_id: ""
-        exec_type: builtin
-        value: (fnptr)
+        module_name: ""
+        prodfn_type: "builtin"
+        args: (fnptr)
         
 
 
 
 the dylibs are loaded into:
 
-    cm->initmods
+    cm->openlibs
 
 
 and the functions are assigned to the branches.
 
 
-cosmos_config provides the list of initial "built-in" modules.  
+cosmos_config provides a list of initial "built-in" modules.
+
+for each module the follow algo applied to load:
 
 
 
@@ -142,17 +204,23 @@ the first time cosmos_init is called, create the host cosm:
     argc: 1
     argv: { cosmfpath }
 
-  cosmos_mknod( aframe, prodinstr, ".cosm", mode, dev );
+  cosmos_mknod( cosmosdb, tree, ".cosm", , mode, dev, prodinstr );
 
 
 makes...
 
   cosmos_db
     tree
-      .cosm
+      ".cosm"
 
 
 
+create a first access path
+--------------------------
+
+any
+
+  cosmos_mknod( cosmosdb, tree, prodinstr, "", mode, dev );
 
 
 
@@ -162,27 +230,62 @@ respond to lookup request
 
 lookup requests can come from the file system user, or they can be internal, such as a reference within a prod instr.
 
-access paths are created through the lookup process.
+access paths are created through the lookup process (as well as explicit creation in the init procedure).
 
 
-when snafufs runs lookup on example_mnt aframe
 
-  lookup: example_mnt/.cosm/lookup
+lookup state
+------------
 
-  lookup somename
+  cosmosdb,
+  visitor aframe,
+  target aframe,
+  target dcel,
+  inherited_lookup_fn_hdl,
+  lookup_fn_hdl,
+  result aframe
 
----
 
-lookup =
-cosmos::get $aframe, ".cosm/lookup"
 
-return =
-lookup $aframe, $string
+lookup procedure
+----------------
+(2018-08-12)
 
-uses:
-searches aframe.dcel.children
-runs aframe.dcel.prodinstr
-produces aframe.dcel.children
+  lookup( cosmosdb, visitor context, domain context, lookup str );
+
+
+domain context is an access frame id in the cosmos db -- this is the start of the lookup.
+
+
+acquire lookup function.
+
+grab inheritance lookup function from domain context frame's parent.
+
+  inhlookup = domain context->par->lookupfn
+
+
+use inheritance lookup to locate domain lookup fn.
+
+  dlookup = lookupexec( inhlookup, cosmosdb, visitor context, domain context, lookupfn relative path )
+
+
+use domain lookup fn to perform lookup.
+
+  lookupexec( dlookup, cosmosdb, visitor context, domain context, lookup str );
+
+
+requires:
+
+  domain context aframe
+    domain parent aframe
+      lookupfn aframe
+
+  lookup()
+  lookupexec()
+  aframe_exec()
+  dcel_exec()
+  dcel_exec_helper_internal()
+  dcel_exec_helper_external()
 
 
 
