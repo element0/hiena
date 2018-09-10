@@ -5,30 +5,251 @@
 cosmos_exec
 -----------
 
-cosmos exec takes an access frame to an executible.
+everything that can be executed through cosmos is encapsulated by the cosmos_executable type.
 
-three types of executible:
+ie this type can encapsulate:
 
-- none
-- built-in
-- module-supported
+    - library function
+    - executable
+    - script/code (sh, java, etc.)
 
-the type is flagged in the access frame. 
 
+the cosmos_executable type is used to implement the module system used by fudge and provided by the .cosm object.
+
+the lookup function is such.
+
+because of its incapsulation effect, the executable appears as a file in the .cosm tree.
+
+ie:
+
+  .cosm/lib/cosmos/lookup/lookupfn
+
+
+
+abi vs virtualization
+---------------------
+
+first we need to look at module and executable use cases:
+
+  file://
+  ssh://
+  https://
+
+these are source services.  they provide io interfaces.  if all systems have them, they benefit from direct abi.  if one or more systems don't have, they need to be virtualized.
+
+  somedir/somefile.mapper
+  somedir/somefile.transformer
+
+  mapper
+  transformer
+
+these are fudge modules.  provide mapper and transformer interfaces. benifit from customization and extensibility.  --virtualization.
+
+  lookup_fudge.so
+
+the lookup engine.  this runs on all machines.  i suppose it could be virtualized.  but its speed benefits from abi.
+
+  bind://
+  cascade://
+
+two sourcerers that could go either way.
+
+
+using a library function call as a transformer:
+
+  somedir/somefile.libcall
+
+
+requires virtualization.
+
+
+next, we need to analyze the use of functions within the modules.  can they use abi?
+
+  source io interface - the module is virtualized, the functions are abi.
+
+  mapper - module and functions may be virtualized; or module virtualized, functions abi.
+
+  transformer - module and functions may be virtualized; or module virtualized, functions abi.
+
+  lookup engine - the module is virtualized, the functions are abi.
+
+  bind and cascade - the modules are virtualized, the functions are abi.
+
+  fn call transformer - virtualized
+
+
+
+prototype solution:  cosmos executable format (CEF)
+-------------------
+
+the CEF knows the execution profile of its payload.  it's API behaves like a shared library: you open the CEF, and symlink one of its symbols, then use the pointer as a function or struct.
+
+  cosmos_dlopen()
+  cosmos_dlsym()
+
+in the case of a host-native library, the CEF Loader will simply act as a passthrough for dlopen and dlsym.
+
+in the case of a shell script or CLI executable, the CEF Loader will give a virtual pointer.  the pointer will be a host-native function within the loader which translates the input and return values.
+
+the CEF API is a front end for the virtual machines.
+
+
+
+fail-safe code execution
+------------------------
+
+if a module library call crashes, it would crash cosmosd.
+
+it is better to isolate module calls in their own process.
+
+a virtual machine can be a daemon process.  the module call is deligated to the vm.  after the call, the vm stays running.  on a crash, the vm is restarted.
+
+
+
+virtual machines
+----------------
+
+executables have "requirements profiles".
+
+an installation of cosmos will have two or more native vm's providing "capability profiles".
+
+(matching an executable to a vm is like matching MIME types to handlers, but with more variation.)
+
+the executable will run locally by a vm if it matches.  otherwise, the executable is run by another cosmos node on the network.
+
+
+
+there are two required vm's:
+
+
+`hostfn` runs library calls natively on the host.
+
+`netrun` encapsulates the network.  it runs the executable on another host. 
+
+
+another should be present:
+
+
+`hostexec` runs programs through the host exec interface; handles binaries and interpreters starting with "#!".
+
+
+other vms, though not required, can be written to bypass the "hostexec" vm for more efficient interfaces (to jvm or c#, for example).
+
+
+
+the vm socket locations are os dependent.  on linux:
+
+  /var/run/cosmos/vm/hostfn
+  /var/run/cosmos/vm/hostfn_err
+
+
+
+vm's and hosts
+--------------
+
+not every vm can run on every host.  if an executable requires, it must be run on a different host.
+
+
+
+
+
+meta-data in access frames
+--------------------------
+
+cosmos exec takes an access frame to an executable.
+
+the executable's machine profile is stored in the access frame.
+
+when cosmos_exec generates a result access frame it records the vm profile and executable required to reproduce the result.
+
+
+
+
+vm's and .cosms
+---------------
+
+a cosm will have a default vm profile, usually, localhost.  the default can be changed.
+
+the .cosm files and executables are relative to a vm because of package dependencies.
+
+using vm's and .cosm changes the concept of the PATH variable:
+
+review: the .cosm automatically inherits from the host:
+
+  PATH=~/bin:/usr/local/bin:/bin
+  -reduces to-
+  PATH=.cosm/bin
+
+
+now we add vm's
+
+  PATH={.cosm/vm/*}:
+
+and add the default
+
+  PATH=.cosm/default/vm:$PATH
+
+
+
+
+
+
+note: vm's vs containers
+------------------------
+
+in cosmos a vm is a runtime - like a jvm or a c# runtime which runs on the localhost.  a container is a complete virtual host ie LXC
+
+
+
+
+
+vm distribution
+---------------
+
+how does one device inherit another devices vm's?
+
+
+three devices
+
+  mac, linux, windows
+
+
+
+cosmos keeps handles to open vm's in the cosmosdb.
+
+it loads them from the working .cosm in the access tree.  a vm is an executable with a profile like any other.  if the vm profile matches the device native profile, it can be run.
+
+an executable's profile is matched against the vm's in the working .cosm.
+
+
+should vm's be allowed to run other  vm's?  tbd.
+
+
+
+
+
+
+
+
+
+
+
+-old being reworked-
 
 
 chicken and egg with built-ins
 ------------------------------
 
-an example of how a module supported executible is run via built-ins.
+an example of how a module supported executible is run via vms.
 
 
   aframe_id: "pathto/somemod/mapfn"
   par: "pathto/somemod"
-  exectype: module-supported
-  module_id: "dlsym"
-  addr: "mapfn"
+  exectype: locahostfn
+  service: "dlsym"
+  addr: dlibptr/"mapfn"
   value: (will become fnptr)
+  vmprofile: linux-intel
 
 
 to run mapfn, we have to: 1) run the open method from its module.  2) use the result as a function pointer and run it.  3) run the close method from its module.

@@ -57,11 +57,12 @@ struct hiena_dcel {
         btree_t *child_index;
 
         
-        /** production state */
+        /* production state */
         void    *prop_index_state;
         void    *child_index_state;
 
-        /** housekeeping */
+
+        /* housekeeping */
         int retain;
         int dirty;
         genno_t gen_no;

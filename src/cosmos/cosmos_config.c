@@ -3,6 +3,14 @@
 #include "cosmos_config.h"
 #include "../hierr.h"
 
+
+char *cm_mod_symbols[]={
+    "open",
+    "close",
+};
+
+
+
 int cosmos_config(struct cosmos *cm)
 {
         char *homedir;

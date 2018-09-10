@@ -20,11 +20,25 @@ struct cosmos *cosmos_db_new()
 
 int cosmos_db_cleanup(struct cosmos *cm)
 {
+        struct access_frame *proto;
+
         if(cm == NULL)
                 return 0;
 
         if(cm->lookup_dl != NULL)
                 dlclose(cm->lookup_dl);
+
+        proto = cm->proto;
+        if(proto != NULL)
+        {
+                if(proto->lookfn_hdl != NULL)
+                       aframe_cleanup(proto->lookfn_hdl);
+
+                aframe_cleanup(proto);
+        }
+
+        
+
 
         free(cm);
 

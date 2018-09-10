@@ -1,6 +1,7 @@
 #include <libgen.h>    // basename()
 #include <unistd.h>    // chdir()
 #include <sys/stat.h>
+#include <stdint.h>
 #include <dlfcn.h>
 #include <string.h>
 #include <errno.h>
@@ -63,6 +64,51 @@ static char *user_at_host_string()
 
 
 
+static struct access_frame *init_lookupfn_hdl(struct cosmos *cm)
+{
+    cosmos_id_t lfh;
+
+    if(cm == NULL)
+    {
+        HIERR("init_lookupfn_hdl: err cm NULL");
+        return NULL;
+    }
+
+    if(cm->lookup_dl == NULL)
+    {
+        HIERR("init_lookupfn_hdl: err cm->lookup_dl NULL");
+        return NULL;
+    }
+
+    if(cm->proto == NULL)
+    {
+        HIERR("init_lookupfn_hdl: err cm->proto NULL");
+        return NULL;
+    }
+
+    lfh = cm->proto->lookfn_hdl = aframe_new();
+
+
+    /// WIP
+
+    src = prodinstr_new();
+
+    
+    prodinstr_append(src,0,dlsym);
+    prodinstr_append(src,0,cm->lookup_dl);
+    prodinstr_append(src, strlen(CM_LOOKUP_FN_NAME), CM_LOOKUP_FN_NAME);
+    prodinstr_set_return_size(src, sizeof(uintptr_t));
+
+    dc = dcel_new();
+    dcel_set_prodinstr(dc, src);
+
+    aframe_set_dcel(lfh, dc);
+    aframe_set_exec_helper(lfh, 
+
+
+    return cm->lookfn_hdl;
+}
+
 
 
 static struct cosmos *cosmos_get_db() {
@@ -78,11 +124,14 @@ struct cosmos *cosmos_create_db(int modc, char *mod_path[])
 {
 
         struct cosmos *cm;
-        cosmos_id_t boot_cosm;
-        cosmos_id_t uhost_nod;
-        cosmos_id_t cmroot;
-        cosmos_id_t hostcosm;
+        cosmos_id_t proto;
+        cosmos_id_t root;
+        cosmos_id_t uhost;
         cosmos_id_t userhost;
+
+
+        ^^^^ wip
+
         mode_t mode;
         char *userhost_str;
 
@@ -109,22 +158,10 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
-        cm->dcel = dcel_new(NULL);
-
-        if(cm->dcel == NULL)
-        {
-                HIERR("cosmos_init: err: cm->dcel NULL");
-                cosmos_db_cleanup(cm);
-                return NULL;
-        }
-
-
-
-        
-
 
         /* cosmos proto aframe */
-
+        /* provides inheritance
+           for root aframe */
 
 
         cm->proto = aframe_new();
@@ -138,6 +175,56 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
                 return NULL;
         }
 
+
+
+        /* proto lookup fn */
+        /* (for lookup in root) */
+
+
+        printf("lookupmodpath: %s\n", cm->lookupmodpath);
+        cm->lookup_dl = dlopen(cm->lookupmodpath,RTLD_NOW);
+        if(cm->lookup_dl == NULL)
+                printf("%s\n",dlerror());
+
+if(cm->lookup_dl != NULL)
+        {
+                printf("cm->lookup_dl OPEN\n");
+
+                init_lookupfn_hdl(cm);
+
+        }else{
+                printf("cm->lookup_dl == NULL\n");
+        }
+
+
+
+
+        /* init mapper function */
+
+        char *mapfnpath = CM_MODLIBPATH "/" CM_SOURCE_MODULE_NAME CM_MODSUFFIX "/" CM_MAP_FN_NAME;
+
+
+        mode = S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+
+        cosmos_mknod_path(cm, cm->proto, mapfnpath, mode, 0 );
+
+
+
+
+
+        /* ELIMINATE? */
+        /* dcel collector */
+
+
+        cm->dcel = dcel_new(NULL);
+
+        if(cm->dcel == NULL)
+        {
+                HIERR("cosmos_init: err: cm->dcel NULL");
+                cosmos_db_cleanup(cm);
+                return NULL;
+        }
 
 
 
@@ -162,9 +249,9 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
 
 
-
+        /* ELIMINATE? */
         /* init modules */
-
+/*
 
         if( cosmos_init_modules(cm, modc, mod_path) == -1 )
         {
@@ -175,42 +262,9 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
                 return NULL;
         }
 
+*/
 
 
-
-
-        /* init lookup fn */
-
-        printf("lookupmodpath: %s\n",cm->lookupmodpath);
-        cm->lookup_dl = dlopen(cm->lookupmodpath,RTLD_NOW);
-        if(cm->lookup_dl == NULL)
-                printf("%s\n",dlerror());
-
-
-        if(cm->lookup_dl != NULL)
-        {
-                printf("cm->lookup_dl != NULL\n");
-                cm->proto->lookfn = dlsym(cm->lookup_dl,CM_LOOKUP_FN_NAME);
-                if(cm->proto->lookfn != NULL)
-                {
-                        printf("cm->proto->lookfn: %lu\n", (unsigned long)cm->proto->lookfn);
-                }
-        }else{
-                printf("cm->lookup_dl == NULL\n");
-        }
-
-
-
-
-        /* init mapper function */
-
-        mapfnpath = CM_MODLIBPATH "/" CM_SOURCE_MODULE_NAME CM_MODSUFFIX "/" CM_MAP_FN_NAME;
-
-
-        mode = S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-
-
-        cosmos_mknod_path(cm, cm->proto, mapfnpath, mode, 0 );
 
 
         /* WIP */
@@ -244,17 +298,6 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
         cosmos_cascade_bind( cm, rootcosm, protocosm );
 
 
-/*
-        if( cosmos_init_modules(cm, modc, mod_path) == -1 )
-        {
-                HIERR("cosmos_init: err: can't init modules");
-
-                cosmos_db_cleanup(cm);
-
-                return NULL;
-        }
-
-*/
         
 
 

@@ -125,14 +125,15 @@ int ptr_stack_push(ptr_stack_t pp, void *ptr)
 }
 
 
-void *ptr_stack_pop(ptr_stack_t p)
+void *ptr_stack_pop(ptr_stack_t pp)
 {
-        (struct ptr_stack *)p;
+        struct ptr_stack *p;
         struct linked_item *top;
         struct linked_item *prev;
         void *res;
 
 
+        p = (struct ptr_stack *)pp;
         if(p == NULL)
         {
                 HIERR("ptr_stack_pop: err: p NULL");

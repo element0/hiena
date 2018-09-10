@@ -24,11 +24,6 @@
 #define CM_MAP_FN_NAME "cosmos_map_fn"
 
 
-char *cm_mod_symbols[]={
-    "open",
-    "close",
-};
-
 
 
 int cosmos_config(struct cosmos *);

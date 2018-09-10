@@ -1,0 +1,69 @@
+
+playground
+----------
+
+virtual fn skel
+virtual fn array generator
+
+vfn array lib
+vfn array lib morpher
+
+
+
+vmfn+marshalldef *vfn( vm+idl, ... );
+void *cosmos_dlopen( path, mode );
+void *cosmos_dlsym( dl, fndecl );
+int dlclose( dl );
+
+
+
+
+profiles and vm's
+-----------------
+
+cosmos_dlopen()
+
+creates a cosmos_dlopen_handle
+inside the handle are library and vm information.
+
+ie. if you try to dlopen a sh file this is when the 'hostsh' vm is identified and loaded into a vm handle.
+
+if you want to dlopen a library.so then the 'hostfn' vm is loaded and a handle obtained.
+
+
+cosmos_dlsym()
+
+using cosmos_dlsym() will run a version of dlsym within the vm.
+
+each call to cosmos_dlsym() generates a unique vfn number.  each vfn is instantiated in a library file and linked to unique vfn table entries.
+
+
+
+instead of being just a symbol name, the string passed to cosmos_dlsym is a full interface description of the function.
+
+ie.
+
+  fnptr = cosmos_dlsym(dl, "int add( int x, int y )");
+
+
+cosmos_dlsym() passes the interface description to the vm handle.  the vm handle processes the return type, name and arguments according to its design and creates a generic "vm call frame template".
+
+a vfn has a static variable which tracks whether it has been initialized: the "call frame template" is used to init the vfn.
+
+a vfn has a formal interface defined as:
+
+   void *vfn0001(vmcallframe *, ...);
+
+
+after the vfn has been initialized, it masquerades as the function in the definition and can be called using the definition's grammar:
+
+   int vfn0001(int, int);
+
+
+this will not generate compile errors because the vfn was originally loaded as a void * by it's birth-call to dlsym.
+
+internally, each vfn instance uses variadic arguments.  the guts of the vfn test it's initial state to determine how to interpret the args.  if there is a "vm call frame" template, it will parse the arguments accordingly and send an rpc request to the vm.
+
+
+
+

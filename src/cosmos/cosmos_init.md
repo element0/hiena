@@ -1,7 +1,5 @@
 
 
-test file change <----
-
 
 cosmos init
 -----------
@@ -17,7 +15,9 @@ init procedure creates cosmos db and loads essential modules:
   file sourcer
   lookup
 
-now the daemon is able to take requests
+it creates a host, host vm and cloud vm.
+
+now the daemon is able to take requests.
 
 
 
@@ -71,9 +71,11 @@ use config.h to compile default values, override those if a config file is prese
   COSMOS_CONFIG_PATH=".cosm/etc/cosmos:~/.cosm/etc/cosmos:/etc/cosmos"
 
 
+
 default config:
 
   lookup_module=".cosm/lib/cosmos/lookup/lookup.so"
+  COSMOS_HOST_ROOT="/"
 
   
 
@@ -93,6 +95,19 @@ lookup module builtin.
 
 
 
+
+load and spin-up vms
+--------------------
+
+(see "cosmos_exec.md")
+
+vm's are lazy loaded from:
+
+  .cosm/vm/
+
+localhost vm:
+
+  .cosm/vm/$hostname
 
 
 

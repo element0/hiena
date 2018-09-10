@@ -1,3 +1,20 @@
+
+#include <libgen.h>    // basename()
+#include <unistd.h>    // chdir()
+#include <sys/stat.h>
+#include <dlfcn.h>
+#include <string.h>
+#include <errno.h>
+#include "../hierr.h"
+#include "../prod_instr.h"
+#include "../dcel.h"
+#include "../access_frame.h"
+#include "cosmos_db.h"
+#include "cosmos_fs.h"
+#include "cosmos_xformr.h"
+#include "cosmos_config.h"
+#include "load_module.h"
+
 int cosmos_init_modules(struct cosmos *cm)
 {
 
@@ -9,7 +26,7 @@ int cosmos_init_modules(struct cosmos *cm)
         void *lookmod;
 
         char buf[PATH_MAX];
-        char *bufptr = &buf;
+        char *bufptr = buf;
         char *dsav;
 
 

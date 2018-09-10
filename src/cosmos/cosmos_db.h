@@ -25,6 +25,8 @@ struct cosmos {
         char *modsuffix;
         size_t modsuffixlen;
         char *modsymbols;
+        char *lookupmodpath;
+        void *lookup_dl;
      
 
         /* init */
@@ -39,14 +41,14 @@ struct cosmos {
         btree_t *paths;
         struct access_frame *proto;
         struct access_frame *root;
-        struct access_frame *openfiles;
-        struct hiena_dcel *dcel;
 
         /* temp */
         char *lookupmodpath;
         void *lookup_dl;
 
         /* maybe not */
+        struct access_frame *openfiles;
+        struct hiena_dcel *dcel;
         struct hiena_dcel *dcel_garbage;
 };
 

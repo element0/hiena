@@ -48,11 +48,11 @@ btree_cpp:
 
 
 cosmos-bind:
-	gcc $(dbugopts)  -c cosmos/cosmos_bind.c -o $(out-o)/cosmos_bind.o
+	gcc $(dbugopts) -fPIC -c cosmos/cosmos_bind.c -o $(out-o)/cosmos_bind.o
 
 
 cosmos-config:
-	gcc $(dbugopts)  -c cosmos/cosmos_config.c -o $(out-o)/cosmos_config.o
+	gcc $(dbugopts) -fPIC -c cosmos/cosmos_config.c -o $(out-o)/cosmos_config.o
 
 cosmos-db:      btree_cpp hash
 	gcc $(dbugopts)  -fPIC -c cosmos/cosmos_db.c -o $(out-o)/cosmos_db.o
@@ -61,16 +61,19 @@ cosmos-fs:      cosmos-db access-frame
 	gcc $(dbugopts)  -fPIC -c cosmos/cosmos_fs.c -o $(out-o)/cosmos_fs.o
 
 cosmos-dirh:      cosmos-db access-frame
-	gcc $(dbugopts)  -c cosmos/cosmos_dirh.c -o $(out-o)/cosmos_dirh.o
+	gcc $(dbugopts) -fPIC -c cosmos/cosmos_dirh.c -o $(out-o)/cosmos_dirh.o
+
+cosmos-lookup:
+	gcc $(dbugopts)  -fPIC -c cosmos/cosmos_lookup.c -o $(out-o)/cosmos_lookup.o
 
 cosmos-load-mod:        dcel access-frame
-	gcc $(dbugopts)  -c cosmos/load_module.c -o $(out-o)/cosmos_load_module.o
+	gcc $(dbugopts) -fPIC -c cosmos/load_module.c -o $(out-o)/cosmos_load_module.o
 
 cosmos-module:
-	gcc $(dbugopts)  -c cosmos/cosmos_module.c -o $(out-o)/cosmos_module.o
+	gcc $(dbugopts) -fPIC -c cosmos/cosmos_module.c -o $(out-o)/cosmos_module.o
 
 cosmos-init:    cosmos-db cosmos-load-mod
-	gcc $(dbugopts)  -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
+	gcc $(dbugopts) -fPIC -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
 
 
 cosmos-util:    cosmos-db cosmos-init
@@ -168,14 +171,14 @@ lookup-light: hash access-frame btree_cpp cosmos-db cosmos-fs dcel dcel-child fr
 
 
 
-libcosmos:  devdirs access-frame cosmos-config cosmos-db cosmos-fs cosmos-module cosmos-init
-	gcc $(dbugopts) -fPIC -shared $(out-o)/{access_frame,cosmos_config,cosmos_db,cosmos_fs,cosmos_module}.o -o $(out-lib)/libcosmos.so
+libcosmos:  devdirs libhiena access-frame cosmos-config cosmos-db cosmos-fs cosmos-module cosmos-init cosmos-bind cosmos-lookup
+	gcc $(dbugopts) -fPIC -shared $(out-o)/access_frame.o $(out-o)/cosmos_{db,fs,config,lookup,module,init,bind}.o -o $(out-lib)/libcosmos.so -L$(out-lib) -lhiena -ldl
 
 
 
 
 libhiena:  devdirs fraglib mfraglib
-	gcc $(dbugopts) -shared $(out-o)/$(fraglibo) $(out-o)/$(mfraglibo) -o $(out-lib)/libhiena.so
+	gcc $(dbugopts) -shared $(out-o)/$(fraglibo) $(out-o)/$(mfraglibo) $(out-o)/{hash,ptr_stack,btree_cpp,dcel}.o -o $(out-lib)/libhiena.so -lstdc++
 
 
 
@@ -250,8 +253,8 @@ prod-fns:
 ptr-stack:
 	gcc $(dbugopts) -fPIC -c ptr_stack.c -o $(out-o)/ptr_stack.o
 
-ptr-stack-test:
-	gcc $(dbugopts) ptr_stack.c ptr_stack_test.c -o $(out-test-bin)/ptr_stack_test
+test-ptr-stack:
+	gcc $(dbugopts) ptr_stack.c test_ptr_stack.c -o $(out-test-bin)/ptr_stack_test
 
 
 scanners: ox-so ox2-so
@@ -320,12 +323,16 @@ test-cosmos-fs: cosmos-fs
 	gcc $(dbugopts) $(out-o)/cosmos_{db,fs}.o $(out-o)/{hash,btree_cpp,access_frame}.o cosmos/cosmos_fs_test.c -o $(out-test-bin)/cosmos_fs_test -lstdc++
 
 
-test-cosmos-mknodpath: libhiena cosmos-db cosmos-config cosmos-module ptr-stack cosmos-fs dcel cosmos-init cosmos-bind
-	gcc $(dbugopts) $(out-o)/cosmos_{db,fs,config,module,init,bind}.o $(out-o)/{hash,btree_cpp,access_frame,ptr_stack,dcel}.o test_cosmos_mknodpath.c -o $(out-test-bin)/cosmos_mknodpath_test -L$(out-lib) -lhiena -lstdc++ -ldl
+test-cosmos-mknodpath: libcosmos
+	gcc $(dbugopts) test_cosmos_mknodpath.c -o $(out-test-bin)/cosmos_mknodpath_test -L$(out-lib) -lcosmos
 
 
 test-cosmos-module:  libhiena cosmos-db cosmos-config cosmos-module ptr-stack
 	gcc $(dbugopts) $(out-o)/cosmos_{db,config,module}.o $(out-o)/{hash,btree_cpp,dcel,access_frame,ptr_stack}.o cosmos/test_cosmos_module.c -o $(out-test-bin)/cosmos_module_test -L$(out-lib) -lhiena -lstdc++
+
+
+test-libcosmos:  libcosmos
+	gcc $(dbugopts) test_libcosmos.c -o $(out-test-bin)/libcosmos_test -L$(out-lib) -lcosmos
 
 
 
