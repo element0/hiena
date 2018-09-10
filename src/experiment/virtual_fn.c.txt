@@ -8,6 +8,7 @@ typedef struct cosmos_argtype {
         size_t varlen;
 }argtype_t;
 
+
 typedef struct cosmos_fntype {
         int argc;
         argtype_t **argv;
@@ -50,7 +51,7 @@ void *vfn001(fntype_t *fnt, ...)
 
 
 
-/* the rpc interface library
+/* the cosmos_exec rpc interface library
  */
 
 
