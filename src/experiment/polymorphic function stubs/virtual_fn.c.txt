@@ -1,0 +1,35 @@
+
+
+/* virtual function header file */
+
+
+typedef struct cosmos_argtype {
+        int vartype;
+        size_t varlen;
+}argtype_t;
+
+
+typedef struct cosmos_fntype {
+        int argc;
+        argtype_t **argv;
+}fntype_t;
+
+
+
+
+
+
+/* the cosmos_exec rpc interface library
+ */
+
+
+static fntype_t parsefntype(char *);
+
+
+
+void *cosmos_dlopen(char *, dlmode_t);
+
+void *cosmos_dlsym(void *, char *);
+
+void cosmos_dlclose(void *);
+

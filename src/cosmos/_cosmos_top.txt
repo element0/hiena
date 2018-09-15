@@ -1,0 +1,98 @@
+
+
+
+cosmos
+
+- stores
+- hosts
+- vm
+- distrib fs
+- distrib exec
+
+
+
+config
+
+  .cosm/
+    store/
+    hosts/
+    vm/
+    bin/
+    lib/
+    flows/
+    etc/
+
+  hosts/*/
+    store/
+    vm/
+    bin/
+    lib/
+    flows/
+    id/
+      id_rsa.pub
+      idl
+
+  store/*/
+    id/
+      id_rsa.pub
+      idl
+    etc/
+      config
+
+  vm/*/
+    lib/
+    bin/
+    id/
+      id_rsa.pub
+      idl
+    etc/
+      config
+
+
+
+
+config helpers 
+
+  cosmos autoconf
+  cosmos add host
+  cosmos add vm
+  ...
+
+
+
+usage
+
+  /* init */
+
+  cosmos = cosmos_init( rootdir );
+
+
+  /* distrib. fs */
+
+  ino = cosmos_lookup( cosmos, ino1, path );
+  access_frame = cosmos_info( ino );
+  ino2 = cosmos_alt( cosmos, ino, host, version );
+
+  fh = cosmos_open( ino, mode );
+  cosmos_read( fh, size, buf );
+  cosmos_close( fh );
+
+  cosmos_mknod( cosmos, ino_par, destpath);
+  cosmos_cp( cosmos, ino, ino_par, destpath);
+  cosmos_ln( cosmos, ino, ino_par, destpath);
+  cosmos_mv( cosmos, ino, ino_par, destpath);
+  cosmos_rm( cosmos, ino );
+
+
+
+  /* distrib. executables (RPC ) */
+
+  dl = cosmos_dlopen( cosmos, ino );
+  fn = cosmos_dlsym( cosmos, dl, idl );
+  fn( cosmos, context, args... );
+  cosmos_dlclose(dl);
+  
+  cosmos_exec( cosmos, context, ino );
+
+
+  

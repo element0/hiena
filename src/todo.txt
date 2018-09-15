@@ -1,5 +1,33 @@
 
 
+2018-09-15  0712
+
+explore ipc to run rpc on localhost.
+
+
+todo
+  daemon rpc server
+  marshall/unmarshall
+  call
+
+
+
+
+
+2018-09-14  0710
+2018-09-15  0711
+
+experiment/test_vfnbank.c
+
+done
+  variadic vfn
+  polymorphic fn
+  polymorphic return type
+  mutate library versions for dlopen
+    - change internal soname OK
+
+
+
 2018-09-06  1921
 
 test cosmos_exec
