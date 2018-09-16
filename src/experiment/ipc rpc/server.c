@@ -28,7 +28,7 @@ int make_socket()
 
 	/* socket file descriptor */
 
-	int sfd, cfd;
+	int soc;
 
 	sfd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if(sfd == -1 )
@@ -45,15 +45,16 @@ int make_socket()
 		printf("bind failed.\n");
 		return -1;
 	}
-        return 0;
+        return soc;
 }
 
 
-int connect()
+int connect(int soc)
 {
+    int con;
 	/* listen for connection */
 
-	if( listen(sfd, 1) != 0 )
+	if( listen(soc, 1) != 0 )
 	{
 		printf("listen failed.\n");
 		return -1;
@@ -62,13 +63,13 @@ int connect()
 	/* accept connection */
 
 	socklen_t addr_len;
-	cfd = accept(sfd, (struct sockaddr *) &sa, &addr_len);
+	con = accept(soc, (struct sockaddr *) &sa, &addr_len);
 
-        return cfd;
+        return con;
 }
 
 
-int do_session()
+int do_session(int con)
 {
 }
 
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
     if(daemonize() == 1)
         return 0;
 
-    if(make_socket() == -1)
+    if((soc = make_socket()) == -1)
     {
         printf("server: err: make_socket() failed\n");
         return -1;
@@ -91,8 +92,8 @@ int main(int argc, char *argv[])
 
     while(run == 1)
     {
-        cfd = connect();
-        do_session();
+        con = connect(soc);
+        do_session(con);
     }
 
 
