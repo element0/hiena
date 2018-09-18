@@ -8,7 +8,7 @@
 
 
 
-out-test-bin = ../../out/test-bin
+out-test-bin = ../../../out/test-bin
 
 vfnbank:  
 	gcc -g -shared -Wl,-soname,vfnbank.so.1 -fPIC vfnbank.c -o $(out-test-bin)/vfnbank.so

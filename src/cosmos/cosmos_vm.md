@@ -6,6 +6,31 @@ cosmos_vm
 ---------
 
 
+
+architecture
+------------
+
+client interface
+    cosmos_vm.h
+    cosmos_vm.o
+
+socket
+    cosmos_rpc.h
+    cosmos_rpc.o
+    cosmos_socket.h
+    cosmos_socket.o
+
+daemon
+    cosmos_vmd.h
+    cosmos_vmd.o
+    cosmos_vm_NAME.c
+
+
+
+
+structure
+---------
+
   main loop
     check socket
     accept new connection

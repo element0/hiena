@@ -3,6 +3,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <unistd.h>
+#include <string.h>
+#include <limits.h>
+
+
 
 
 #define SOCKFILEPATH "./testsock"
@@ -44,7 +49,7 @@ void *marshall(int argc, int fnid, int arg1, int arg2, int *lenptr)
 
     buf = malloc(len);
 
-    buf[0] = sizeof(*buf);
+    buf[0] = len;
     buf[1] = fnid;
     buf[2] = arg1;
     buf[3] = arg2;
@@ -55,11 +60,13 @@ void *marshall(int argc, int fnid, int arg1, int arg2, int *lenptr)
 }
 
 
-int rpc(con_t con, void *buf, size_t len)
+int rpc(con_t con, char *buf, size_t len)
 {
     char c[2];
     FILE *fp;
     // send
+    printf("client sending: %d %c %d %d\n", buf[0], buf[1], buf[2], buf[3]);
+
     send(con, buf, len, 0);
 
     // recv
@@ -67,7 +74,9 @@ int rpc(con_t con, void *buf, size_t len)
     c[0] = fgetc(fp);
     c[1] = '\0';
 
-    return atoi(c);
+    fclose(fp);
+
+    return c[0];
 }
 
 
