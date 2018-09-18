@@ -41,11 +41,12 @@ con_t open_connection()
     return s;
 }
 
-void *marshall(int argc, int fnid, int arg1, int arg2, int *lenptr)
+char *marshall(int argc, int fnid, int arg1, int arg2, size_t *lenptr)
 {
-    int *buf, len;
+    char *buf;
+    size_t len;
 
-    len = sizeof(int)*(argc+1);
+    len = sizeof(char)*(argc+1);
 
     buf = malloc(len);
 
@@ -56,27 +57,29 @@ void *marshall(int argc, int fnid, int arg1, int arg2, int *lenptr)
 
     *lenptr = len;
 
-    return (void *)buf;
+    return buf;
 }
 
 
 int rpc(con_t con, char *buf, size_t len)
 {
-    char c[2];
+    char c;
     FILE *fp;
+
     // send
-    printf("client sending: %d %c %d %d\n", buf[0], buf[1], buf[2], buf[3]);
+    printf("client sending: %d %c %d %d len %d\n", buf[0], buf[1], buf[2], buf[3], len);
 
     send(con, buf, len, 0);
 
     // recv
     fp = fdopen(con, "r");
-    c[0] = fgetc(fp);
-    c[1] = '\0';
+    c = fgetc(fp);
+
+    printf("client: res %d\n", c);
 
     fclose(fp);
 
-    return c[0];
+    return c;
 }
 
 
@@ -84,8 +87,8 @@ int rpc(con_t con, char *buf, size_t len)
 int main(int argc, char *argv[])
 {
     con_t con;
-    void *buf, *retbuf;
-    int sum, len;
+    char *buf, sum;
+    size_t len;
 
     con = open_connection();
 

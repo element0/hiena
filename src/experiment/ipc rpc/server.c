@@ -79,8 +79,9 @@ int do_session(con_t *con)
 {
     char *c;
     FILE *fp;
-    int i, len;
-    int op, x, y, res;
+    int i, er;
+    size_t len;
+    char op, x, y, res;
 
 
     // recv
@@ -89,6 +90,7 @@ int do_session(con_t *con)
     len = fgetc(fp);
 
     c = malloc((sizeof(char)*len)+1);
+    c[0] = len;
 
     for(i=1; i<len; i++)
     {
@@ -96,13 +98,13 @@ int do_session(con_t *con)
     }
     c[i] = '\0';
 
-    fclose(fp);
+
+
 
     op = c[1];
     x  = c[2];
     y  = c[3];
 
-    printf("server: op %c x %d y %d\n");
 
     if(op == '+')
     {
@@ -111,9 +113,18 @@ int do_session(con_t *con)
         res = x - y;
     }
 
-    // send
-    send(con->fd, &res, sizeof(res), 0);
+    printf("server: len %d, op %c x %d y %d res %d\n", len, op, x, y, res);
 
+    // send
+    printf("server: sizeof(res) %d\n", sizeof(res));
+
+    if(fwrite(&res, sizeof(res), 1, fp) == 0)
+    {
+            perror("server: err:");
+    }
+
+
+    fclose(fp);
 
     return 0;
 }
