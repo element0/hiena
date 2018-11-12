@@ -1,15 +1,163 @@
 
 
-2018-09-15  0712
 
+
+
+
+
+
+2018-10-29  1430
+
+bigger goal:  see previous item
+
+current goal:  cosmos lookup() and stat() methods to use builtin dcel service.  (see snafufs.c for functions needed)
+
+dcel service to use service modules
+
+  cosmos_fs --> dcel_svc
+  dcel_dvc --> modules
+
+
+note:
+  cosmos_fs functions should satisfy fuse api.
+
+
+todo stack:
+aframe.h :: aframe_get_value
+cosmos_db
+cosmos_fs
+aframe_path_by_id(id->par, mod_id);
+mod = aframe_get_val_ptr(mod_af);
+mod->stat(cm, id, dc->addr, sb);
+
+
+done stack:
+
+cosmos_config
+cosmos_init
+aframe_path
+
+
+2018-11-07  1902  DONE
+
+postpone PATH search algo,
+use baked "default install locations":
+- first lookup module fpath
+- first svc module fpath
+
+
+
+2018-09-04  1858
+2018-08-20  2024
+2018-10-02  1930
+
+
+test_libcosmos
+
+
+chasing the wagon through prickly sagebrush...
+
+
+goal:
+
+create cosmos db, bind a directory to root aframe, set lookup function in proto aframe, run the lookup function on root aframe.
+
+
+sub-goal:
+
+use production functions, vm and vfn, lookup module and source module
+
+
+todo: libcosmos
+      - library
+      - init database
+      - create paths
+      - bind urls to paths
+
+
+products:
+      - libcosmos.so
+      - module/lookup_light.so
+      - module/file.so
+      - vm/localhostlib.so
+      - test_libcosmos.c
+
+
+functions:
+
+
+
+current status:
+      - wip cosmos_create_db()"
+      - testing "make libcosmos"
+      - wip cosmos_create_db()
+
+
+
+2018-10-03
+2018-10-07
+2018-10-10
+2018-10-12
+2018-10-16
+
+
+save and access svc mods in the parent metadir.
+
+merge file_mod 'source' function into prod_src function; separate the dcel internals from module writing requirements; generalize get_size() function and add to service module specification (hiena_svc.h).
+
+added directory ops and stat function to service module spec (hiena_svc.h).
+
+use cosmos_dlsym() to init lookupfn()
+
+use cosmos_dlsym() to init modules.
+
+lookupfn() uses lookup_svc to act on domain: using map and find methods
+
+
+
+
+
+2018-09-27  1944
+
+working...
+
+design the production function object type, procedure for use and interactions with modules via the cosmos file system and virtual functions.
+
+
+
+
+
+2018-09-19  0752
+
+next up...
+
+implement cosmos vm's
+
+
+brief design
+  machine profile
+  executable profile
+  vm handle
+    std vm hdl ops
+  dl handle
+    refs dl handle
+  std vm hdl ops
+    marshall/unmarshall
+    
+
+
+
+2018-09-15  0712
+2018-09-19  0725
+
+done
 explore ipc to run rpc on localhost.
 
 
-todo
-  daemon rpc server
+done
+  rpc server
   marshall/unmarshall
-  call
-
+  call rpc
 
 
 
@@ -17,6 +165,7 @@ todo
 2018-09-14  0710
 2018-09-15  0711
 
+done
 experiment/test_vfnbank.c
 
 done
@@ -43,39 +192,6 @@ virtual machines.
 
 designed the interaction between .cosm, virtual machines and heterogeneous hosts.
 
-
-
-2018-09-04  1858
-2018-08-20  2024
-
-chasing the wagon through prickly sagebrush...
-
-
-goal:  create cosmos db, bind a directory to an aframe, bind a lookup function to an aframe, run the lookup function on the directory.
-
-
-todo: libcosmos
-      - library
-      - init database
-      - create paths
-      - bind urls to paths
-
-
-products:
-      - libcosmos.so
-      - module/lookup_light.so
-      - module/file.so
-      - vm/localhostfn.so
-      - test_libcosmos.c
-
-
-functions:
-
-
-
-current status:
-      - testing "make libcosmos"
-      - wip cosmos_create_db()
 
 
 

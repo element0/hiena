@@ -74,11 +74,18 @@ struct hiena_dcel {
 
 /* implementation:  dcel.c */
 
+
 struct hiena_dcel *dcel_new( struct hiena_dcel * );
 
 int dcel_cleanup( struct hiena_dcel * );
 
 struct iovec *dcel_val_ptr(struct hiena_dcel *);
+
+
+/** sets a buffer
+ */
+int dcel_set_val( struct hiena_dcel *dc, void *buf, size_t len );
+
 
 
 /* implementation:  dcel_child.c */

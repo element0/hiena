@@ -18,7 +18,6 @@ int cosmos_config(struct cosmos *cm)
         char *modpath_half;
 
 
-
         if( cm == NULL )
         {
                 HIERR("cosmos_config: cm NULL");
@@ -26,20 +25,53 @@ int cosmos_config(struct cosmos *cm)
         }
 
 
+/**********************************/
 
-        cm->modlibpath = CM_MODLIBPATH;
+ /* metadirectory relative paths */
 
-        cm->modlibpathlen = strlen(cm->modlibpath);
+        cm->metadirname = COSMOS_METADIR_NAME;
 
-        cm->modsuffix = CM_MODSUFFIX;
+        cm->host_lookupmod_fpath = COSMOS_HOST_LOOKUPMOD_FPATH;
 
-        cm->modsuffixlen = strlen(cm->modsuffix);
+        cm->host_svcmod_fpath = COSMOS_HOST_SVCMOD_FPATH;
+
+
+
+/* OS relative suffixes */
+
+        cm->modsuffix = COSMOS_MOD_SUFFIX;
+
+
+/**********************************/
+
+        /* install paths */
+
+
+
+/**********************************/
 
 
         cm->modsymbols = cm_mod_symbols;
 
 
+/**********************************/
 
+/* precalculated string lengths */
+
+        cm->modlibpathlen = strlen(cm->modlibpath);
+
+        cm->modsuffixlen = strlen(cm->modsuffix);
+
+
+
+
+/**********************************/
+
+
+
+        cm->lookup_dl = NULL;
+
+/*
         homedir = getenv("HOME");
 
         modpath_half = "/" CM_MODLIBPATH "/" CM_LOOKUP_MODULE_NAME CM_MODSUFFIX;
@@ -53,11 +85,7 @@ int cosmos_config(struct cosmos *cm)
         strncat(modpath, modpath_half, strlen(modpath_half));
 
 
-
-
-        cm->lookupmodpath = modpath;
-
-
+*/
 
 
         return 0;

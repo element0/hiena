@@ -7,11 +7,14 @@ cosm directory design
           cosmos.conf
       lib
           cosmos
-              modules
               init
-                  modules
-                      dylib.so
-                      dlsym.so
+                  mods
+                      file.so
+                      lookup.so
+              mods
+                  file.so
+                  fudge.so
+                  lookup.so
 
 
 
@@ -29,7 +32,7 @@ various views which may be useful
                 svc
                 xform
 
-        .cosm .ix
+        .cosm .posix
                 bin
                 etc
                 lib

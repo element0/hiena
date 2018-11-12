@@ -1,5 +1,114 @@
 
 
+overview
+--------
+
+cosmos code running situations:
+
+  - virtual functions (transparent rpc)
+  - executables (transparent rpc)
+  - production instructions (distributed processing)
+  - modules
+
+
+
+transparent rpc:
+
+its objective is to make all executable resources available to all hosts.
+
+is the foundation of all modularity in cosmos.  because the fs is shared, any modules which affect the fs must be "runnable" from any host node.
+
+the fudge language embedded in url's is also such a case.  a url must have equal effects on all host nodes.
+
+a dcel's production instruction is likewise required to generate the same results on all nodes.
+
+furthermore, the presence of an executable or library within the shared file system indicates an intent to share the exe or lib.  transparent rpc makes this possible.
+
+
+
+distributed processing:
+
+the objective is to decrease execution burden by dividing a complex task among hosts.
+
+dcel production instructions are one case that can take advantage of this.
+
+
+
+transp rpc and distrib proc:
+
+rpc is a version of distrib proc where the distribution is one machine and the burden is undivided.
+
+the cosmos rpc interface (cosmos_exec, cosmos_dlopen, cosmos_dlsym) and the cosmos distrib proc interface are both ontop of the cosmos distrib proc implementation. (the implementation cannot use the cosmos rpc interface internally).
+
+
+
+descriptions.
+
+virtual functions are accessed through the cosmos transparent rpc system.
+
+  cosmos_dlopen()
+  cosmos_dlsym()
+
+this system provides a function pointer that may be used like a local function - even if it triggers an rpc.
+
+
+executables are similarly transparent.
+
+  cosmos_exec()
+
+this system allows a program to run an executable as if it were local - even if if runs remote.
+
+
+production instructions are data structures inside a dcels which tell how to construct the domain of the cel.  they may be a simple instruction or a program of instructions.  the prod instr interpreter executes it via the rpc-distrib system.  each intruction is a grid instruction.
+
+
+
+grid instructions
+-----------------
+
+a grid instruction is a function id with an args list and context.  the args are structured in a way that they can be factored.  if the function is factorable, it can be split and submitted to other nodes for processing.
+
+
+translating into a grid instruction and rpc
+---
+
+grid_instr_t *gin = GRIDINSTR(prodinstr);
+
+can 'gin' be factored?
+
+what hosts can 'gin' run on?
+
+
+what hosts?
+gin needs a ref to a function or executable.
+
+
+factorable?
+the args from the referred to function should be examined for factorable components.  
+
+
+
+can the grid be made part of the transparent rpc call?
+
+the api is basically the same:
+
+fn = dlsym( dlopen( libname ), fn_idl );
+
+
+
+factorable vs. "prime" functions
+--------------------------------
+
+factorable:
+
+transform (on a set), overlay bind, map, find
+
+
+prime:
+
+source bind
+
+
 
 
 cosmos_exec
@@ -31,11 +140,13 @@ abi vs virtualization
 
 first we need to look at module and executable use cases:
 
+
   file://
   ssh://
   https://
 
 these are source services.  they provide io interfaces.  if all systems have them, they benefit from direct abi.  if one or more systems don't have, they need to be virtualized.
+
 
   somedir/somefile.mapper
   somedir/somefile.transformer
@@ -45,9 +156,11 @@ these are source services.  they provide io interfaces.  if all systems have the
 
 these are fudge modules.  provide mapper and transformer interfaces. benifit from customization and extensibility.  --virtualization.
 
+
   lookup_fudge.so
 
-the lookup engine.  this runs on all machines.  i suppose it could be virtualized.  but its speed benefits from abi.
+the lookup engine.  this runs on all machines.  i suppose it could be virtualized.  but its speed benefits from direct abi.
+
 
   bind://
   cascade://
@@ -57,13 +170,14 @@ two sourcerers that could go either way.
 
 using a library function call as a transformer:
 
-  somedir/somefile.libcall
 
+  somedir/somefile.libcall
 
 requires virtualization.
 
 
-next, we need to analyze the use of functions within the modules.  can they use abi?
+next, we need to analyze the use of functions within the modules.  can they use direct abi?
+
 
   source io interface - the module is virtualized, the functions are abi.
 
@@ -94,9 +208,11 @@ in the case of a shell script or CLI executable, the CEF Loader will give a virt
 the CEF API is a front end for the virtual machines.
 
 
+special denizen of cosmos:  the CEF is implemented on the "inode" level in the cosmos fs.  it does not exist in the underlying host file system.  therefor is irrelevant to the host os.  it encapsulates multiple executable types.
 
-fail-safe code execution
-------------------------
+
+fail-safe code execution - vm's
+-------------------------------
 
 if a module library call crashes, it would crash cosmosd.
 
@@ -158,9 +274,63 @@ meta-data in access frames
 
 cosmos exec takes an access frame to an executable.
 
-the executable's machine profile is stored in the access frame.
+the executable's machine profile is stored in the access frame as part of the CEF.
 
 when cosmos_exec generates a result access frame it records the vm profile and executable required to reproduce the result.
+
+
+
+an executable's requirements profile
+------------------------------------ 
+
+between two debian instances, running the same arch type (x86_64-linux-gnu), an executable and a dynamically loaded shared lib can be compiled on one and run on both, given the presence of lib dependencies on both machines.
+
+lib dependencies can be listed by pax-utils.deb::lddtree.  simply enough, this list can be the 'requirements profile'.
+
+
+other dependencies may in fact exist.
+
+
+dependencies fall into categories:
+
+   - libs
+   - file system context
+   - env context
+   - dev context
+
+
+libs are easy to determine via 'lddtree'.
+
+fs, env and dev can all be abstracted via the single merged file system view available in cosmos.
+
+
+a call to a cosmos_dlsym'd function or to a cosmos_exec'd program will require a the 'requirements profile' plus an 'exec context' frame.  the 'exec context' contains fs, env and dev contexts which can be virtualized within the vm.
+
+
+a candidate vm must match:
+   - libs required
+   - cosmos fs
+
+the context frame will give access to distributed devs and fs - local or remote.
+
+
+
+vm capabilities profile
+-----------------------
+
+a vm's caps may be numerous.
+
+a vm validates a requirement profile.
+
+the vm api provides a validation call.
+
+  cosmos_vm_accepts( profile );
+
+
+recursive vm's
+--------------
+
+a vm does not run vm's.  all vm's are peers through cosmosfs.
 
 
 

@@ -20,31 +20,46 @@ struct access_frame;
 struct cosmos {
 
         /* config */
+
+        char *metadirname;
+
+        char *modrelpath;
         char *modlibpath;
-        size_t modlibpathlen;
         char *modsuffix;
+        char **modsymbols;
+
+        char *host_etcdir_fpath;
+        char *host_libdir_fpath;
+
+        char *host_lookupmod_fpath;
+        char *host_svcmod_fpath;
+
+
+        char *lookupmodname;
+
+        char *svcmodname;
+
+        size_t modlibpathlen;
         size_t modsuffixlen;
-        char *modsymbols;
-        char *lookupmodpath;
-        void *lookup_dl;
-     
+
+        char *proto_metadir_src_url;
+        char *root_src_url;
+
 
         /* init */
+        void *lookup_dl;
         void *filesvc;
         void *cosmsvc;
-        void *lookup;
+        void *lookupmod;
         struct access_frame *init;
         struct access_frame *base_svc;
+
 
         /* runtime */
         btree_t *strings;
         btree_t *paths;
         struct access_frame *proto;
         struct access_frame *root;
-
-        /* temp */
-        char *lookupmodpath;
-        void *lookup_dl;
 
         /* maybe not */
         struct access_frame *openfiles;

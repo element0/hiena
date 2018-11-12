@@ -1,7 +1,58 @@
 
 
-module system
--------------
+
+purpose of modules
+------------------
+
+modules provide lookup functions (query services), io services, mapping services and transformation services.  these categories mirror the production function types.
+
+
+module types
+------------
+
+cosmos_lookup_service:
+query dcel
+
+cosmos_io_service:
+stream & dir
+
+cosmos_mapping_service:
+map io stream & dir to hiena map
+
+cosmos_transforming_service:
+use dcels & access frames to generate new dcel w new stream & dir
+
+
+
+
+example
+-------
+
+cosmos_bind() links a url to an access frame.  the protocol identifies a module.
+
+the module provides io service from the url to the domain cel (read, write, readdir)
+
+
+
+
+modules re. production functions
+--------------------------------
+
+
+
+
+
+
+cosmos_load_mod()
+-----------------
+
+cosmos_load_mod() is used at cosmos init time to load modules and add their essential functions to the cosmos db.
+
+
+
+
+module system via fudge
+-----------------------
 
 a module's funcs are avail thru fudge.
 
@@ -12,21 +63,6 @@ in fudge, the path can be resolved via a PATH resolution mechanism and via alias
 and the full pathname resolves to an access frame pointer.
 
 
-types of modules
-----------------
-modules must implement one or more of the following interfaces.
-
-cosmos_lookup_fn()
-cosmos_source_fn()
-cosmos_bind_fn()
-cosmos_grind_fn()
-
-
-
-load_mod()
-----------
-
-load_mod() is used at cosmos init time to load modules and add their essential functions to the cosmos db.
 
 
 prod instr to create mod paths
@@ -49,6 +85,8 @@ prod instr to create mod paths
 
 using a func ptr
 ----------------
+
+** this is superceded by transparent RPC via virtual functions. **
 
   val = dcel_val( dcel, &len );
   func_t_macro(val)(...);

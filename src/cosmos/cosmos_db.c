@@ -1,6 +1,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <dlfcn.h>
 #include "cosmos_db.h"
 #include "../btree_cpp.h"
 #include "../hash.h"
@@ -76,7 +77,7 @@ cosmos_strid_t cosmos_put_string(struct cosmos *cm, char *s)
         }
 
         id = (cosmos_strid_t)hash_sdbm(s);
-        btree_put(strings, (bkey_t)id, (bval_t)s);
+        btree_put(strings, (bkey_t)id, (bval_t)strdup(s));
 
         return id;
 }

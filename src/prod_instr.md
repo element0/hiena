@@ -1,10 +1,67 @@
 
 
+production instruction design
+=============================
+
+the production function object type, procedure for use and interactions with modules via the cosmos file system and virtual functions.
+
+
+procedure
+---------
+
+to create a production instruction and a dcel, use an initializer function:
+
+  dcel_prod_bind( url );
+
+
+eg, the bind production initializer parses the protocol name of the url into 'module_name', puts the module name into a dcel, stores the remainder of the url as the dcel 'addr' and sticks a production id 'source' into the dcel.
+
+except that... the media of the dcel is where the module name goes?  or does a media fragment merely referece a dcel?
+
+media fragments locate an area
+
+
+the dcel is ready for action.
+
+
+  dcel_open( dcel, cosmos );
+
+
+dcel_open() will use the fragment system to identify one or more source modules for its fragments, then will open a handle to a module...
+
+the media handle open procedure will...
+
+locate the 'module' in the cosmos file system:
+
+  cosmos_lookup( cosmos, access_path, module_name );
+
+
+next, open a module handle and populate the functions...
+
+  mod_hdl = {
+    .dl = cosmos_dlopen( module ),
+    .open = cosmos_dlsym( dl, "void *open(char *addr)" )
+  };
+
+
+next, open a 'media_handle'...
+
+  media_hdl.open( mfrag.addr );
+
+
+store it within the dcel_fh file handle object.
+
+  fh.media_hdl = media_hdl;
+
+
+
 
 
 
 production instruction implementation
 ======================
+
+- overview
 
 - playground
 
@@ -22,22 +79,49 @@ production instruction implementation
 
 
 
+overview
+--------
+
+a prod instr tells how to construct a domain.
+
+a prodinstr is made of one or more instructions.
+
+an instruction is a function call or flow logic.
+
+
+
+
 
 playground
 ----------
 
-a dcel is a product of a production instruction.
+cosmos api:
 
-a dcel has a module, a production function id and an args datagram.
+cosmos_bind()    set source
+cosmos_merge()   overlay sources
+cosmos_lookup()  query
+cosmos_eval()    produces new data
 
-the module has stream functions and mapping functions.  all functions use the datagram to access their arguments.
 
 
-a 'file:///filepath' dcel will reference a 'file' module, sourcer function, "filepath" arg in the datagram.
 
-run 'map $module $target' to build the child and property maps in $target.
 
-run 'find $par rqstr' to return a dcel from the parent's map which matches the rqstring.
+
+production instructions and dcels
+---------------------------------
+
+a dcel has a production instruction, a service module, and a vars datagram.
+
+a dcel is a product of a production instruction.  it uses the vars datagram to store arguments and context.
+
+the service module has stream functions and mapping functions that provide io for the dcel.  module functions use the datagram to access their arguments.
+
+
+a 'bind' production instruction with a 'file:///filepath' argument will produce a dcel with a 'file' module and a "filepath" arg in the datagram.
+
+via the file module, run 'map $target' to build the child and property maps in $target.  (this function would benefit from distrib proc -- does it qualify as a prod instr?)
+
+a 'find' production instruction, 'find $par rqstr', returns a dcel from the parent's map which matches the rqstr.
 
 (the found dcel is not a product of find, however.  it is a product of the mapper function.)
 
@@ -97,6 +181,18 @@ if it is a special RETURN or END symbol, return value.
 program stack tracks subroutines.
 
 
+
+primative production function types
+-----------------------------------
+
+bind source,
+bind overlay,
+map,
+find,
+evaluate-transform
+
+
+
 generative vs non-generative functions
 --------------------------------------
 
@@ -114,35 +210,6 @@ non-producing functions:
 
 
 
-
-
-module connector maps for auto fudge
-------------------------------------
-
-fudge tries to complete a path of transformations between incompatable formats.
-
-this table describes possible transformations:
- 
-    ox  | divine
-    ox  | dir
-    dir | ox
-    dir | yaml
-    txt | ox
-    txt | html
-    txt | yaml
-    txt | c
-    yaml | dir
-    divine | html
-
-
-a request:
-
-    dir.html
-
-
-would complete by:
-
-    dir.ox.divine.html
     
 
 

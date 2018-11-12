@@ -1,35 +1,24 @@
-
+#include "../../../lookup_svc.h"
 #include "../../../cosmos.h"
-#include "../../../access_frame.h"
-#include "../../../dcel.h"
 #include "../../../hierr.h"
 
 
-struct access_frame *cosmos_lookup_fn( struct cosmos *cm, struct access_frame *par, char *s )
+cosmos_id_t cosmos_lookup_fn ( struct cosmos *cm, cosmos_id_t par, char *rqstr )
 {
-        struct hiena_dcel *dc, *res;
-        struct access_frame *resaf;
+        struct lookup_hdl *h;
+        cosmos_id_t res;
+        int err;
 
-        dc = par->dcel;
-        res = dcel_find_child(dc, s, cm);
+        h = lookup_hdl_new();
 
-        if( res == NULL )
-        {
-                HIERR("lookup_light: cosmos_lookup_fn: res NULL");
-
-                return NULL;
-        }
-
-        resaf = aframe_spawn(par);
-        if( resaf == NULL )
-        {
-                HIERR("lookup_light: cosmos_lookup_fn: resaf NULL");
-
-                return NULL;
-        }
+        h->cosmos = cm;
+        h->aframe = par;
+        h->str = rqstr;
 
 
-        resaf->dcel = res;
 
-        return resaf;
+
+        res = (cosmos_id_t)(h->targ);
+
+        return res;
 }

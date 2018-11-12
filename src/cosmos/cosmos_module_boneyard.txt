@@ -1,0 +1,28 @@
+
+#include "../access_frame.h"
+#include "../dcel.h"
+#include "../cosmos.h"
+#include "../scanner_hdl.h"
+
+struct cosmos_module {
+
+        /* open dylib handle */
+        void *dl;
+
+
+        /* service */
+        struct hiena_service *svc;
+
+
+        /* mapper */
+        int (*map)(Hsp *hsp);
+
+
+        /* lookup */
+        cosmos_id_t (*lookup) ( struct cosmos *cm, cosmos_id_t par, char *rqstr );
+
+
+        /* function / transform */
+        void *(*grind)(void *, ...);
+
+};

@@ -72,7 +72,7 @@ cosmos-load-mod:        dcel access-frame
 cosmos-module:
 	gcc $(dbugopts) -fPIC -c cosmos/cosmos_module.c -o $(out-o)/cosmos_module.o
 
-cosmos-init:    cosmos-db cosmos-load-mod
+cosmos-init:
 	gcc $(dbugopts) -fPIC -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
 
 

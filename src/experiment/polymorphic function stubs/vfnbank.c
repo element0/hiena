@@ -47,8 +47,8 @@ intptr_t vfn0001(int init, ...)
         /* include first arg */
         res += init;
         
-        va_start(ap, init);
-        for(i = 0; i < (ini-1); i++)
+        va_start(ap, argc);
+        for(i = 0; i < (argc-1); i++)
         {
             cur = va_arg(ap, int);
             res += cur;

@@ -1,0 +1,253 @@
+static struct access_frame *init_lookupfn_hdl(struct cosmos *cm)
+{
+    cosmos_id_t lfh;
+
+    if(cm == NULL)
+    {
+        HIERR("init_lookupfn_hdl: err cm NULL");
+        return NULL;
+    }
+
+    if(cm->lookup_dl == NULL)
+    {
+        HIERR("init_lookupfn_hdl: err cm->lookup_dl NULL");
+        return NULL;
+    }
+
+    if(cm->proto == NULL)
+    {
+        HIERR("init_lookupfn_hdl: err cm->proto NULL");
+        return NULL;
+    }
+
+    lfh = cm->proto->lookfn_hdl = aframe_new();
+
+
+    /// WIP
+
+    src = prodinstr_new();
+
+    
+    prodinstr_append(src,0,dlsym);
+    prodinstr_append(src,0,cm->lookup_dl);
+    prodinstr_append(src, strlen(CM_LOOKUP_FN_NAME), CM_LOOKUP_FN_NAME);
+    prodinstr_set_return_size(src, sizeof(uintptr_t));
+
+    dc = dcel_new();
+    dcel_set_prodinstr(dc, src);
+
+    aframe_set_dcel(lfh, dc);
+    aframe_set_exec_helper(lfh, 
+
+
+    return cm->lookfn_hdl;
+}
+
+
+
+
+  /*******************************/
+
+
+        /* proto aframe:
+         * provides inheritance
+         * for root
+         */
+
+
+        cm->proto = aframe_new();
+
+        if( cm->proto == NULL )
+        {
+                HIERR("cosmos_init: err: can't create cosmos proto aframe");
+
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+
+  /*******************************/
+
+        /*
+         * create proto metadir
+         */
+
+        mode = S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+        protocosm = cosmos_mkdir(cm, cm->proto, COSMOS_METADIR_NAME, mode );
+
+
+
+        /*
+         * bind to source
+         */
+
+
+        if(cosmos_bind(cm, protocosm, cm->proto_metadir_src_url, NULL) != protocosm)
+        {
+                HIERR("cosmos_init: err: can't bind protocosm to proto_metadir_src_url");
+
+                        cosmos_db_cleanup(cm);
+
+                return NULL;
+
+        }
+
+
+
+  /*******************************/
+
+        /* lookup fn
+         */
+
+        // TODO:  lookupmodfpath
+        // TODO:  cosmos_dlopen()
+        // TODO:  cosmos_dlsym()
+
+        cm->lookup_dl = cosmos_dlopen( cm, cm->lookupmodfpath, RTLD_NOW );
+
+        if(cm->lookup_dl == NULL)
+        {
+                HIERR("cm->lookup_dl == NULL\n");
+                fprintf(stderr, "%s\n", dlerror());
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+        
+        HIERR("cm->lookup_dl OPEN");
+
+
+        cm->root->lookupfn = cosmos_dlsym(cm->lookup_dl, "struct access_frame *cosmos_lookup_fn(struct cosmos *, struct access_frame *, char *)");
+
+        if(cm->root->lookupfn == NULL)
+        {
+                HIERR("cosmos_init: err: can't create cosmos root->lookupfn");
+
+                        cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+  /*******************************/
+
+
+
+
+        /* ELIMINATE? */
+        /* dcel collector */
+
+
+        cm->dcel = dcel_new(NULL);
+
+        if(cm->dcel == NULL)
+        {
+                HIERR("cosmos_init: err: cm->dcel NULL");
+                cosmos_db_cleanup(cm);
+                return NULL;
+        }
+
+
+
+
+
+
+
+        /* ELIMINATE? */
+        /* cosmos openfiles aframe */
+
+        cm->openfiles = aframe_new();
+
+        if( cm->openfiles == NULL )
+        {
+                HIERR("cosmos_init: err: can't create cosmos openfiles aframe");
+
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+
+
+
+        /* ELIMINATE? */
+        /* init modules */
+/*
+
+        if( cosmos_init_modules(cm, modc, mod_path) == -1 )
+        {
+                HIERR("cosmos_init: err: can't init modules");
+
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+*/
+
+
+        /* init host cosm */
+
+
+/*
+
+        mode = S_IFDIR | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+
+
+        hostcosm = cosmos_mkdir( cm, cmroot, ".cosm", mode);
+
+        if(hostcosm == NULL)
+        {
+                HIERR("cosmos_create_db: err: can't init hostcosm");
+
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+
+
+        cosmos_bind(cm, hostcosm, "file", mod_path[0], cmroot);
+
+*/
+
+
+        /* init user-host cosm */
+
+
+/*
+
+        userhost_str = user_at_host_string();
+
+        if( userhost_str == NULL )
+        {
+                HIERR("cosmos_create_db: err: can't create userhost_str");
+
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+
+        userhost = cosmos_mkdir( cm, cmroot, userhost_str, mode);
+
+        if(hostcosm == NULL)
+        {
+                HIERR("cosmos_create_db: err: can't init userhost");
+
+                free(userhost_str);
+                cosmos_db_cleanup(cm);
+
+                return NULL;
+        }
+
+        free(userhost_str);
+
+
+
+        cosmos_bind(cm, userhost, cmroot, "init/filesvc", "/");
+
+
+*/

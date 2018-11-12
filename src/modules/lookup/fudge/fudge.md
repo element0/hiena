@@ -13,7 +13,7 @@ fudge language
   <name>.<mod_id>.<mod_id>
   <name>.<mod_id>/<name>  //child
   <name>.<mod_id>:<name>  //prop
-
+s
 ie.
 
   myfile.ox
@@ -99,6 +99,39 @@ implements file ops (stat, open, opendir, etc.) as functions on a dcel.  each ta
 (the ops interface is declared by hiena_svc and defined by dcel_svc.)
 
 
+
+
+module connector maps for auto fudge
+------------------------------------
+
+fudge tries to complete a path of transformations between incompatable formats.
+
+this table describes possible transformations:
+ 
+    ox  | divine
+    ox  | dir
+    dir | ox
+    dir | yaml
+    txt | ox
+    txt | html
+    txt | yaml
+    txt | c
+    yaml | dir
+    divine | html
+
+
+a request:
+
+    dir.html
+
+
+would complete by:
+
+    dir.ox.divine.html
+
+
+
+
 fudge grammar
 -------------
 (10/12/2017)
@@ -133,5 +166,24 @@ fudge grammar
 
   '.==' <url> : <source equiv>
 
+
+
+
+boneyard
+--------
+
+lazy evaluation lookup
+----------------------
+9/24/2018
+10/07/2018 unnecessary and inefficient - omit
+
+
+fudge compiles a fudge url into a dcel chain.  the validity of the chain is unknown.
+
+the contents of the leaf of the chain are evaluated at file system access, such as a stat() call, at which point, the chain is evaluated.
+
+this lazy evaluation is the same mechanism as the normal sync'ing of the distributed file system.
+
+the evaluation mechanism is implemented by production instructions in the dcel chain.
 
 

@@ -1,6 +1,32 @@
 
 
 
+
+cosmos simple syrup
+-------------------
+
+  new db
+  new root aframe
+  set root aframe parent to root
+  create root service mappings with aframe paths
+      lookup mod
+      file mod
+  bind root dcel to rooturl
+
+
+
+
+lookup( root, somepathname ) will get lookup mod from root's parent.  (root's parent is root.)
+
+  lookupmod = apath get object( root->par, lookupmod_relpath )
+
+
+lookupmod will use dcel service interface.  dcel service interface looks up the service module of root's dcel.  this lookup requires the mod to be premapped to avoid feedback loop.
+
+
+
+
+
 cosmos init
 -----------
 
@@ -15,7 +41,7 @@ init procedure creates cosmos db and loads essential modules:
   file sourcer
   lookup
 
-it creates a host, host vm and cloud vm.
+it creates a host, runs host vm and cloud vm.
 
 now the daemon is able to take requests.
 
@@ -68,34 +94,23 @@ configure
 
 use config.h to compile default values, override those if a config file is present:
 
-  COSMOS_CONFIG_PATH=".cosm/etc/cosmos:~/.cosm/etc/cosmos:/etc/cosmos"
 
 
+config.h
 
-default config:
+  COSMOS_HOST_ROOT "/"
 
-  lookup_module=".cosm/lib/cosmos/lookup/lookup.so"
-  COSMOS_HOST_ROOT="/"
+  COSMOS_CONFIG_PATH ".cosm/etc/cosmos:~/.cosm/etc/cosmos:" COSMOS_HOST_ROOT "/etc/cosmos"
+
+  COSMOS_LIBPATH ".cosm/lib/cosmos:.cosm/lib/cosmos:"
+COSMOS_HOST_ROOT "/lib/cosmos"
+
+  COSMOS_VMPATH cosmos_path_search(COSMOS_LIBPATH,"vm");
+
+
+  lookup_module "lookup/lookup.so"
 
   
-
-
-
-load and map builtins
----------------------
-
-lookup module builtin.
-
-  cosmosdb
-    lookup_dylib   // dlopen() here
-    tree
-      lookupfn  <-- lookupfn aframe
-
-
-
-
-
-
 load and spin-up vms
 --------------------
 
@@ -103,11 +118,27 @@ load and spin-up vms
 
 vm's are lazy loaded from:
 
-  .cosm/vm/
+  COSMOS_VMPATH
 
 localhost vm:
 
-  .cosm/vm/$hostname
+  COSMOS_VMPATH/$hostname
+
+
+
+
+load and map builtins
+---------------------
+
+lookup module
+
+  cosmosdb
+    lookup_dl   // dlopen() to here
+
+    tree
+      lookupfn  <-- lookupfn aframe
+
+
 
 
 

@@ -78,23 +78,22 @@ con_t *do_connect(int soc)
 int do_session(con_t *con)
 {
     char *c;
-    FILE *fp;
+    // FILE *fp;
     int i, er;
-    size_t len;
-    char op, x, y, res;
+    // size_t len;
+    char len, op, x, y, res;
 
 
     // recv
-    fp = fdopen(con->fd, "r");
+    // fp = fdopen(con->fd, "rw");
 
-    len = fgetc(fp);
+    recv(con->fd, &len, 1, MSG_PEEK);
 
     c = malloc((sizeof(char)*len)+1);
-    c[0] = len;
 
-    for(i=1; i<len; i++)
+    for(i=0; i<len; i++)
     {
-        c[i] = fgetc(fp);
+        recv(con->fd, &(c[i]), 1, 0);
     }
     c[i] = '\0';
 
@@ -118,13 +117,10 @@ int do_session(con_t *con)
     // send
     printf("server: sizeof(res) %d\n", sizeof(res));
 
-    if(fwrite(&res, sizeof(res), 1, fp) == 0)
-    {
-            perror("server: err:");
-    }
+    send(con->fd, &res, 1, 0);
 
 
-    fclose(fp);
+    //fclose(fp);
 
     return 0;
 }

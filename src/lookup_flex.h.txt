@@ -1,0 +1,16 @@
+
+
+
+#ifndef _HIENA_LOOKUP_FLEX_H_
+#define _HIENA_LOOKUP_FLEX_H_
+
+
+#define YY_INPUT(buf,result,max_size) \
+    { \
+    static int pos = 0; \
+    int c = yyextra->str[pos++]; \
+    result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
+    }
+
+
+#endif /*! _HIENA_LOOKUP_FLEX_H_ */

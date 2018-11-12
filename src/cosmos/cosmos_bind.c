@@ -17,7 +17,7 @@
  *
  */
 
-cosmos_id_t cosmos_bind( struct cosmos *cm, cosmos_id_t dest, char *protocol, char *addr, cosmos_id_t context)
+cosmos_id_t cosmos_bind_by_protocol( struct cosmos *cm, cosmos_id_t dest, char *protocol, char *addr, cosmos_id_t context)
 {
         struct hiena_dcel *dc;
 
@@ -71,6 +71,44 @@ abort:
 }
 
 
+cosmos_id_t cosmos_bind( struct cosmos *cm, cosmos_id_t dest, char *url, cosmos_id_t access_context)
+{
+        /* parse url */
+        
+        for(i=0; (c=url[i])!=':'
+               && c!='/'
+               && plen++;
+            i++);
+
+        if(c == '/')
+                goto default_protocol;
+
+        prtcol = strndup(url,plen);
+
+        if(url[i] == '/'
+        && url[i+1] == '/')
+        {
+                addr = &(url[i+2]);
+        }
+
+
+        res = cosmos_bind_by_protocol( cm, dest, prtcol, addr, context);
+
+
+        goto finish;
+
+default_protocol:
+
+        res = cosmos_bind_by_protocol( cm, dest, "file", addr, context);
+
+
+finish:
+
+        free(prtcol);
+        
+        return res;
+
+}
 
 
 cosmos_id_t cosmos_cascade_bind( struct cosmos *cm, cosmos_id_t af, cosmos_id_t af2 )

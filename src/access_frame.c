@@ -62,14 +62,14 @@ int aframe_cleanup( struct access_frame *af )
 }
 
 
-struct iovec *aframe_get_value_ptr(struct access_frame *af)
+struct iovec *aframe_get_value_iovec(struct access_frame *af)
 {
         struct hiena_dcel *dc;
         struct iovec *iov;
 
         if( af == NULL )
         {
-                HIERR("aframe_remap_dirent_id af NULL");
+                HIERR("aframe_get_value_iovec af NULL");
                 return NULL;
         }
 
@@ -81,7 +81,44 @@ struct iovec *aframe_get_value_ptr(struct access_frame *af)
 }
 
 
-bval_t  aframe_remap_dirent_id( struct access_frame *af, bval_t key )
+int aframe_set_value_ptr(struct access_frame *af, void *ptr)
+{
+        int er;
+        struct hiena_dcel *dc;
+        void *buf;
+        size_t len;
+
+
+        er = dcel_set_val( dc, ptr, sizeof(void *) );
+
+        return er;
+}
+
+
+
+void *aframe_get_value_ptr(struct access_frame *af)
+{
+        struct hiena_dcel *dc;
+        struct iovec *iov;
+        void *ptr;
+
+        if( af == NULL )
+        {
+                HIERR("aframe_get_value_ptr af NULL");
+                return NULL;
+        }
+
+        dc = af->dcel;
+        iov = dcel_val_ptr(dc);
+
+        ptr = iov->iov_base;
+
+        return ptr;
+}
+
+
+
+bval_t aframe_remap_dirent_id( struct access_frame *af, bval_t key )
 {
         bval_t res;
         btree_t *bt;

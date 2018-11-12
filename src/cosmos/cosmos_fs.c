@@ -1,30 +1,57 @@
+
+/***********************************
+ cosmos_fs.c
+
+ provides c functions that can be called from FUSE to create a FUSE file system.
+
+ the FUSE interface is implemented by snafufs.c
+
+ **********************************/
+
+
+
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <string.h>
 #include "../access_frame.h"
+#include "../aframe_path.h"
 #include "../btree_cpp.h"
 #include "../hierr.h"
 #include "../ptr_stack.h"
+#include "../dcel.h"
 #include "cosmos_db.h"
 #include "cosmos_dirh.h"
 #include "cosmos_string_db.h"
+#include "cosmos_module.h"
 
 
 
 
-
-
+/* important:
+    sb->st_dev
+    sb->st_ino
+    sb->st_mode
+    sb->st_nlink
+ */
 
 int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
 {
         (struct access_frame *)id;
+        struct hiena_dcel *dc;
+        cosmos_strid_t mod_id;
+        struct access_frame *mod_af;
+        cosmos_module_t *mod;
 
         printf("cosmos_stat\n");
 
-        sb->st_dev = id->st_dev;
-        sb->st_ino = (ino_t)id;
-        sb->st_mode = id->st_mode;
-        sb->st_nlink = id->st_nlink;
+        dc = id->dcel;
+        mod_id = dc->module_id;
+
+        mod_af = aframe_by_path_id(id->parent, mod_id);
+
+        mod = aframe_get_value_ptr(mod_af);
+
+        mod->stat(cm, id, dc->addr, sb);
 
         return 0;
 }

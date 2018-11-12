@@ -8,7 +8,7 @@
 struct hiena_dcel;
 
 #define aframe_envar(af,s,len)\
-     dcel_child_val(af->env,s,len)
+     dcel_child_val(af != NULL ? af->env : NULL, s, len)
 
 struct access_frame {
         struct cosmos *cosmos;
@@ -19,15 +19,23 @@ struct access_frame {
         struct access_frame *parent;
         struct access_frame *cascade;
 
+        /* use this for paths */
         btree_t *branch;
 
+        /* rm? */
         btree_t *lookup_cache;
+
+
+        /* aliases */
         btree_t *remap;
 
         
         struct access_frame *lookfn_hdl;
+
         struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
+
         struct access_frame *(*execfn)(struct access_frame *, int argc, char **);
+
         int execfnid;
 
         struct access_frame *garbage_next;
@@ -63,7 +71,7 @@ int aframe_open_value(struct access_frame *);
 DANGEROUS: the returned iovec contains a raw pointer to the internal buffer of the dcel behind the aframe.  This method is included for efficiency, but please be careful.
 
  */
-struct iovec *aframe_get_value_ptr(struct access_frame *);
+struct iovec *aframe_get_value_iovec(struct access_frame *);
 
 /**
   copies bytes (nmemb*size) from aframe's internal value into ptr.
@@ -79,6 +87,18 @@ struct iovec *aframe_val_ptr(struct access_frame *);
 */
 
 bval_t  aframe_remap_dirent_id( struct access_frame *, bval_t );
+
+
+int aframe_set_parent(struct access_frame *, struct access_frame *);
+
+
+/**
+    This is a dirty shortcut.  The nice way to do it is cosmos_bind().
+ */
+
+int aframe_set_value_ptr(struct access_frame *, void *);
+
+void *aframe_get_value_ptr(struct access_frame *);
 
 
 
