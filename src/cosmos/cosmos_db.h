@@ -58,8 +58,10 @@ struct cosmos {
         /* runtime */
         btree_t *strings;
         btree_t *paths;
+	btree_t *vm;
         struct access_frame *proto;
         struct access_frame *root;
+
 
         /* maybe not */
         struct access_frame *openfiles;

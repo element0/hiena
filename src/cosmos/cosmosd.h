@@ -1,16 +1,13 @@
 #ifndef COSMOS_DAEMON_H
 #define COSMOS_DAEMON_H
 
-#include "../hiena.h"
-
-#define tbd_t void
+#include "cosmosdb.h"
+#include "cosmos_server_core.h"
 
 
 struct cosmos_daemon {
-        tbd_t *user;
-        struct hiena_dcel *cosm;
-        struct hiena_slib *scanners;
-        tbd_t *strings;
+	struct cosmos *cosmos;
+	struct cosmos_server_core *server_core;
 };
 
 

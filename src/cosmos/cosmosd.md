@@ -9,15 +9,13 @@ the daemon of libcosmos.
 
 runs 1 per user per host.
 
-forked if needed by cosmos_init.
+forked when needed by `cosmos_init`.
 
-initializes root access frame for this daemon by running host-device scanner.
-
-keeps the databases.
+keeps the databases via `cosmos_db`.
 
 links to libcosmos.
 
-keeps the vm socket addresses
+keeps vm connections via generic socket server.
 
 
 databases

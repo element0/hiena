@@ -30,6 +30,11 @@ lookupmod will use dcel service interface.  dcel service interface looks up the 
 cosmos init
 -----------
 
+a project that uses `libcosmos` will first call `cosmos_init()`.
+
+the result will be a `cosmos_db` handle which will be used by subsequent cosmos api calls.
+
+
 runs the daemon if not running.
 
 daemon runs init procedure.

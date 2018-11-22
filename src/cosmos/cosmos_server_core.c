@@ -1,6 +1,7 @@
 
 /*
-link this to provide generic socket server.
+this provides a generic socket server.
+use for cosmosd and vm's.
 */
 
 #include <stdio.h>
