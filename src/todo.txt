@@ -1,7 +1,30 @@
 
 
 
+2018-11-21  0722
 
+hacking the cosmosd, vm system:
+
+
+cosmosd is a stand alone service.
+each vm is a stand alone svc.
+
+
+cosmosd manages socket addresses.
+cosmosd has a default socket addr for vm's to connect to.
+
+cosmosd and vm's use 'cosmomsg' protocol and cosmos_rp_call().
+
+
+
+
+todo:
+- cosmosd to vm interface
+- cosmosd to cosmosd interface
+
+
+files:
+- cosmosd.md
 
 
 

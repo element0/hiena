@@ -3,9 +3,11 @@
 #include <string.h>
 #include <dlfcn.h>
 #include "cosmos_db.h"
+#include "cosmos_module.h"
 #include "../dcel.h"
 #include "../access_frame.h"
 #include "../hierr.h"
+
 
 
 
@@ -33,7 +35,7 @@ char *shortname( char *fpath )
 
 
 
-struct cosmos_module *cosmos_load_mod( struct cosmos *cm, char *fpath )
+cosmos_module_t *cosmos_load_mod( struct cosmos *cm, char *fpath )
 {
         if( cm == NULL
          || fpath == NULL )
@@ -43,7 +45,7 @@ struct cosmos_module *cosmos_load_mod( struct cosmos *cm, char *fpath )
                 return NULL;
         }
 
-        struct cosmos_module *mod;
+        cosmos_module_t *mod;
         void *dl = NULL;
         char *dlerr = NULL;
         int err = 0;

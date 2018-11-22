@@ -38,7 +38,7 @@ transp rpc and distrib proc:
 
 rpc is a version of distrib proc where the distribution is one machine and the burden is undivided.
 
-the cosmos rpc interface (cosmos_exec, cosmos_dlopen, cosmos_dlsym) and the cosmos distrib proc interface are both ontop of the cosmos distrib proc implementation. (the implementation cannot use the cosmos rpc interface internally).
+the cosmos distrib proc interface and the cosmos rpc interface (cosmos_exec, cosmos_dlopen, cosmos_dlsym) are both ontop of the cosmos rpc implementation.
 
 
 
@@ -59,7 +59,7 @@ executables are similarly transparent.
 this system allows a program to run an executable as if it were local - even if if runs remote.
 
 
-production instructions are data structures inside a dcels which tell how to construct the domain of the cel.  they may be a simple instruction or a program of instructions.  the prod instr interpreter executes it via the rpc-distrib system.  each intruction is a grid instruction.
+production instructions are data structures inside dcels which tell how to construct the domain of the cel.  they may be a simple instruction or a program of instructions.  the prod instr interpreter executes it via the rpc-distrib system.  each intruction is a grid instruction.
 
 
 

@@ -17,7 +17,7 @@ match requirements profile to a vm capabilities profile
 
 open vm handle
    load/open vm
-   request function pointer block
+   rcv function pointer block
 
 
 

@@ -82,6 +82,69 @@ prod instr to create mod paths
   af1 = `aframe path:$s1 dcel:$dc1 br:$af2`
 
 
+modules and ipc/rpc
+-------------------
+
+there are a few questions:
+- do modules need the cosmosdb?
+- can modules work without it?
+- which modules can work thru rpc?
+- how is context transmitted to rpc?
+
+a module can be:
+- a transparent rpc dl pointer
+- a list of transp rpc funcs
+
+what a module needs:
+- the caller's execution context
+  - incl. fs, env, resources
+
+an rpc may be initialized by the call's type signature, but the actual rpc needs to pass context with the call frame.
+
+ergo there is a potential duplication of interfaces:
+
+- cosmos module func ptrs
+- rpc func ptrs
+- vm local func calls, executables
+
+
+the interfaces serve multiple purposes
+
+- cosmos module func ptrs
+
+are to be called from within cosmos in a file system/ db context. they implement search/retrieval within dcels.
+
+for example, a vfn is called to open a file handle. in the case of a relative pathname, the process's CWD should be available to the rpc.
+
+
+
+
+- rpc func ptrs
+
+are intended to extend a remote API as if it were local.
+
+herein lies the context issue. if the call were functioning locally within the same process image, it would have the same env.
+
+the rpc could be init'ed with context, but only global context. thread specific context (such as CWD) comes during runtime.
+
+runtime context is transmitted with the rpc message.
+
+
+- vm local funcs and executables
+
+these are the module programmers product. the goal is to make module programming "language and host transparent."
+
+the programmer designs a library func or executable which uses system services as usual.
+
+another programmer wants to use the library, includes cosmos-hiena, adds a vm for the foreign/remote lib and uses cosmos_dlopen/sym to use the functions.
+
+
+
+context and cosmos_dlopen() cosmos_dlsym()
+---------------------------
+
+cosmosdb context can be initialized into the dl pointer through cosmos_dlopen().  this context is propagated into the virtual function pointer through cosmos_dlsym().
+
 
 using a func ptr
 ----------------

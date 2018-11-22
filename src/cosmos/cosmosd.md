@@ -17,23 +17,39 @@ keeps the databases.
 
 links to libcosmos.
 
+keeps the vm socket addresses
+
 
 databases
 ---------
-source database
-xformr database
-scannr database
-
-the database entries could be stored by checksum of their element.
+aframe database
+vm database
+   socket addresses
 
 
 
-cosmosd api
------------
+cosmos rpc api
+--------------
+provided internally by cosmosd. used by clients via cosmosmsg rcp.
+
+
+
+
+cosmosd client api
+------------------
+provided by libcosmos. used by client process. wraps a cosmomsg rpc.
+
 
   aframe *cosmosd_get_access_frame( axid );
 
   aframe *cosmosd_lookup( axid, str );
 
+
+
+cosmosd code structure
+----------------------
+
+cosmosd.c
+cosmos_vm_core.c
 
 

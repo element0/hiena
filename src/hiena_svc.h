@@ -13,13 +13,15 @@ struct hiena_svc
         void * (*open)( void *addr, const char *mode);
         int    (*close)( void *fp );
         int    (*seek)( void *fp, long offset, int whence );
-        size_t (*read)( void *ptr, size_t size, size_t nmemb, void *fp );
+        size_t (*read)( void *ptr, size_t size, size_t nmemb, void *fp );t
         size_t (*write)( void *ptr, size_t size, size_t nmemb, void *fp );
-        int (*getchar)( void * );
+        int (*getchar)( void *fp );
         void *(*opendir)(void *addr);
         void *(*readdir)(void *dir);
         int (*closedir)(void *dir);
         int (*mknod)(void *dir, char *dname, void *mode);
+
+        int (*stat)(void *cm, uintptr_t *id, void *addr, void *sb);
 
 };
 

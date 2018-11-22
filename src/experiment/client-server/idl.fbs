@@ -1,0 +1,16 @@
+// IDL for client server test using flatbuffers
+
+namespace Cosmos.VM;
+
+
+table VFArg {
+  type:
+  size:
+  vec:
+}
+
+table VFCall {
+  argv:string;
+}
+
+root_type VFCall;

@@ -1,0 +1,7 @@
+
+cosmos server core
+------------------
+
+a generic server core used by cosmosd and vm's.
+
+use libwerbsockets 
