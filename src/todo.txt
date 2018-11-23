@@ -1,6 +1,6 @@
 
 
-
+2018-11-23  0705
 2018-11-21  0722
 
 hacking the cosmosd, vm system:
@@ -8,6 +8,9 @@ hacking the cosmosd, vm system:
 
 cosmosd is a stand alone service.
 each vm is a stand alone svc.
+
+
+both implementations use a generic `cosmos_server_core`.
 
 
 cosmosd manages socket addresses.
@@ -18,7 +21,8 @@ cosmosd and vm's use 'cosmomsg' protocol and cosmos_rp_call().
 
 
 
-todo:
+todo stack:
+- cosmos_server_core
 - cosmosd to vm interface
 - cosmosd to cosmosd interface
 
