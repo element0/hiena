@@ -1,0 +1,27 @@
+// IDL for client server using flatbuffers
+
+namespace Cosmos;
+
+
+
+struct VFVal {
+  size:ulong;
+  body:[ubyte];
+}
+
+
+table VFCallFrame {
+  fnid:VFVal;
+  return:VFVal;
+  argc:ubyte;
+  argv:[VFVal];
+
+  /// 'ptrs' flags return and args as ptrs. 1 bit per arg. 1st is return.
+
+  ptrs:ulong;
+
+  /// 'modified' flags return and args as modified. 1 bit per arg. 1st is return.
+  modified:ulong;
+}
+
+root_type VFCallFrame;
