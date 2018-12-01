@@ -75,9 +75,23 @@ cosmos-module:
 cosmos-init:
 	gcc $(dbugopts) -fPIC -c cosmos/cosmos_init.c -o $(out-o)/cosmos_init.o
 
+cosmos-server-core:
+	gcc $(dbugopts) -fPIC -c cosmos/cosmos_server_core.c -o $(out-o)/cosmos_server_core.o
+
+cosmos-server-msg:
+	gcc $(dbugopts) -fPIC -c cosmos/cosmos_server_msg.c -o $(out-o)/cosmos_server_msg.o
 
 cosmos-util:    cosmos-db cosmos-init
 	gcc $(dbugopts)  $(out-o)/cosmos_init.o cosmos/cosmos_util.c -o $(out-bin)/cosmos
+
+cosmos-vm-core:
+	gcc $(dbugopts) -fPIC -c cosmos/cosmos_vm_core.c -o $(out-o)/cosmos_vm_core.o
+
+
+cosmos-vm-localhost: cosmos-vm-core cosmos-server-core cosmos-server-msg
+	gcc $(dbugopts) -fPIC $(out-o)/{cosmos_vm_core.o,cosmos-server-core.o,cosmos-server-msg.o} -o $(out-bin)/cosmos_vm_localhost
+
+
 
 dcel:   ptr-stack frag
 	gcc $(dbugopts) -fPIC -c dcel.c -o $(out-o)/dcel.o

@@ -3,31 +3,57 @@
 cosmos_vm
 ---------
 
-a daemon service with socket io using a cosmos message protocol. each vm has a unique profile which defines a target architecture.
+a daemon service with socket io using an rpc message protocol and encapsulating a code execution runtime. each vm has a unique profile which defines a target architecture, language and calling convention.
 
   examples:
   - c fn runner
   - exec runner
   - script runner
 
-
-an executable or library has a requirements profile which is matched with a target architecture.
+an executable or library has a requirements profile which is matched with a vm profile.
 
 all vm's appear local but may be remote.
 
-the interface to all vm's is the same from libcosmos. the args for a unique vm call are marshalled by a CallFrame template provided by the vm.t
+the interface to all vm's is the same from libcosmos. the args for a unique vm call are marshalled by a idl template provided by the vm.
+
+
+rpc argument translation
+------------------------
+
+the client generates an interface definition string in a particular language of the lib or executable opened via cosmos_dlopen. it transmits through client's cosmos_dlsym call.
+
+   dlsym( idl_str );
+
+the vm gets the idl_str via a message and compiles it into a generic binary stack frame idl. the idl describes the grammar of the rpc call's stack frame in a generic format.
+
+   return idl;
+
+the client uses the idl to marshall the stack frame into a message and send to the vm.
+
+   msg =
+   marshall(idl, client_stack_frame);
+
+the vm uses the same idl to unmarshall the stack frame and uses a call generator to produce a call using the native calling convention.
+
+   vm_call_frame =
+   unmarshall(idl, msg);
+
+   generate_call(vm_call_frame);
+
+this way, the vm native function is unaware of the interface translation.
+
 
 
 designing a vm
 --------------
 
-a vm must parse a function prototype into an arguments marshalling instruction. it must interpret the prototype and generate a variables template. the variables template is used to marshall and unmarshall the io.
+a vm must parse a function prototype and generate a variables template. the variables template is used to marshall and unmarshall the arguments.
 
 a vm must locate and load a library, fork an executable or otherwise load and run code. it keeps a table of id's, runables and variable templates.
 
 a vm responds to a vocabulary of messages.
 
-a vm_call message passes an id and marshalled arguments. the vm unmarshalls the args and populates an instance of the variables template.
+a vm_call message passes an id and marshalled arguments. the vm unmarshalls the args and generates a function call. the call is generated via a piece of low-level code 
 
 
 

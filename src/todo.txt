@@ -18,6 +18,8 @@ cosmosd has a default socket addr for vm's to connect to.
 
 cosmosd and vm's use 'cosmomsg' protocol and cosmos_rp_call().
 
+use fctrl's O_NONBLOCKING
+
 
 
 

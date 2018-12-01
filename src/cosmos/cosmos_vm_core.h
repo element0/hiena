@@ -5,21 +5,20 @@
 /** a reusable vm core.
  */
 
+struct cosmos_vm {
 
-typedef struct cosmos_conn {
-
-}cosmos_conn_t;
-
-
-
-
-struct cosmos_vm_core {
-
-        /**
-         the functions which open, link and exec are provided via a struct of function pointers 'struct cosmos_vm_ops'.
+        /** capabilities profile compared with library and exec requirements profile.
          */
 
-        struct cosmos_vm_ops *cosmos_vm_ops;
+        void *profile;
+
+        /** functions which open, link and exec.
+         */
+
+        void *(*libopen)(char *);
+        int (*libclose)(void *);
+        void *(*libsym)(void *, char *);
+        void *(*exec)(void *);
 
 
         /** open libraries
@@ -27,7 +26,7 @@ struct cosmos_vm_core {
 
         int open_libs_size;
         int open_libs_count;
-        void *cosmos_vm_open_libs[];
+        void *open_libs[];
 
 
         /** open functions:
@@ -36,31 +35,10 @@ struct cosmos_vm_core {
 
         int open_fns_size;
         int open_fns_count;
-        uintptr_t *cosmos_vm_open_fns[];
-
-
-
-        /** socket
-         */
-
-	     struct sockaddr_un sa;
-
-
-        /** cosmosdb connections:
-          allows multiple db servers
-          in case that is useful.
-         */
-
-        cosmos_conn_t *cmdb_con[];
-
-
-
-        /** client connections
-         */
-
-        cosmos_conn_t *client[];
+        uintptr_t *open_fns[];
 
 };
+
 
 
 #endif /* ! _COSMOS_VM_CORE_H_ */
