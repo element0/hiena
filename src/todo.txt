@@ -4,18 +4,20 @@
 
 TODO
 
-- build file mod in
-- just use builtin modules for now
-- struct cosmos_module
-- cosmos_load_mod{,_builtin,_vfn}
-- cosmos_fs :: cosmos_stat
-   used by lookup module
-- test load_module
+- config cm->root_src_url
+- implement aframe_set_branch()
+- implement aframe_get_branch()
+- debug cosmos_init_test
+- lookup builtin
 - use default lib locations
 
 
 OK
 - file-module
+- file module builtin
+- struct cosmos_module
+- cosmos_fs :: cosmos_stat
+   used by lookup module
 
 
 2018-12-03  0751

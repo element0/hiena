@@ -82,6 +82,12 @@ cosmos_id_t cosmos_bind( struct cosmos *cm, cosmos_id_t dest, char *url, cosmos_
 
 
         /* parse url */
+
+        if(url == NULL)
+        {
+                HIERR("cosmos_bind: url NULL");
+                return COSMOS_ID_NULL;
+        }
         
         for(i=0; (c=url[i])!=':'
                && c!='/'

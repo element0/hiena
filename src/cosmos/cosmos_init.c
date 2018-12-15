@@ -44,6 +44,8 @@ static char *user_at_host_str()
         size_t userstrlen, hoststrlen, reslen, ressize;
 
 
+        /* fixme - getlogin() not secure
+           do not free 'userstr' */
         userstr = getlogin();
 
         hoststr = malloc(sizeof(char)*HOST_NAME_MAX);
@@ -61,7 +63,6 @@ static char *user_at_host_str()
         snprintf(res, ressize, "%s@%s", userstr, hoststr);
 
         
-        free(userstr);
         free(hoststr);
 
         return res;
@@ -159,7 +160,7 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
 
         userhoststr = user_at_host_str();
 
-        userhostroot = aframe_mkflatpath(cm, cm->root, userhoststr);
+        userhostroot = aframe_set_branch(cm->root, cosmos_put_string(cm,userhoststr), aframe_new());
 
         free(userhoststr);
 
