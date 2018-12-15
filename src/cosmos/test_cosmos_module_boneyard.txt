@@ -1,0 +1,10 @@
+
+        if(cosmos_config(cm) == -1)
+        {
+HIERR("test_cosmos_module::main: err: fail to configure cosmos db");
+                return -1;
+        }
+
+        fnpath = cosmos_calc_fnpath(cm, "file", "cosmos_map_fn");
+
+        printf("test_cosmos_module::main: success: fnpath == %s\n", fnpath);
