@@ -62,6 +62,22 @@ int aframe_cleanup( struct access_frame *af )
 }
 
 
+int aframe_set_parent(struct access_frame *af, struct access_frame *par)
+{
+        if(af == NULL)
+        {
+                HIERR("aframe_set_parent: af NULL");
+                
+                return -1;
+        }
+
+        af->parent = par;
+
+        return 0;
+}
+
+
+
 struct iovec *aframe_get_value_iovec(struct access_frame *af)
 {
         struct hiena_dcel *dc;

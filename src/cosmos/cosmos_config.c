@@ -53,12 +53,14 @@ int cosmos_config(struct cosmos *cm)
 
         cm->modsymbols = cm_mod_symbols;
 
+        cm->moddirpath = COSMOS_HOST_MODDIR_PATH;
+
 
 /**********************************/
 
 /* precalculated string lengths */
 
-        cm->modlibpathlen = strlen(cm->modlibpath);
+        cm->moddirpathlen = strlen(cm->moddirpath);
 
         cm->modsuffixlen = strlen(cm->modsuffix);
 

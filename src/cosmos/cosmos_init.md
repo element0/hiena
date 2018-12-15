@@ -135,15 +135,20 @@ localhost vm:
 load and map builtins
 ---------------------
 
+as cosmos may be installed and started from anywhere, it may be useful to build these modules in.
+
+
 lookup module
 
   cosmosdb
-    lookup_dl   // dlopen() to here
-
+    lookup_dl == NULL   // builtin
+    lookup_mod_virtual_path
     tree
       lookupfn  <-- lookupfn aframe
 
+file module
 
+  
 
 
 

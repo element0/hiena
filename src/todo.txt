@@ -1,9 +1,52 @@
+2018-12-08  0718
+2018-12-08  1501
+2018-12-11  1926
+
+TODO
+
+- build file mod in
+- just use builtin modules for now
+- struct cosmos_module
+- cosmos_load_mod{,_builtin,_vfn}
+- cosmos_fs :: cosmos_stat
+   used by lookup module
+- test load_module
+- use default lib locations
+
+
+OK
+- file-module
+
+
+2018-12-03  0751
+2018-12-05  0712
+2018-12-06  0803  POSTPONE
+
+rpc 
+
+need distributed shared memory for fully transparent rpc. otherwise, use atomic rpc call frames returning leaf data.
+
+
+2018-12-06  0801
+2018-12-06  1930  DONE
+
+- test_cosmos_dlfcn
+- cosmos_dl_hdl
+- cosmos_dlsym() native
+- cosmos_open() native
+- cosmos_dlclose() native
+- stub for vm's and RPC
+
 
 
 2018-11-23  0705
 2018-11-21  0722
+2018-12-06  0805  POSTPONE
 
-hacking the cosmosd, vm system:
+leave stubs for this...
+
+
+the cosmosd, vm system:
 
 
 cosmosd is a stand alone service.
@@ -19,7 +62,6 @@ cosmosd has a default socket addr for vm's to connect to.
 cosmosd and vm's use 'cosmomsg' protocol and cosmos_rp_call().
 
 use fctrl's O_NONBLOCKING
-
 
 
 
@@ -48,10 +90,13 @@ dcel service to use service modules
 
 
 note:
+
   cosmos_fs functions should satisfy fuse api.
 
 
 todo stack:
+
+cosmos_config
 aframe.h :: aframe_get_value
 cosmos_db
 cosmos_fs
@@ -62,7 +107,6 @@ mod->stat(cm, id, dc->addr, sb);
 
 done stack:
 
-cosmos_config
 cosmos_init
 aframe_path
 

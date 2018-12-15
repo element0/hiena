@@ -10,8 +10,8 @@ char *cosmos_calc_fnpath(struct cosmos *cm, char *modname, char *fnname)
 {
         char *fnpath, *cur;
         size_t len;
-        char *modlibpath, *modsuffix;
-        size_t fnpathsize, modlibpathlen, modnamelen, modsuffixlen, fnnamelen;
+        char *moddirpath, *modsuffix;
+        size_t fnpathsize, moddirpathlen, modnamelen, modsuffixlen, fnnamelen;
 
         if( cm == NULL )
         {
@@ -34,17 +34,17 @@ char *cosmos_calc_fnpath(struct cosmos *cm, char *modname, char *fnname)
         }
 
 
-        modlibpath = cm->modlibpath;
+        moddirpath = cm->moddirpath;
         modsuffix = cm->modsuffix;
 
-        modlibpathlen = cm->modlibpathlen;
+        moddirpathlen = cm->moddirpathlen;
         modsuffixlen = cm->modsuffixlen;
         modnamelen = strlen(modname);
         fnnamelen = strlen(fnname);
 
 
         fnpathsize = sizeof(char)*
-(modlibpathlen+1
+(moddirpathlen+1
 +modnamelen
 +modsuffixlen+1
 +fnnamelen+1);
@@ -54,8 +54,8 @@ char *cosmos_calc_fnpath(struct cosmos *cm, char *modname, char *fnname)
 
         cur = fnpath;
 
-        strncpy(cur, modlibpath, modlibpathlen);
-        cur += modlibpathlen;
+        strncpy(cur, moddirpath, moddirpathlen);
+        cur += moddirpathlen;
 
         (cur++)[0] = '/';
 

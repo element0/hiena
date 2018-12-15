@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 struct hiena_svc
 {
@@ -13,7 +14,7 @@ struct hiena_svc
         void * (*open)( void *addr, const char *mode);
         int    (*close)( void *fp );
         int    (*seek)( void *fp, long offset, int whence );
-        size_t (*read)( void *ptr, size_t size, size_t nmemb, void *fp );t
+        size_t (*read)( void *ptr, size_t size, size_t nmemb, void *fp );
         size_t (*write)( void *ptr, size_t size, size_t nmemb, void *fp );
         int (*getchar)( void *fp );
         void *(*opendir)(void *addr);
@@ -22,6 +23,8 @@ struct hiena_svc
         int (*mknod)(void *dir, char *dname, void *mode);
 
         int (*stat)(void *cm, uintptr_t *id, void *addr, void *sb);
+
+        off_t (*get_size)( char *n );
 
 };
 

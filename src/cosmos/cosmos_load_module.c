@@ -3,6 +3,7 @@
 #include <string.h>
 #include <dlfcn.h>
 #include "cosmos_db.h"
+#include "cosmos_dlfcn.h"
 #include "cosmos_module.h"
 #include "../dcel.h"
 #include "../access_frame.h"
@@ -52,6 +53,128 @@ cosmos_module_t *cosmos_load_mod( struct cosmos *cm, char *fpath )
 
 
 
+        /* make sure the fpath 
+           contains a slash or
+           it may not work like
+           you expect. */
+
+
+        if(strstr(fpath,"/") == NULL)
+        {
+                HIERR("mod_load: err: fpath must include a '/'");
+                return NULL;
+        }
+
+
+
+        /* load dylib */
+
+        dl = dlopen(fpath, RTLD_LAZY);
+
+        dlerr = NULL;
+
+
+
+        /* note
+           dlerror()
+           may cause valgrind err;
+           not included here. */
+
+
+
+        if(dl == NULL)
+        {
+                HIERR("cosmos_load_mod::load_svc: err: dl NULL");
+                // HIERR(dlerr);
+                return NULL;
+        }
+
+
+        mod = cosmos_module_new();
+
+        // save the dl in the module
+
+        mod->dl = dl;
+
+
+        // link whatever succeeds
+
+        (mod->svc = dlsym(dl, "svc")) ? 1 : err++;
+
+        (mod->map = dlsym(dl, "map"))? 1 : err++;
+
+        (mod->lookup = dlsym(dl, "lookup")? 1 : err++;
+
+        (mod->grind = dlsym(dl, "grind")? 1 : err++;
+
+
+        if( err == 4 )
+        {
+                HIERR("cosmos_load_mod: err: no module services found");
+                HIERR(fpath);
+                cosmos_module_cleanup(mod);
+                return NULL;
+        }
+
+        mod = cosmos_module_new();
+
+        // save the dl in the module
+
+        mod->dl = dl;
+
+
+        // link whatever succeeds
+
+        (mod->svc = dlsym(dl, "svc")
+
+
+        return mod;
+}
+
+
+struct cosmos_module *cosmos_load_mod_builtin( struct cosmos *cm, char *modname )
+{
+        struct cosmos_module *mod;
+
+
+        if( cm == NULL
+         || modname == NULL )
+        {
+                HIERR("cosmos_load_mod_builtin::load_svc: err: input cm or modname NULL");
+ 
+                return NULL;
+        }
+
+        mod = cosmos_module_new();
+
+        // save the dl in the module
+
+        mod->dl = NULL;
+
+
+        // link whatever succeeds
+
+        mod->svc = dlsym(NULL, modname)
+
+        return mod;
+}
+
+
+struct cosmos_module *cosmos_load_mod_vfn( struct cosmos *cm, char *fpath )
+        if( cm == NULL
+         || fpath == NULL )
+        {
+                HIERR("cosmos_init::load_svc: err: input cm or fpath NULL");
+ 
+                return NULL;
+        }
+
+        cosmos_module_t *mod;
+        void *dl = NULL;
+        char *dlerr = NULL;
+        int err = 0;
+
+
 
         /* make sure the fpath 
            contains a slash or
@@ -71,7 +194,7 @@ cosmos_module_t *cosmos_load_mod( struct cosmos *cm, char *fpath )
         /* use cosmos_dlopen for transparent RPC. */
 
 
-        dl = cosmos_dlopen(cm, fpath, RTLD_LAZY);
+        dl = dlopen(fpath, RTLD_LAZY);
 
         dlerr = NULL;
 
@@ -80,11 +203,9 @@ cosmos_module_t *cosmos_load_mod( struct cosmos *cm, char *fpath )
         /* note
            dlerror()
            may cause valgrind err;
-           comment out if need be */
+           not included here. */
 
-        // TODO: cosmos_dlerror() 
 
-        // dlerr = cosmos_dlerror(cm, fpath);
 
         if(dl == NULL)
         {

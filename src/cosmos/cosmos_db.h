@@ -24,7 +24,7 @@ struct cosmos {
         char *metadirname;
 
         char *modrelpath;
-        char *modlibpath;
+        char *moddirpath;
         char *modsuffix;
         char **modsymbols;
 
@@ -39,7 +39,7 @@ struct cosmos {
 
         char *svcmodname;
 
-        size_t modlibpathlen;
+        size_t moddirpathlen;
         size_t modsuffixlen;
 
         char *proto_metadir_src_url;
@@ -72,6 +72,10 @@ struct cosmos {
 
 struct cosmos *cosmos_db_new();
 
+
+/**
+ error code: 0) OK  no other error
+ */
 int cosmos_db_cleanup( struct cosmos * );
 
 

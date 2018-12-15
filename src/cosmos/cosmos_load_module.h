@@ -27,5 +27,10 @@
 struct cosmos_module *cosmos_load_mod( struct cosmos *cm, char *fpath );
 
 
+struct cosmos_module *cosmos_load_mod_builtin( struct cosmos *cm, char *modname );
+
+
+struct cosmos_module *cosmos_load_mod_vfn( struct cosmos *cm, char *fpath );
+
 
 #endif /* !COSMOS_LOAD_MODULE */

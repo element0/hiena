@@ -12,8 +12,9 @@
 
 #include "../../hiena_svc.h"
 
+
 struct hiena_svc file_svc_ops;
 
-off_t get_filesize( char * );
+
 
 #endif /*! HIENA_FILE_SVC_H */

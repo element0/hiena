@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include "../../hiena_svc.h"
 
 off_t get_filesize( char *n )
@@ -25,7 +26,7 @@ struct hiena_svc file_svc_ops = {
         .getchar  = (int (*)( void * ))fgetc,
         .get_size = get_filesize,
         .opendir = (void *(*)(void *))opendir,
-        .readdir = (void *(*)(void *),
-        .closedir = (void *(*)(void *),
+        .readdir = (void *(*)(void *))readdir,
+        .closedir = (int (*)(void *))closedir,
 
 };

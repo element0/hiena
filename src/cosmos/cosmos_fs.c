@@ -51,7 +51,7 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
 
         mod = aframe_get_value_ptr(mod_af);
 
-        mod->stat(cm, id, dc->addr, sb);
+        mod->svc->stat(cm, id, dc->addr, sb);
 
         return 0;
 }

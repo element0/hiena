@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "../cosmos.h"
 #include "../access_frame.h"
@@ -73,6 +74,13 @@ abort:
 
 cosmos_id_t cosmos_bind( struct cosmos *cm, cosmos_id_t dest, char *url, cosmos_id_t access_context)
 {
+        int i;
+        size_t plen;
+        char c, *prtcol, *addr;
+        cosmos_id_t res;
+
+
+
         /* parse url */
         
         for(i=0; (c=url[i])!=':'
@@ -92,14 +100,14 @@ cosmos_id_t cosmos_bind( struct cosmos *cm, cosmos_id_t dest, char *url, cosmos_
         }
 
 
-        res = cosmos_bind_by_protocol( cm, dest, prtcol, addr, context);
+        res = cosmos_bind_by_protocol( cm, dest, prtcol, addr, access_context);
 
 
         goto finish;
 
 default_protocol:
 
-        res = cosmos_bind_by_protocol( cm, dest, "file", addr, context);
+        res = cosmos_bind_by_protocol( cm, dest, "file", addr, access_context);
 
 
 finish:
@@ -107,7 +115,6 @@ finish:
         free(prtcol);
         
         return res;
-
 }
 
 

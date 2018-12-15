@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <limits.h>
 #include "../hierr.h"
+#include "../modules/file/file_builtin.h"
+#include "../modules/lookup/light/lookup_builtin.h"
 #include "../access_frame.h"
 #include "../aframe_path.h"
 #include "cosmos_db.h"
@@ -89,7 +91,8 @@ struct cosmos *cosmos_create_db(int modc, char *mod_path[])
         cosmos_id_t root;
         cosmos_id_t userhostroot;
         cosmos_id_t mod;
-        cosmos_module_t *lookmod, *svcmod;
+        cosmos_module_t *lookmod;
+        cosmos_module_t *svcmod;
 
         mode_t mode;
         size_t len;
@@ -181,7 +184,8 @@ HIERR("cosmos_create_db: err: fail to configure cosmos db");
          * load lookup module
          */
 
-        lookmod = cosmos_load_mod(cm, cm->host_lookupmod_fpath);
+        lookmod = &cosmos_lookup_builtin;
+
 
 
         /*
@@ -226,7 +230,7 @@ strnlen(cm->lookupmodname, PATH_MAX)+ 1);
          * load service module
          */
 
-        svcmod = cosmos_load_mod(cm, cm->host_svcmod_fpath);
+        svcmod = &cosmos_file_builtin;
 
 
         /*
@@ -281,18 +285,8 @@ strnlen(cm->svcmodname, PATH_MAX)+ 1);
 
 struct cosmos *cosmos_init(int modc, char *mod_path[])
 {
-/*
-        if( modc < 3
-          || mod_path == NULL )
-        {
-                HIERR("cosmos_init: err: modc < 3 || mod_path NULL");
-                return NULL;
-        }
-*/
-
 
         struct cosmos *cm;
-
 
 
 
