@@ -64,11 +64,6 @@ static char *user_at_host_str()
         
         snprintf(res, ressize, "%s@%s", userstr, hoststr);
 
-        
-<<<<<<< HEAD
-
-=======
->>>>>>> 4ce50b2ae94848dd673f645e06baad0ce464255d
         free(hoststr);
 
         return res;
