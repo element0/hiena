@@ -54,17 +54,24 @@ int aframe_cleanup( struct access_frame * );
 
 struct access_frame *aframe_lookup(struct access_frame *, char *);
 
+
 struct access_frame *aframe_set_branch(struct access_frame *, cosmos_strid_t, struct access_frame *);
 
 struct access_frame *aframe_get_branch(struct access_frame *, cosmos_strid_t);
 
+
+
 /**
-  an aframe, via it's dcel, can refer to an internal location within another resource.
+    an aframe, via it's dcel, can refer to an internal location within another resource.
   some resources will need to be opened before they can be used.  (the resource type
   and handler module are managed within the dcel.)
+
   */
 
 int aframe_open_value(struct access_frame *);
+
+
+
 
 /**
 
@@ -73,23 +80,34 @@ DANGEROUS: the returned iovec contains a raw pointer to the internal buffer of t
  */
 struct iovec *aframe_get_value_iovec(struct access_frame *);
 
+
+
+
 /**
-  copies bytes (nmemb*size) from aframe's internal value into ptr.
+    copies bytes (nmemb*size) from aframe's internal value into ptr.
+
  */
 size_t aframe_read_value(void *ptr, size_t size, size_t nmemb, struct access_frame *);
 
 int aframe_close_value(struct access_frame *);
 
-/* retire this and use 'aframe_get_value'
+
+
+/*    retire this and use 'aframe_get_value'
 
 struct iovec *aframe_val_ptr(struct access_frame *);
 
 */
 
+
+
 bval_t  aframe_remap_dirent_id( struct access_frame *, bval_t );
 
 
 int aframe_set_parent(struct access_frame *, struct access_frame *);
+
+
+
 
 
 /**

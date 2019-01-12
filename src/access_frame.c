@@ -167,12 +167,71 @@ bval_t aframe_remap_dirent_id( struct access_frame *af, bval_t key )
 }
 
 
-struct access_frame *aframe_set_branch(struct access_frame *par, cosmos_strid_t id, struct access_frame *branch)
+struct access_frame *aframe_set_branch(struct access_frame *af, cosmos_strid_t id, struct access_frame *branch)
 {
-          return NULL;
+        struct access_frame *res;
+        btree_t *bt;
+
+
+        if( af == NULL )
+        {
+                HIERR("aframe_set_branch af NULL");
+
+                return NULL;
+        }
+
+
+        bt = af->branch;
+
+        if( bt == NULL )
+        {
+                HIERR("aframe_set_branch: bt NULL");
+
+                return NULL;
+        }
+
+
+        res = (struct access_frame *)btree_put( bt, (bkey_t)id, (bval_t)branch );
+
+        if(res != branch)
+        {
+                HIERR("aframe_set_branch: res and branch differ.");
+
+                return NULL;
+        }
+
+        return res;
 }
 
-struct access_frame *aframe_get_branch(struct access_frame *par, cosmos_strid_t id)
+struct access_frame *aframe_get_branch(struct access_frame *af, cosmos_strid_t id)
 {
-          return NULL;
+        bval_t br;
+        btree_t *bt;
+        struct access_frame *res;
+
+
+
+        if( af == NULL )
+        {
+                HIERR("aframe_get_branch af NULL");
+                return NULL;
+        }
+
+
+        bt = af->branch;
+
+        if( bt == NULL )
+        {
+                HIERR("aframe_get_branch: bt NULL");
+                return NULL;
+        }
+        
+
+        br = btree_get( bt, (bkey_t)id );
+
+        res = (struct access_frame *)br;
+
+
+
+        return res;
 }

@@ -7,7 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <limits.h>
+#include <limits.h>  /* PATH_MAX? */
+#include "../limits.h"
+#include <unistd.h>  /* PATH_MAX? */
 #include "../hierr.h"
 #include "../modules/file/file_builtin.h"
 #include "../modules/lookup/light/lookup_builtin.h"
@@ -61,7 +63,7 @@ static char *user_at_host_str()
         snprintf(res, ressize, "%s@%s", userstr, hoststr);
 
         
-        free(userstr);
+
         free(hoststr);
 
         return res;

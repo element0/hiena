@@ -38,6 +38,35 @@ int dcel_cleanup( struct hiena_dcel *dc )
 }
 
 
+
+int dcel_save_undo( struct hiena_dcel *dc )
+{
+        if( dc == NULL )
+        {
+                HIERR("dcel_save_undo: err: input dc NULL");
+                return -1;
+        }
+
+        ptr_stack_t ps;
+
+        ps = dc->undo;
+
+        if( ps == NULL )
+        {
+                ps =ptr_stack_new();
+                dc->undo = ps;
+        }
+
+        ptr_stack_push( ps, (void *)dc->frag );
+
+        return 0;
+}
+
+
+
+
+
+
 /**
     sets a buffer
  */
@@ -70,28 +99,7 @@ int dcel_set_val( struct hiena_dcel *dc, void *buf, size_t len )
         return res;
 }
 
-int dcel_save_undo( struct hiena_dcel *dc )
-{
-        if( dc == NULL )
-        {
-                HIERR("dcel_save_undo: err: input dc NULL");
-                return -1;
-        }
 
-        ptr_stack_t ps;
-
-        ps = dc->undo;
-
-        if( ps == NULL )
-        {
-                ps =ptr_stack_new();
-                dc->undo = ps;
-        }
-
-        ptr_stack_push( ps, (void *)dc->frag );
-
-        return 0;
-}
 
 
 struct iovec *dcel_val_ptr(struct hiena_dcel *dc)
