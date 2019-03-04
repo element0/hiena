@@ -1,7 +1,7 @@
 
 
 snafufs
--------
+=======
 
 
 
@@ -13,8 +13,8 @@ a context is a configuration which imposes constraints on access to a dcel, such
 
 a context access frame can share the same root dcel as another context, but the local .cosm will differ.
 
-  cosmos_db
-    root
+    cosmos_db
+     root
       "skinner@badfish"
         context-"demo"
           "/"
@@ -27,25 +27,25 @@ a context access frame can share the same root dcel as another context, but the 
 
 a generic default context exists
 
-  cosmosdb
-    aframe
+    cosmosdb
+     aframe
       skinner@badfish
         "/"
 
-each time smafu_init is called, create a user-host-context aframe if needed.
+each time snafu_init is called, create a user-host-context aframe if needed.
 
-  url: cosmos://user@host/context/
+    url: cosmos://user@host/context/
 
-  cosmosdb
-    aframe
+    cosmosdb
+     aframe
       user@host
         context
 
 using these calls:
 
-  cosmos_mknod( aframe, null_prodinstr, userhost_str, mode, dev );
+    cosmos_mknod( aframe, null_prodinstr, userhost_str, mode, dev );
 
-  cosmos_mknod( userhost_aframe, null_prodinstr, context_str, mode, dev );
+    cosmos_mknod( userhost_aframe, null_prodinstr, context_str, mode, dev );
 
 
 
@@ -55,11 +55,11 @@ create volume dcel
 
 each time snafufs is run, create a mountpoint aframe:
 
-  url: cosmos://user@host/context/mountpoint
-  url: cosmos://user@host/context/home/user/example_mnt
+    url: cosmos://user@host/context/mountpoint
+    url: cosmos://user@host/context/home/user/example_mnt
 
-  cosmosdb
-    aframe
+    cosmosdb
+     aframe
       user@host
         context
           home
@@ -69,12 +69,12 @@ each time snafufs is run, create a mountpoint aframe:
 
 and create a prod instr.  fn_aframe is derived from context_aframe.
 
-  prod instr
-    context_aframe: &(aframe/user@host/context/home/user/)
-    fn_aframe: &((context_aframe)/.cosm/svc/file/source)
-    fn: &((fn_aframe)/dcel:value)
-    argc: 1
-    argv: { mountfpath }
+    prod instr
+      context_aframe: &(aframe/user@host/context/home/user/)
+      fn_aframe: &((context_aframe)/.cosm/svc/file/source)
+      fn: &((fn_aframe)/dcel:value)
+      argc: 1
+      argv: { mountfpath }
 
 
 run to create dcel and store dcel at example_mnt
@@ -98,7 +98,7 @@ access frames are memory managed by the cosmosdb.
 mounting a directory ontop of itself
 ------------------------------------
 
-snafufs -> cosmos -> stdio -> 
+    snafufs -> cosmos -> stdio -> 
 
 snafufs makes calls to cosmos.  cosmos makes calls to service modules.
 service modules make calls into the os.

@@ -4,18 +4,148 @@
 domain cell     {#dcel}
 ===========
 
+[TOC]
 
-- \ref database-analogy
-- \ref dcel-map
+- dcel model
+- related architecture 
+- dcel lifecycle
+
+- interface architecture
+
+- dcel structure
+- database-analogy
+- dcel-map
 - dcel-mapcel hierarchy structure
 - sql query strings for use in examples
 
 
 
+dcel model
+----------
+2019-02-18 0610
+
+dcel
+  production instruction
+  buffer
+  map
+  index
 
 
-# dcel database analogy #   {#database-analogy}
 
+related architecture  
+-------------------- {#architecture}
+2019-02-20
+
+
+  master vm 
+  production instructions (PI)
+    master ops
+    vm instructions
+  master context    // see footnote**
+  modules (mod)
+    virtual functions (vfn)
+    virtual machines (vm)
+  domain cells (dcel)
+
+
+**master context - the os context from which the modules are drawn. in cosmos, this is the cascading os context.
+
+
+
+dcel lifecycle        {#lifecycle}
+--------------
+2019-02-20
+
+create prod instr. (PI) submit to master vm.
+
+master vm runs instruction, uses master context, vfn's and vm's to execute sub-instr's. returns result in dcel.
+
+dcel is now a controller for the product domain via REST, stream io, directory, and SQL API's.
+
+dcel can be mapped by the master vm, using additional production operations. the map is saved within the dcel.
+
+
+
+example: production
+
+   mastervm_source("ssh://host/file");
+
+master runs local source operation, which sets source module "ssh" and address. no vfn's are run. returns dcel w service and addr inside prodinstr.
+
+   --> myDcel.prodinstr.{svc,addr}
+
+
+example: REST
+
+   
+   buf = dcel_get( myDcel, &len );
+
+the dcel controller uses the REST interface of the PI svc module, returning an atomic result in `buf,len`.
+
+   --> {buf,len}
+
+
+example: mapping
+
+   mastervm_map(myDcel,"ox");
+
+the master vm runs local map operation which finds the mapping interface of module "ox", which in turn modifies dcel's map and index in place.
+
+   --> myDcel.{map,index}  // modified
+
+
+example: directory
+
+   dirh   = dcel_opendir(myDcel);
+   dirent = dcel_readdir(dirh);
+   ...
+   dcel_closedir(dirh);
+
+the dcel controller reads a dirent from myDcel.index, or passes through to PI svc module if mod provides a directory interface. (passthrough avoids duplicating a directory in dcel if it already exists on another source.)
+
+
+
+
+source code architecture
+------------------------
+2019-02-23
+
+ dcel.c
+    dcel control
+ frag.c,mfrag.c
+    buf ctrl
+ mapcel.c
+    map ctrl
+ mastervm_ops.c
+    source()
+    map()
+    find()
+    bind()
+    grind()
+ vm_instr.c
+    vm_instr ctrl
+ mastervm.c
+    uses mastervm_ops
+    runs vm_instr's
+    makes dcel's
+    manages modules
+    manages vm's
+ module_interface.h
+    mapper ops
+    uses svc_interfaces
+ svc_interfaces.h
+    REST,stream,directory,SQL
+   
+
+ 
+
+
+
+
+
+
+dcel database analogy   {#database-analogy}
+----------------------------------
 2017-10-07 1745
 
 a dcel directory is a table
@@ -24,11 +154,11 @@ ruleid's are column names
 
 
 
-# domain cell map: complex table #  {#dcel-map}
+## domain cell map: complex table ##  {#dcel-map}
 
 2017-10-08 0730
 
-a domain cell can be visualized as a single row in a table.  the columns of the table are layered and nested and reflect the mappings.
+a domain cell can be visualized as a single row in a table.  the columns of the table are layered and nested to reflect the mappings.
 
 
 dcel production and service module
@@ -241,6 +371,44 @@ opendir() would produce an iterator to the dcel's raw child list.
   }
 
 d_name is a dcel.  you can get its value by using dcel_svc_read() or dcel_svc_getchar().
+
+
+dcel and stream io
+------------------
+
+  fh = dcelfh_open( dcel );
+
+  numbytes = dcelfh_read( buf, len, fh );
+
+  dcelfh_close( fh );
+
+
+dcelfh_open() will use the fragment system to identify one or more source modules for its fragments, then will open a handle to a module...
+
+the media handle open procedure will...
+
+locate the 'module' in the cosmos file system:
+
+  cosmos_lookup( cosmos, access_path, module_name );
+
+
+next, open a module handle and populate the functions...
+
+  mod_hdl = {
+    .dl = cosmos_dlopen( module ),
+    .open = cosmos_dlsym( dl, "void *open(char *addr)" )
+  };
+
+
+next, open a 'media_handle'...
+
+  media_hdl.open( mfrag.addr );
+
+
+store it within the dcel_fh file handle object.
+
+  fh.media_hdl = media_hdl;
+
 
 
 concatenating dcel content

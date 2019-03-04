@@ -1,19 +1,83 @@
 
-
-
-access_frame 
-------------
-
+accessframe
+===========
 aka( context_frame )
 
+2019/02/25
 
-access frame stores access context for each level of path lookup.
+the name may change back to context_frame.
 
-there are two "subclasses" of access frame: data aframes and meta aframes.
 
-data aframes represent the regular nodes of a file tree. 
 
-meta aframes represent the meta-directory branches, ie the .cosm directory.
+context system
+--------------
+
+- data context
+- access context
+
+
+data context is the configuration of resources, related data and metadata that reside locally along-side and within data. htaccess files, libs and bin PATH are an example. they exist within the filespace of the data they affect.
+
+access context is the configuration of resources which accompany a session, such as a shell login session or website visit. particularly the directory stack, shell env, browser config and visited-link history are notable.
+
+
+
+context paths
+-------------
+
+context can be linked together to form trees and directed graphs.
+
+a file system's directed graph of directories and links is an example of a data context graph.
+
+a browser history is an example of an access context tree with a single axis, "back and forward".
+
+
+
+context paths as file system
+----------------------------
+
+ lookup( ctx, str );
+
+all ops are on ctx path nodes (context frames).
+
+lookup is modular.
+
+
+
+context frames and dcels
+------------------------
+
+a context frame encapsulates a dcel. a context frame is the product of a lookup. the dcel is the result of the lookup.
+
+further lookups branch out from the context frame.
+
+
+
+
+data context paths
+------------------
+
+
+there are two kinds of data context: data and meta.
+ 
+data context represent the regular nodes of a file tree. 
+
+meta context represent meta-directory branches in a file tree, in cosmos, the .cosm directory.
+
+data path nodes are directed via 'par' and 'child' properties.
+
+
+
+access context paths
+--------------------
+
+access path nodes store context for each level of a path lookup. examples of access path lookup can be name lookup or a query. 
+
+what this design seeks to improve is the path'ing of iterative searches, file transformation and link traversal.
+
+simply put, a file system can be represented by access paths, not data paths.
+
+
 
 
 data vs meta aframes
@@ -30,6 +94,7 @@ because it is a modifier of the access context, it is naturally a property of th
 aframes are used within the .cosm directory branches, but if they contain .cosm directories, they will become infinitely recursive.
 
 so the meta aframe behaves differently from the data aframe. 
+
 
 
 meta directory cascading

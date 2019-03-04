@@ -5,7 +5,9 @@
 #include "hierr.h"
 #include "frag.h"
 #include "ptr_stack.h"
+/*
 #include "cosmos.h"
+*/
 
 struct hiena_dcel *dcel_new( struct hiena_dcel *dcgarbage )
 {

@@ -7,15 +7,6 @@
 #ifndef HIENA_MFRAG_H
 #define HIENA_MFRAG_H
 
-/* CHANGELOG
-
-2019-02-22 removed svc, addr
-           use `source`
-2019-02-22 removed buf, len
-           use `bufid` for buffer manager
-           (may use the string db.)
-*/
-
 #include <sys/types.h>
 #define HIMFRAG_BOUND_T off_t
 #define HIMFRAG_BOUNDS_MIN 0
@@ -37,10 +28,12 @@
 
 
 struct hiena_mfrag {
-        void *source;  // prod_instr
+        void *addr;    //<-- WIP dcel here
+        struct hiena_svc *svc;  // rm
         HIMFRAG_BOUND_T boundhead;
         HIMFRAG_BOUND_T boundtail;
-        void *bufid; // indirect buffer
+        void *buf;
+        HIMFRAG_BUFSIZE_T len;
         HIMFRAG_BOUND_T bufh;
         HIMFRAG_BOUND_T buft;
         int flags;
@@ -51,8 +44,9 @@ struct hiena_mfrag *mfrag_dup( struct hiena_mfrag * );
 
 void mfrag_cleanup( struct hiena_mfrag *mf );
 
-int mfrag_set_source( struct hiena_mfrag *f, void *source );
+int mfrag_set_svc( struct hiena_mfrag *f, struct hiena_svc *svc );
 
+int mfrag_set_addr( struct hiena_mfrag *mf, void *addr );
 
 int mfrag_set_bounds( struct hiena_mfrag *mf, HIMFRAG_BOUND_T bh, HIMFRAG_BOUND_T bt );
 

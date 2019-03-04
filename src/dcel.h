@@ -1,65 +1,44 @@
 #ifndef _HIENA_DCEL_H_
 #define _HIENA_DCEL_H_
 
+
+
 /** @file dcel.h
-  2018-05-08:  added child_list
-  2018-05-04:  Updated methods to require `struct cosmos *`.
+ *
+ * 2018-02-18 New Version
+ *
+ * CHANGE LOG
+ * - eliminate dep to cosmos struct
+ * - use cosmos_string_db
+ * - eleminate child list
+ * - use child index for directory
+ * - consolidate production state ptrs
+ * - remove dep to XSI's iovec
+ *
+ * TO CONSIDER
+ *
  */
 
-#include <sys/uio.h>
+#include "types.h"
+
+struct prod_instr;
 #include "frag.h"
+#include "mapcel.h"
 #include "btree_cpp.h"
 #include "ptr_stack.h"
-#include "mapcel.h"
-#include "types.h"
-#include "cosmos.h"
-
-
-struct prod_args;
-
-
-
-#define dcel_retain( dc ) if(dc != NULL) dc->retain++
-
-
-#define dcel_release( dc ) if(dc != NULL) dc->retain--
-
-
-#define dcel_child_val(dc,s,len)\
-    r = dcel_child( dcel,varname );\
-    val = dcel_read( r, &len );
-
-
 
 
 
 struct hiena_dcel {
+        struct prod_instr *prod_instr;
 
-        /* production */
-        /* svc is in producer module */
-        int prodfn_id;
-        cosmos_strid_t module_id;
-        cosmos_strid_t addr;
-        struct prod_args *args;
+        struct hiena_frag *buffer;
+        struct hiena_mapcel *map;
 
-        /* stream and map */
-        struct hiena_frag *frag;
-        struct hiena_mapcel *mapcel;
-        
-
-        /* lists */
-        struct dcel_dirent *child_list;
-        struct dcel_dirent *child_list_last;
-
-
-        /* indices */
         btree_t *prop_index;
         btree_t *child_index;
 
-        
-        /* production state */
-        void    *prop_index_state;
-        void    *child_index_state;
+        void    *prod_state;
 
 
         /* housekeeping */
@@ -67,28 +46,43 @@ struct hiena_dcel {
         int dirty;
         genno_t gen_no;
         genno_t par_gen_no;
+
+
+        /* undo stack */
         ptr_stack_t undo;
 };
 
 
 
-/* implementation:  dcel.c */
 
+
+/******** housekeeping *******/
+
+/*  dcel.c  */
 
 struct hiena_dcel *dcel_new( struct hiena_dcel * );
 
+#define dcel_retain( dc ) if(dc != NULL) dc->retain++
+
+#define dcel_release( dc ) if(dc != NULL) dc->retain--
+
 int dcel_cleanup( struct hiena_dcel * );
 
-struct iovec *dcel_val_ptr(struct hiena_dcel *);
 
 
-/** sets a buffer
- */
-int dcel_set_val( struct hiena_dcel *dc, void *buf, size_t len );
+/******** REST API *******/
+
+/*  dcel.c  */
+
+void *dcel_get( struct hiena_dcel *dc, size_t *len );
+
+int dcel_put( struct hiena_dcel *dc, void *buf, size_t len );
 
 
 
-/* implementation:  dcel_child.c */
+/****** Directory *******/
+
+/*  dcel_child.c  */
 
 int dcel_add_child(struct hiena_dcel *, char *, struct hiena_dcel *, struct cosmos *);
 
@@ -100,6 +94,10 @@ struct hiena_dcel *dcel_find_child_by_regex(struct hiena_dcel *, char *, struct 
 
 struct hiena_dcel *dcel_find_child_by_ordinal(struct hiena_dcel *, char *, struct cosmos *);
 
+
+#define dcel_child_val(dc,s,len)\
+    r = dcel_child( dcel,varname );\
+    val = dcel_read( r, &len );
 
 
 

@@ -1,9 +1,31 @@
+
+2019-03-04  0749
+
+TODO
+design primary "snafufs" library which can be implemented cross-platform and serve as the basis for "cosmos" applications.
+
+
+
+2019-02-16  1655
+
+TODO
+
+dcel improvement
+
+-"standalone" cosmos string db
+- service handle
+- buf/mem mgr
+- map mgr
+
+
+
 2018-12-08  0718
 2018-12-08  1501
 2018-12-11  1926
 
 TODO
 
+cosmos_init
 - config cm->root_src_url
 - implement aframe_set_branch()
 - implement aframe_get_branch()

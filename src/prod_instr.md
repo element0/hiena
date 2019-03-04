@@ -3,55 +3,48 @@
 production instruction design
 =============================
 
-the production function object type, procedure for use and interactions with modules via the cosmos file system and virtual functions.
+the production instruction type, procedure for use and interactions with modules via the cosmos file system and virtual functions.
+
+
+overview
+--------
+
+a prod instr informs the master vm on how to construct a piece of data. the result is recorded in a dcel.
+
+a single instruction can be a function call or a statement of flow logic.
+
+a prod instr object may be singular or compound, comprised of one or more instructions.
+
+
+
+
+
+
 
 
 procedure
 ---------
 
-to create a production instruction and a dcel, use an initializer function:
+to create a production instruction, use an initializer function:
 
-  dcel_prod_bind( url );
+  pi = pinstr_source_url( url );
 
 
-eg, the bind production initializer parses the protocol name of the url into 'module_name', puts the module name into a dcel, stores the remainder of the url as the dcel 'addr' and sticks a production id 'source' into the dcel.
+the initializer parses the protocol name of the url into 'module_id', stores the remainder of the url as the 'addr'. both are stored in the prod_instr object.
 
-except that... the media of the dcel is where the module name goes?  or does a media fragment merely referece a dcel?
 
-media fragments locate an area
+**the media fragments of the dcel's buffer reference the prod_instr as their source.
+
+
+the instruction is fed to the master_vm. the master creates a dcel with a link to the prod_instr.
+
+  dc = mastervm_run_pinstr( pi );
 
 
 the dcel is ready for action.
 
 
-  dcel_open( dcel, cosmos );
 
-
-dcel_open() will use the fragment system to identify one or more source modules for its fragments, then will open a handle to a module...
-
-the media handle open procedure will...
-
-locate the 'module' in the cosmos file system:
-
-  cosmos_lookup( cosmos, access_path, module_name );
-
-
-next, open a module handle and populate the functions...
-
-  mod_hdl = {
-    .dl = cosmos_dlopen( module ),
-    .open = cosmos_dlsym( dl, "void *open(char *addr)" )
-  };
-
-
-next, open a 'media_handle'...
-
-  media_hdl.open( mfrag.addr );
-
-
-store it within the dcel_fh file handle object.
-
-  fh.media_hdl = media_hdl;
 
 
 
@@ -62,8 +55,6 @@ production instruction implementation
 ======================
 
 - overview
-
-- playground
 
 - producer modules
 
@@ -79,55 +70,39 @@ production instruction implementation
 
 
 
-overview
---------
-
-a prod instr tells how to construct a domain.
-
-a prodinstr is made of one or more instructions.
-
-an instruction is a function call or flow logic.
-
-
-
-
-
-playground
-----------
-
-cosmos api:
-
-cosmos_bind()    set source
-cosmos_merge()   overlay sources
-cosmos_lookup()  query
-cosmos_eval()    produces new data
-
-
-
-
-
 
 production instructions and dcels
 ---------------------------------
 
-a dcel has a production instruction, a service module, and a vars datagram.
+a dcel has a production instruction. a dcel is a product of a production instruction.
 
-a dcel is a product of a production instruction.  it uses the vars datagram to store arguments and context.
+a prod instr has a service module and a vars datagram. it uses the vars datagram to store arguments and context.
 
 the service module has stream functions and mapping functions that provide io for the dcel.  module functions use the datagram to access their arguments.
 
 
-a 'bind' production instruction with a 'file:///filepath' argument will produce a dcel with a 'file' module and a "filepath" arg in the datagram.
 
-via the file module, run 'map $target' to build the child and property maps in $target.  (this function would benefit from distrib proc -- does it qualify as a prod instr?)
+productions have functional categories:
 
-a 'find' production instruction, 'find $par rqstr', returns a dcel from the parent's map which matches the rqstr.
+  source
+  map
+  find
+  bind
+  grind
 
-(the found dcel is not a product of find, however.  it is a product of the mapper function.)
 
-(different find producers are possible.  a "find-multi" could merge multiple results into one container cel.  a "find-one-or-list" could return a single cel or a container cel if there are multiple matches.)
+a 'source' production instruction initialized with a 'file:///filepath' argument will have a 'file' module and a 'filepath' arg. when the production is run, it will generate a blank dcel with a reference to the PI.
+
+a 'map' PI with a dcel and a module as args, will use the the mapping function of the module on the dcel. the mapping function will modify the indices and property maps of the dcel.
+
+a 'find' PI, 'find( dcel *par, str * )', returns a child dcel from the parent's map who's id matches the str. (the found dcel is not a product of find. it is a product of the mapper.)
+
+a 'bind' PI takes one or more dcel args and stacks them in an overlay. a bind module is responsible for delivering io and directory listings in a coherent fashion, maintaining integrity of the component dcels.
 
 run 'transform $module $target $args' to run the module on the target decel and generate a derivative cel.
+
+
+
 
 examples:
 
@@ -169,6 +144,13 @@ bytecode array (`pilist_t`) of the above:
 flow contol
     pcmd_if, pilist_ptr, pilist_ptr
     pcmd_ifn, pilist_ptr, pilist_ptr
+
+
+
+find producers
+--------------
+
+(different find producers are possible.  a "find-multi" could merge multiple results into one container cel.  a "find-one-or-list" could return a single cel or a container cel if there are multiple matches.)
 
 
 instruction processing
