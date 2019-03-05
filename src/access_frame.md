@@ -217,6 +217,25 @@ this would be an alias of:
 
 
 
+CHANGELOG
+
+2019-02-05 1324
+
+        /*
+        code cleanup, round 1
+
+        - the following is unecessary because an access_path handle could contain a {struct cosmos,struct access_frame} tuple.
+        
+            struct cosmos *cosmos;
+
+        - the following vars have been removed and will be implemented using a proper branch named ".cosm" or "_cosm".
+        
+            struct hiena_dcel *cosm;
+            struct hiena_dcel *env;
+            btree_t *remap;
+
+        */
+
 
 prop: env
 ---------

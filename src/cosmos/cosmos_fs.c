@@ -141,7 +141,7 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
 
 
 
-cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *pathstr, mode_t mode, dev_t dev)
+cosmos_id_t cosmos_mkpath(struct cosmos *cm, cosmos_id_t par, char *pathstr, mode_t mode, dev_t dev)
 {
         printf("cosmos_mknod_path\n");
 
@@ -173,7 +173,13 @@ cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *pathstr,
 }
 
 
+cosmos_id_t cosmos_mknod_path(struct cosmos *cm, cosmos_id_t par, char *pathstr, mode_t mode, dev_t dev)
+{
 
+        return cosmos_mkpath(cm, par, pathstr, mode, dev);
+
+        /*** retire ***/
+}
 
 
 cosmos_id_t cosmos_mkdir(struct cosmos *cm, cosmos_id_t par, char *name, mode_t mode)
