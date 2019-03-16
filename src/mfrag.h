@@ -7,7 +7,12 @@
 #ifndef HIENA_MFRAG_H
 #define HIENA_MFRAG_H
 
-/* CHANGELOG
+/** @file mfrag.h
+ *
+ * CHANGE LOG
+ *
+ * 2019-03-17 Update
+ * - moved `bufid` to `dcel.h`
 
 2019-02-22 removed svc, addr
            use `source`
@@ -37,10 +42,15 @@
 
 
 struct hiena_mfrag {
-        void *source;  // prod_instr
+        /**
+         * Points to a `dcel`.
+         * The `prod_instr` of the dcel
+         * has the `svc` module and `addr`.
+         * The `dcel` also has a buffer.
+         */
+        void *source;  // dcel
         HIMFRAG_BOUND_T boundhead;
         HIMFRAG_BOUND_T boundtail;
-        void *bufid; // indirect buffer
         HIMFRAG_BOUND_T bufh;
         HIMFRAG_BOUND_T buft;
         int flags;

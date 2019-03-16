@@ -7,8 +7,13 @@
  *
  * CHANGE LOG
  *
+ * 2019-03-17 Update
+ * - added `bufid`. moved from `mfrag.h`
+ * - changed `buffer` to `fragmap`
+ * - changed `bufid` to `buffer`
+ *
  * 2019-03-16 Update
- * - moved 'prod_state' to 'prod_instr.h'
+ * - moved `prod_state` to `prod_instr.h`
  *
  * 2019-02-18 New Version
  * - eliminated dep to cosmos struct
@@ -32,9 +37,29 @@ struct prod_instr;
 
 
 struct hiena_dcel {
+        /**
+         * The producer of the dcel. Includes `module` name
+         * and command line arguments. May include multiple
+         * instructions.
+         */
         struct prod_instr *prod_instr;
-
-        struct hiena_frag *buffer;
+        /**
+         * Memory buffer. This can be byte for byte,
+         * or can be fragmented. The `mfrag` leaves in the
+         * `fragmap` point to locations in the buffer.
+         * So the actual buffer could contain data in any
+         * order.
+         */
+        void *buffer;
+        /**
+         * A tree of fragments (`frag.h`)
+         * which tracks media fragments (`mfrag.h`).
+         */
+        struct hiena_frag *fragmap;
+        /**
+         * Nesting fields within the domain,
+         * identified by `mapper` modules.
+         */
         struct hiena_mapcel *map;
 
         btree_t *prop_index;
