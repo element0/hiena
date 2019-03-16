@@ -38,6 +38,7 @@ struct hiena_frag {
 
 
     //---- legacy ----
+    // - deprecate
     struct hiena_frag *first_content;
     struct hiena_frag *last_content;
     struct hiena_frag *prev;

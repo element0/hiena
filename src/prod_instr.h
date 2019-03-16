@@ -33,11 +33,12 @@ struct prod_sequence *prod_seq_add( struct prod_sequence *, void * );
 
 
 struct prod_instr {
-    int function_id;
-    cosmos_strid_t module_id;
-    struct prod_sequence **args;
+        int function_id;
+        cosmos_strid_t module_id;
+        struct prod_sequence *args;
+        void    *prod_state;
 
-    PRODFN_T(fnptr);
+        PRODFN_T(fnptr);
 };
 
 

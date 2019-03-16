@@ -5,17 +5,19 @@
 
 /** @file dcel.h
  *
- * 2018-02-18 New Version
- *
  * CHANGE LOG
- * - eliminate dep to cosmos struct
- * - use cosmos_string_db
- * - eleminate child list
- * - use child index for directory
- * - consolidate production state ptrs
- * - remove dep to XSI's iovec
  *
- * TO CONSIDER
+ * 2019-03-16 Update
+ * - moved 'prod_state' to 'prod_instr.h'
+ *
+ * 2019-02-18 New Version
+ * - eliminated dep to cosmos struct
+ * - use cosmos_string_db
+ * - eleminated child list
+ * - use child index for directory
+ * - consolidated production state ptrs
+ * - removed dep to XSI's iovec
+ *
  *
  */
 
@@ -38,7 +40,6 @@ struct hiena_dcel {
         btree_t *prop_index;
         btree_t *child_index;
 
-        void    *prod_state;
 
 
         /* housekeeping */

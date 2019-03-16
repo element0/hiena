@@ -1,42 +1,36 @@
-
+@file prod_instr.md
 
 production instruction design
 =============================
 
-the production instruction type, procedure for use and interactions with modules via the cosmos file system and virtual functions.
+the production instruction type, procedure and its use of modules through the cosmos file system and virtual functions.
 
 
 overview
 --------
+A prod instr informs the master-vm about how to construct a piece of data. The result is recorded in a dcel.
 
-a prod instr informs the master vm on how to construct a piece of data. the result is recorded in a dcel.
+A single instruction can be a function call or a statement of flow logic.
 
-a single instruction can be a function call or a statement of flow logic.
-
-a prod instr object may be singular or compound, comprised of one or more instructions.
-
-
-
-
+A prod instr object may be singular or compound, comprised of one or more instructions.
 
 
 
 
 procedure
 ---------
+To create a production instruction, use an initializer function:
 
-to create a production instruction, use an initializer function:
-
-  pi = pinstr_source_url( url );
-
-
-the initializer parses the protocol name of the url into 'module_id', stores the remainder of the url as the 'addr'. both are stored in the prod_instr object.
+    pi = pinstr_source_url( url );
 
 
-**the media fragments of the dcel's buffer reference the prod_instr as their source.
+The initializer parses the protocol name of the url into `module_id`, stores the remainder of the url as the `addr`. both are stored in the `prod_instr` object.
+i
+
+**the media fragments of the dcel's buffer reference the `prod_instr` as their source.**
 
 
-the instruction is fed to the master_vm. the master creates a dcel with a link to the prod_instr.
+The instruction is fed to the master_vm. the master creates a dcel with a link to the prod_instr.
 
   dc = mastervm_run_pinstr( pi );
 
