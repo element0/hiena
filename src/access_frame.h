@@ -3,7 +3,7 @@
 
 /** @file access_frame.h
  *
- *  should rename as "path_node.h"
+ *  Consider renaming as "path_node.h".
  */
 
 #include <sys/stat.h>
@@ -17,41 +17,78 @@ struct hiena_dcel;
 
 struct access_frame {
 
+        /**
+         * 2019-03-05 1958
+         * Depricated in favor of a generic
+         * payload.
+         */
         struct hiena_dcel *dcel;
+
+        /**
+         * A generic payload allows
+         * pathnodes to locate any type of
+         * object.
+         */
+        void *payload;
+
+        /**
+         * Parent path node.
+         */
         struct access_frame *parent;
 
 
         /**
-         * This allows inheritance.
+         * This is how we facilitate
+         * inheritance. Consider renaming
+         * "inheritance".
+         * The access_frame does
+         * not implement the inheritance 
+         * functions. The cosmos filesystem 
+         * will provide them. 
          */
         struct access_frame *cascade;
 
         /**
-         * Number of cascade sources.
+         * The number of inheritance 
+         * sources.
          * Usually 0 or 1. Greater than 1
          * defines multiple inheritances.
          */
         int cascade_count;
 
         /**
-         use this for paths.
-         in cosmos_fs it is fair to
-         say the branches can be used for
-         lookup cache.
-
-         branches here do not represent dirents. dirents are represented by dcel/index. 
+         * Path branches. CosmosFS uses
+         * these for lookup request cache.
+         * Dirents are implemented by `dcel->index`.
          *
          */
-
         btree_t *branch;
-        
+
+
+        /**
+         * Consider implementing in
+         * '.cosm'.
+         */
         struct access_frame *lookfn_hdl;
 
+        /**
+         * Consider implementing in
+         * '.cosm'.
+         */
         struct access_frame *(*lookfn)(struct cosmos *, struct access_frame *, char *);
 
+        /**
+         * Consider implementing in
+         * '.cosm'.
+         */
         struct access_frame *(*execfn)(struct access_frame *, int argc, char **);
 
+        /**
+         * Consider implementing in
+         * '.cosm'.
+         */
         int execfnid;
+
 
         struct access_frame *garbage_next;
         struct access_frame *garbage_prev;

@@ -1,3 +1,4 @@
+@file cosmos_lookup.md
 
 
 table of contents
@@ -51,7 +52,6 @@ if the branch passes the sync check, use the branch.
 
 if the branch fails the sync check, sync the branch: re-run the production instruction for the aframe's dcel.
 
-if the lookup string does not match a branch of the aframe tree, run the lookupfn from the aframe's parent.
 
 
 

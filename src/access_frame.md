@@ -1,11 +1,167 @@
 
-accessframe
-===========
+access_frame
+============
 aka( context_frame )
 
 2019/02/25
 
 the name may change back to context_frame.
+
+
+
+directories
+-----------
+
+In common terms, a directory is visible to a file manager and lists entries which the user has access to.
+
+Hiena's Domain Cells (dcels) have a list of child entries. This is a simple array and does not map names to entries.
+
+    dcel
+      child list
+        dcel1
+        dcel2
+
+Child indexes, however, are key:value maps which index children based on certain properties, such `name`.
+
+    path node
+      index
+        "filename" -> path node 1
+        "filename2" -> path node 2
+
+In SNAFU, changing directory entry filenames triggers file transformations. Also, the act of creating new files and setting their names may trigger data population or cause other effects.
+
+
+    path node
+      index
+        "entry1.transformed" -> path node 3
+        "entry2.transformed" -> path node 4
+
+
+    // created by the transformations
+
+    path node 3
+      parent: path node
+      data: dcel3
+
+    path node 4
+      parent: path node
+      data: dcel4
+
+
+
+ACL's control visibility based on context from the access path such as user, device, app or process.
+
+Snafu implements a rename-transformation by creating a new path node with the transformation, blocking `user+readdir` in the old pathnode ACL and allowing it in the new one. `user+lookup` is still allowed in the old pathnode, as well as a 'lookup cache' flag is set. The old pathnode is not removed except by explicit removal by an allowed access path context.
+
+
+    path node
+      index
+        "filename" -(ACL)> path node 1
+        "filename2" -(ACL)> path node 2
+        "entry1.transformed" -(ACL)> path node 3
+        "entry2.transformed" -(ACL)> path node 4
+
+
+
+
+
+access path trees vs domain trees
+---------------------------------
+
+Domain trees store data. They are rooted at a set of hosts. They have context in the sense that a root node may have properties which cascade to branch nodes (such as ACL's).
+
+Access path trees are created on a per session basis. They have context which originates at a certain host with a certain process. The access path nodes correspond to domain tree nodes in order of tranversal and can span links accross file systems (such as hyperlinks).
+
+
+
+
+access paths: uri's with context
+--------------------------------
+
+a context is a user environment which surrounds a running process which is requesting access to file space.
+
+
+    access_path = snafu_get(context, "cosmos://user@host/dir/file");
+
+
+builds an access tree for this session, starting with `context` as root.
+
+
+    access_path_tree
+      context
+        user
+          host
+            dir
+              file
+
+
+the result is an access frame which links to the contents of `file` with context inherited from `context`.
+
+another process may have the same context, or it may differ.
+
+    context_path_tree
+       context2
+        user
+          host
+            dir
+              file
+
+
+now there are two distinct roots, each to the same file data, but with different access contexts. 
+
+each result access frame can be used as the context for another lookup. context carries forward down the file tree. it also carries forward accross file system boundaries, such as hyperlinks.
+
+    context_path_tree
+      context
+        http: url1
+          http: url2
+
+
+
+
+Context vs ACL's
+----------------
+
+Access path context and domain tree ACL's are like puzzle interlocks. The context is the notch and the ACL is the tab.
+
+ACL's are stored in the domain tree path node and permit or deny access contexts.
+
+Context is stored in both the access path tree and in the domain tree. The ACL is matched against the access path context.
+
+
+
+
+
+
+Inheritance, Sync
+-----------------
+
+In the domain tree, special `.cosm` directories are cascaded, with content inherited from higher order `.cosm` directories. The cascade is implemented with dcels and bind production instructions.
+
+A `bind dcel` implements domain context inheritance by merging two or more dcels. A domain tree path node for `.cosm` points to this dcel.
+
+Cloud sync accross multiple hosts is also implemented by bind dcels.
+
+
+
+
+
+File Remapping
+--------------
+
+Filenames can be remapped for a given access context, such as written languages.
+
+Files can also be transformed to different types for a given context such as project departments.
+
+
+
+
+
+lookup cache
+------------
+
+If we want to cache lookup strings and file transformations that we have used previously, we need a lookup cache tree. This tree maps lookup strings to dcels after they have been transformed.
+
 
 
 

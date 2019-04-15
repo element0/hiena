@@ -1,4 +1,4 @@
-
+@file dcel.md
 
 
 domain cell     {#dcel}
@@ -24,11 +24,61 @@ dcel model
 ----------
 2019-02-18 0610
 
-dcel
-  production instruction
-  buffer
-  map
-  index
+    dcel
+      production
+      buffer
+      fragmap
+      map
+      index
+
+    production
+      module
+      prod type
+      instructions
+        (command,args)[]
+      
+
+
+dcel methods
+------------
+2019-03-17 2015
+
+Service methods:
+
+    stream io
+    --
+    open
+    close
+    getc
+    read
+    write
+
+    rest
+    --
+    get
+    put
+
+    sql
+    --
+    select
+    insert
+
+    fs
+    --
+    touch
+    mv
+    rm
+    cp
+
+
+
+module methods
+--------------
+2019-03-18 0711
+
+Modules may, at their discretion, overload dcel service methods.
+
+Additionally, they may provide objects and commands which may be used in the `production instructions`.
 
 
 
@@ -37,18 +87,81 @@ related architecture
 2019-02-20
 
 
-  master vm 
-  production instructions (PI)
-    master ops
-    vm instructions
-  master context    // see footnote**
-  modules (mod)
-    virtual functions (vfn)
-    virtual machines (vm)
-  domain cells (dcel)
+    master vm 
+    production instructions (PI)
+      master ops
+      vm instructions
+    master context    // see footnote*
+    modules (mod)
+      virtual functions (vfn)
+      virtual machines (vm)
+    domain cells (dcel)
+      fragments (frag)
+        media fragments (mfrag)
 
 
-**master context - the os context from which the modules are drawn. in cosmos, this is the cascading os context.
+*master context - the os context from which the modules are drawn. in cosmos, this is the cascading os context.
+
+
+
+media fragments
+---------------
+
+These are leaf nodes on the fragment tree. They refer back to a dcel and indicate boundaries within the dcel.
+
+Media fragments do not need to refer back to the same cel as their container. They can reference other cells.
+
+
+
+modules
+-------
+
+The module used to serve the dcel cannot come from within the dcel. It must be provided by an access context.
+
+The access context is a path node and must have a lookup module to function. The lookup module looks at the path branches and then at the node's dcel if need be. If the dcel needs to be mapped, a map module must be run.
+
+The lookup module looks in the path branches for a mapper, and then in the dcel, but this time if no mapper is found, lookup recurses backward into the context's parent.
+
+
+
+contexts
+--------
+2019-03-19 0626
+
+
+Domain Context surrounds and includes the domain (dcel).
+
+Access Context surrounds the Domain Context and is present only during operations.
+
+Domain Internal Context is the context within the dcel which surrounds the dcel's children and map fields.
+
+
+lookup in context
+-----------------
+2019-03-19 1926
+
+Access Context includes a lookup module and a file module by default.
+
+Module functions run inside the contexts they are accessed in. The lookup module uses the Access Context as its resource.
+
+After dcel creation, you can find the dcel's module in the Domain Context and run any of its functions, such as io or mapping.
+
+
+Dcel data structures record module references within the `production` object. To recreate the dcel, pass the `production` object and Domain Context to the producer engine.
+
+The modules are searched relative to the Domain Context based on MODPATH variable in the Domain Context's ENV.
+
+
+index
+-----
+there are two indices: child and property.
+
+the child index is where dirents are indexed by mapper modules.
+
+the property index is where other significant values are indexed.
+
+properties can be accessed by fudging the dcel from a directory to a property directory. the transformation generates a new dcel and maps the properties to the child index. (the transformer module will need to override the directory services so that new entries can be created and properly inserted into the original dcel.)
+
 
 
 
@@ -56,13 +169,13 @@ dcel lifecycle        {#lifecycle}
 --------------
 2019-02-20
 
-create prod instr. (PI) submit to master vm.
+Create production (PI), submit to master vm.
 
-master vm runs instruction, uses master context, vfn's and vm's to execute sub-instr's. returns result in dcel.
+Master vm runs instruction, uses master context, vfn's and vm's to execute sub-instr's. Returns result in dcel.
 
-dcel is now a controller for the product domain via REST, stream io, directory, and SQL API's.
+Dcel is now a controller for the product domain via REST, stream io, directory, and SQL API's.
 
-dcel can be mapped by the master vm, using additional production operations. the map is saved within the dcel.
+dcel can be mapped by the module indicated within the production instruction and run by the master vm, using additional production operations. The map is saved within the dcel.
 
 
 
@@ -70,9 +183,9 @@ example: production
 
    mastervm_source("ssh://host/file");
 
-master runs local source operation, which sets source module "ssh" and address. no vfn's are run. returns dcel w service and addr inside prodinstr.
+master runs local source operation, which sets source module "ssh" and address. no vfn's are run. returns dcel w service and addr inside `production`.
 
-   --> myDcel.prodinstr.{svc,addr}
+   --> myDcel.production.{svc,addr}
 
 
 example: REST

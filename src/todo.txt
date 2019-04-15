@@ -1,9 +1,35 @@
 
-2019-03-04  0749
+
+2019-04-13  0554
+
+WIP
+
+Design App architecture and sync protocol. - algorithms
+- libraries
+- processes/threads
+
+see design/architecture.md
+see design/cosmos_mobile_app_internal.md
+
+2019-03-16  0811
 
 TODO
-design primary "snafufs" library which can be implemented cross-platform and serve as the basis for "cosmos" applications.
 
+plan data structures and references
+prove no inhibitive cyclic references
+
+
+2019-03-04  0749
+2019-03-05  2014
+
+TODO
+- design primary "cosmosfs" library which can be implemented cross-platform and serve as the basis for "cosmos" applications.
+
+- access_frame: move "lookup" function into the cascade. @see "cosmos/cosmos.md"
+
+- implement cascades through dcel.
+
+- find a home for cascade code and snafu trickery.
 
 
 2019-02-16  1655

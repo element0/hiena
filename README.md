@@ -1,124 +1,69 @@
-Hiena	{#mainpage}
-=====
+Cosmos and Hiena	{#mainpage}
+================
 
 ![Travis CI Status](https://api.travis-ci.org/element0/hiena.svg?branch=iphdev)
 
 
+
 ## Description ##
 
-The Hiena library maps the content of an arbitrary file to file address space.
+
+Cosmos is an extensible, distributed file system which aggregates file systems (or portions of) from any number of devices into a single file system.
+
+Extensibility:
+
+- Pluggable file accessors
+- Pluggable file analyzers
+- Pluggable file transformers
+- Pluggable syncronization manager
+- Pluggable pathwalk function
+
+
+Distributed:
+
+- Configurable storage flows between hosts
+- Intermittent and high-latency syncronization tolerance
+- Modules are virtualized among all hosts, and run native on capable hosts or within virtual machines.
+
+
+Availability:
+
+The database can be built into a project, accessed via a network service or exported as a file system via FUSE (or similar framework.)
+
+Any instances of the database intercommunicate to create a distributed filespace.
+
+
+
+## Pluggable Hierarchical Analyzer: Hiena ##
+
+
+With Hiena, a mapper module maps one or more levels of hierarchy within a seekable data source, which in turn can be mapped by other modules. The result is a file tree accessable via regular file paths.
+
+Mapper modules are defined by parser grammars and are compiled via dispatch from Hiena to a compiler such as Bison or Antler.
+
+
+
+
+## Cascading Configuration Directories ##
+
+
+Cosmos provides automatic cascading of configuration directories such that a child directory inherits and overrides configurations within the parent directory.
+
+A user has the advantage of automatic cascading merely by placing config files into the directory.
+
+Cosmos is configured via the cascading directory from its file system root. So file system behavior can be modified on an abitrary subdirectory level.
+
+Useful modifications include distributed host memberships, storage flows and the ability to change the configuration directory name.
+
 
 
 ## DEVELOPMENT NEWS ##
 
-2017-05-25      `./out/bin/insert_bytes FILE1 START END FILE2 AT` extracts a byte range from FILE1 and inserts into content from FILE2 at AT and prints to stdout.
+
+2019-04-14  Currently designing mobile app and shared library. Nothing works yet.
+
+
 2017-03-25	`./util/byterange FILENAME STARTBYTE ENDBYTE` extracts a byte range from a file.
 
 
-## API's OVERVIEW ##
-
-	struct snafu_fh *snafu_fuse_open( struct access_frame *, char * );
-
-	struct hiena_map *hiena_map_parse( struct mapperlib *, struct hiena_dcel * );
-
-	int dcel_set_map( struct hiena_dcel *, struct hiena_map * ); 
-
-	void *dcel_svc_open( struct hiena_dcel * );
-        int dcel_svc_getchar( void * );
-
-	void *dcel_svc_opendir( struct hiena_dcel * );
-	struct dirent *dcel_svc_readdir( void * );
-
-
-
-
-
-## Hiena Main Function ##
-
-`THIS IS A LITTLE OUT OF DATE`
-
-The main function of hiena is to "map a domain".
-
-You can use the `hiena` function recursively in your own pathwalk or (tree renderer) to iterate over a hierarchy of domains.
-
-The domain is passed in the form of a "domain cell" or `dcel` which keeps internal mappings as well as info about its storage location and retrieval method.  It also has an optional internal 'filter' which can process the data from storage before sending it out to the mappers. (The actual "read" which the mappers should use, will be the "dcel source" module encapsulated within a `dcel_io` object.)
-
-A mapper module need only use the `dcel_io` API.
-
-The hiena function accesses its modules through a module list.  So if you wish, you can pass different modules to different levels of hierarchy.
-
-	hiena( dcel_io, module_list )
-
-	BEGIN
-	- clone input dcel (aspire to COW process)
-	- select mapper based on dcel's `expect` property
-	- run mapper from module on `dcel_io` object
-		- mapper may create data mappings
-		- mapper may create a directory of child dcels
-		- mapper may assign server modules to each child dcel
-		- mapper may assign `expect` to each child dcel
-		- dcel_io will select source server
-		- dcel_io will filter the stream before output to mapper
-	- return mapped dcel
-	END
-
-
-## Hiena DCel Structure ##
-
-A dcel is a "Domain Cell".  It contains the following.
-
-	- inner data source 	// the location of data and location server
-	- inner data filter		// functions to filter data from address
-	- inner file directory	// directory index to child dcels
-	- inner data mappings	// named or classified data locations
-	- inner type expect		// scanner module names to constrain content
-
-## Data Source ##
-
-At a minimum, a data source needs to be
-
-	- location of data
-	- server functions for reading the location
-
-This could be a complex object.  Location could be fragmented across storage or could include data bindings to other objects.
-
-## Default Sources ##
-
-A minimum configuration of hiena should include modules for these sources:
-
-	- buf server
-	- dcel server
-
-This allows you to create a dcel which has storage inside a buffer.  And it hiena to create dcels which have virtual storage inside other dcels.
-
-## Hiena Grammar ##
-
-Hiena grammar takes after bison.
-
-	#include <hiena.h>
-
-	%%
-	hiena_rule 	: mapping
-				| dcel_nest
-				;
-
-	dcel_nest	: dcel_raw dcel_server dcel_content_expect
-				;
-
-	%%
-	void *a_decel_server ( ... );
-
-## Hiena Main ##
-
-
-## Hiena Module ##
-
-When you write a hiena module, you must include both parser functions and some stream server functions.
-
-	void *read( struct hiena_dcel_io * );
-
-	void *moduleid_parse( void *parserstate, struct hiena_dcel_io * );	
-
-
-	
 
