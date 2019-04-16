@@ -1,10 +1,20 @@
+
+/** @file cosm.md */
+
+Cosm Directory
+==============
+
+
+
 cosm directory design
 ---------------------
 (date 2018-06-21)
 
-  .cosm
+    .cosm
       etc
           cosmos.conf
+          aliases.conf
+          lookup.conf
       lib
           cosmos
               init

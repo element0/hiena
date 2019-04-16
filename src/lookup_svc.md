@@ -1,7 +1,8 @@
+@file lookup_svc.md
 
 
-see also design/architecture.md
-
+see design/architecture.md
+see cosmos/cosmos_lookup.md
 
 `lookup_svc` provides service to lookup modules.  a lookup module must include `lookup_svc.h`
 
