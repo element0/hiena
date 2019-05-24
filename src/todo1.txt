@@ -1,0 +1,640 @@
+
+2019-04-15
+
+WIP
+
+Rewrite project description in "README.md".
+
+
+2019-04-13  0554
+
+WIP
+
+Design App architecture and sync protocol.
+
+- algorithms
+- libraries
+- processes/threads
+
+see design/architecture.md
+see design/cosmos_mobile_app_internal.md
+
+2019-03-16  0811
+
+TODO
+
+plan data structures and references
+prove no inhibitive cyclic references
+
+
+2019-03-04  0749
+2019-03-05  2014
+
+TODO
+- design primary "cosmosfs" library which can be implemented cross-platform and serve as the basis for "cosmos" applications.
+
+- access_frame: move "lookup" function into the cascade. @see "cosmos/cosmos.md"
+
+- implement cascades through dcel.
+
+- find a home for cascade code and snafu trickery.
+
+
+2019-02-16  1655
+
+TODO
+
+dcel improvement
+
+-"standalone" cosmos string db
+- service handle
+- buf/mem mgr
+- map mgr
+
+
+
+2018-12-08  0718
+2018-12-08  1501
+2018-12-11  1926
+
+TODO
+
+cosmos_init
+- config cm->root_src_url
+- implement aframe_set_branch()
+- implement aframe_get_branch()
+- debug cosmos_init_test
+- lookup builtin
+- use default lib locations
+
+
+OK
+- file-module
+- file module builtin
+- struct cosmos_module
+- cosmos_fs :: cosmos_stat
+   used by lookup module
+
+
+2018-12-03  0751
+2018-12-05  0712
+2018-12-06  0803  POSTPONE
+
+rpc 
+
+need distributed shared memory for fully transparent rpc. otherwise, use atomic rpc call frames returning leaf data.
+
+
+2018-12-06  0801
+2018-12-06  1930  DONE
+
+- test_cosmos_dlfcn
+- cosmos_dl_hdl
+- cosmos_dlsym() native
+- cosmos_open() native
+- cosmos_dlclose() native
+- stub for vm's and RPC
+
+
+
+2018-11-23  0705
+2018-11-21  0722
+2018-12-06  0805  POSTPONE
+
+leave stubs for this...
+
+
+the cosmosd, vm system:
+
+
+cosmosd is a stand alone service.
+each vm is a stand alone svc.
+
+
+both implementations use a generic `cosmos_server_core`.
+
+
+cosmosd manages socket addresses.
+cosmosd has a default socket addr for vm's to connect to.
+
+cosmosd and vm's use 'cosmomsg' protocol and cosmos_rp_call().
+
+use fctrl's O_NONBLOCKING
+
+
+
+todo stack:
+- cosmos_server_core
+- cosmosd to vm interface
+- cosmosd to cosmosd interface
+
+
+files:
+- cosmosd.md
+
+
+
+
+2018-10-29  1430
+
+bigger goal:  see previous item
+
+current goal:  cosmos lookup() and stat() methods to use builtin dcel service.  (see snafufs.c for functions needed)
+
+dcel service to use service modules
+
+  cosmos_fs --> dcel_svc
+  dcel_dvc --> modules
+
+
+note:
+
+  cosmos_fs functions should satisfy fuse api.
+
+
+todo stack:
+
+cosmos_config
+aframe.h :: aframe_get_value
+cosmos_db
+cosmos_fs
+aframe_path_by_id(id->par, mod_id);
+mod = aframe_get_val_ptr(mod_af);
+mod->stat(cm, id, dc->addr, sb);
+
+
+done stack:
+
+cosmos_init
+aframe_path
+
+
+2018-11-07  1902  DONE
+
+postpone PATH search algo,
+use baked "default install locations":
+- first lookup module fpath
+- first svc module fpath
+
+
+
+2018-09-04  1858
+2018-08-20  2024
+2018-10-02  1930
+
+
+test_libcosmos
+
+
+chasing the wagon through prickly sagebrush...
+
+
+goal:
+
+create cosmos db, bind a directory to root aframe, set lookup function in proto aframe, run the lookup function on root aframe.
+
+
+sub-goal:
+
+use production functions, vm and vfn, lookup module and source module
+
+
+todo: libcosmos
+      - library
+      - init database
+      - create paths
+      - bind urls to paths
+
+
+products:
+      - libcosmos.so
+      - module/lookup_light.so
+      - module/file.so
+      - vm/localhostlib.so
+      - test_libcosmos.c
+
+
+functions:
+
+
+
+current status:
+      - wip cosmos_create_db()"
+      - testing "make libcosmos"
+      - wip cosmos_create_db()
+
+
+
+2018-10-03
+2018-10-07
+2018-10-10
+2018-10-12
+2018-10-16
+
+
+save and access svc mods in the parent metadir.
+
+merge file_mod 'source' function into prod_src function; separate the dcel internals from module writing requirements; generalize get_size() function and add to service module specification (hiena_svc.h).
+
+added directory ops and stat function to service module spec (hiena_svc.h).
+
+use cosmos_dlsym() to init lookupfn()
+
+use cosmos_dlsym() to init modules.
+
+lookupfn() uses lookup_svc to act on domain: using map and find methods
+
+
+
+
+
+2018-09-27  1944
+
+working...
+
+design the production function object type, procedure for use and interactions with modules via the cosmos file system and virtual functions.
+
+
+
+
+
+2018-09-19  0752
+
+next up...
+
+implement cosmos vm's
+
+
+brief design
+  machine profile
+  executable profile
+  vm handle
+    std vm hdl ops
+  dl handle
+    refs dl handle
+  std vm hdl ops
+    marshall/unmarshall
+    
+
+
+
+2018-09-15  0712
+2018-09-19  0725
+
+done
+explore ipc to run rpc on localhost.
+
+
+done
+  rpc server
+  marshall/unmarshall
+  call rpc
+
+
+
+
+2018-09-14  0710
+2018-09-15  0711
+
+done
+experiment/test_vfnbank.c
+
+done
+  variadic vfn
+  polymorphic fn
+  polymorphic return type
+  mutate library versions for dlopen
+    - change internal soname OK
+
+
+
+2018-09-06  1921
+
+test cosmos_exec
+
+create test for cosmos_exec().
+fill in the blanks and realize cosmos_exec().
+
+
+
+2018-08-27  1839
+
+virtual machines.
+
+designed the interaction between .cosm, virtual machines and heterogeneous hosts.
+
+
+
+
+
+
+2018-07-09  2055
+
+get back on the wagon...
+
+
+Todo: small program to:
+      - init cosmos
+      - init builtins
+      - test builtin
+
+
+product:
+      test_builtins
+
+
+use:
+      cosmos_init()
+
+
+
+
+2018-06-06  0835
+2018-06-05  0745
+2018-06-04  2248
+2018-06-04  0758
+2018-06-01  2028
+
+
+WIP:
+      mapfn module API
+      cosmos_open()
+      cosmos_close()
+      aframe_get_value() ?? cosmos_get_value()?
+      cosmos_exec_mapfn
+      cosmos_lookup.c
+      /*  add results to cache */
+      /* implement design from cosmos_lookup.md */
+
+
+hold off:
+      bind implementation
+      exec helper function
+
+
+done:
+      cosmos_init
+      cosmos_bind
+      lookup_light.so
+      cosmos_mknod_path()
+      cosmos_lookup()
+
+
+
+goals:
+      proto frame
+      lookup module
+      file module
+
+      cosmos_init will prepare the cosmos db state so that cosmos_bind() and cosmos_lookup() will operate correctly.
+
+
+      the following program  will work:
+
+      ino=cosmos_mknkod_path(str)
+      cosmos_bind(ino,url)
+      cosmos_lookup(ino,str2)
+
+
+
+
+
+
+2018-05-17  0752
+2018-05-22  0757
+2018-05-23  0801
+2018-05-28  0750
+
+
+WIP:   
+       module loading
+       cosmos_config.{c,h}
+
+
+done:  test_file_module
+       ~/.cosm/lib/cosmos/modules/.
+       cosmos_calc_fnpath()
+       prod_fns.c
+
+
+prep:
+      cosmos_init
+      hiena_svc
+
+
+WIP:  source and map
+
+      - prod_source
+      - prod_map
+
+
+WIP:  file module
+
+
+
+stack:
+      prod_fns.c
+      cosmos_db_get_mod()
+
+
+
+
+
+
+2018-05-15  0804
+
+WIP:  cosmos_lookup
+
+
+fn stack:
+      cosmos_lookup
+      lookup module
+OK    lookup_hdl::find_child
+OK    lookup_svc::lookup_find_child
+OK    prod_fns::prod_find_child
+*     prod_fns::prod_map
+OK    dcel::dcel_find_child
+
+
+
+2018-05-13  0623
+
+DONE! dcel_dirsvc
+    - opendir()
+    - readdir()
+    - closedir()
+
+
+2018-05-01  0758
+2018-05-13  0622
+
+DONE! dcel child directory system
+    - dcel_add_child()
+    - dcel_find_child()
+
+
+
+2018-04-30  0612
+
+WIP:  dcel dfind_child_regex
+
+  child index needs to be searchable with a regex.
+
+Research results (via google):
+
+  arrays elements itereated through and individually compared with the regex.
+  c++ containers do not have a regex search function.
+  c++ containers DO have a lower_bound search.
+
+
+
+2018-04-26  0805
+
+DESIGN:  lookup_svc
+
+ q: when creating a prod instr sequence, can we do if-then statements?  i need to conditionally fire a 'transform' if a 'mapper' fails.
+
+ a: do not create production instruction sequences.  keep logic inside the c code and fire each production instruction from the c code.
+
+
+
+2018-03-25  1046
+
+snafufs design:
+   binding an open DIR
+    to a cosmos af
+    via forking a passthrough fs
+
+
+
+2018-02-20  0802
+
+wip:  snafufs.c
+
+to prototype:
+RESTful: aframe_value(), dcel_value()
+
+vs. locking io: aframe_val_lock(), dcel_val_lock()
+
+
+
+2017-11-29  1951
+
+DONE:  cosmos_init()
+
+
+
+2017-11-21  0756
+
+wip: lookup_grind()
+
+focus: dgrind_so()
+
+
+
+2017-10-15  1600
+
+todo: eliminate mapcel object, combine functionality into dcel
+
+
+2017-10-12  2517
+
+todo: lookup_hdl.h lookup_module.h
+
+
+2017-10-12  1734
+
+todo: revise dcel_mapsvc, directories use dcels instead of mapcels.
+
+...
+
+todo:  conform scanner api to work as prod fn.
+
+save result dcel into hsp.
+
+...
+
+wip: dfind() dgrind() prod_exec()
+
+...
+
+todo: implement readdir()
+
+
+
+2017-10-5  0723
+
+done:  associate fragment info with a mapcel (see mapcel.md) -- use a dcel (see dcel.md)
+
+
+2017-10-4  0625  IN PROGRESS...
+
+todo:  read bytes from a mapcel.
+
+how:  use a dcel to encapsulate the mapcel target.
+
+why:  a mapcel doesn't contain media information, a fragment does.
+
+
+2017-9-28  1755
+
+done: use a directory builder stack in dcel_fh for dcel_mapsvc functions
+
+
+2017-9-26  1844
+
+fixed: mapcel_dir object
+
+    implements an array of mapcel pointers that reallocate in blocks when more elements are added.
+
+
+2017-9-7 1800
+
+goal: fix mapping system and API.
+
+status:
+    9-21 working on dcel_dir_svc
+    9-21 working on mapsvc/{new_dirent,make_dir}
+
+
+2017-9-7 0730
+
+goal: allow inconsistent levels of indent later in an outline
+
+priority:  low.  finish hiena mapping system first.  use ox3 as a test util.
+
+example:  the outline nests 3 layers in, and then steps out in smaller indent sizes for 5 layers.
+
+solution: use btree to keep indent stack
+
+solution: array elements are altered to match the new indent size after an END_BODY
+
+
+2017-9-6  DONE
+
+write ox3: same as ox2 but no mapping calls
+
+goal: debug ox parser
+
+note: mapping calls caused a double-free err.
+ 
+
+2017-8-3
+
+add hash function internal to mapsvc to hash strings into rule ids.
+
+pass mapsvc a string typecast as void *
+
+keep ruleid void * compatible
+
+working in:
+  btree
+  mapsvc
+  .l .y
+  mapcel
+
+
+2017-8-8
+
+frag_curs logic visually sound
+

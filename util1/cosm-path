@@ -1,0 +1,73 @@
+#!/bin/bash
+
+
+
+# cosm-path
+
+
+
+# finds the first occurance of subpath in .cosm cascade, relative to PWD.
+#
+# if no args, find the first .cosm or _cosm directory in or above PWD.
+
+
+
+# v2019-05-24 RH
+
+shopt -s dotglob
+
+
+function print_usage ()
+{
+    echo "usage: $0 [SUBPATH]" >&2
+}
+
+
+if [ -n "$2" ]
+then
+    print_usage
+    exit -1
+fi
+
+
+if [ -n "$1" ]
+then
+    subpath="/$1"
+else
+    subpath=""
+fi
+
+
+
+
+
+dir="$PWD"
+
+if [ ! -e "$dir" ]
+then
+    echo "$0: err: dir invalid" >&2
+    exit -1
+fi
+
+
+
+
+while [ "$dir" != "/" ]
+do
+    targetpath="$dir"/[_.]cosm"$subpath"
+
+    if [ -e `echo "$targetpath"` ]
+    then
+        echo $targetpath
+        exit
+    fi
+
+    dir=`dirname "$dir"`
+done
+
+
+
+
+
+
+
