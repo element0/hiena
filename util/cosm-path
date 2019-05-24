@@ -54,9 +54,18 @@ fi
 
 while [ "$dir" != "/" ]
 do
-    targetpath="$dir"/[_.]cosm"$subpath"
+    targetpath="$dir"/_cosm"$subpath"
 
-    if [ -e `echo "$targetpath"` ]
+    if [ -e "$targetpath" ]
+    then
+        echo $targetpath
+        exit
+    fi
+
+
+    targetpath="$dir"/.cosm"$subpath"
+
+    if [ -e "$targetpath" ]
     then
         echo $targetpath
         exit
