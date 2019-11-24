@@ -42,14 +42,50 @@ int cosmos_stat(struct cosmos *cm, cosmos_id_t id, struct stat *sb)
         struct access_frame *mod_af;
         cosmos_module_t *mod;
 
-        printf("cosmos_stat\n");
+        fprintf(stderr, "cosmos_stat\n");
+
+        if( cm == NULL ) {
+                fprintf(stderr, "cosmos_stat: cm NULL\n");
+                return -1;
+        }
+
+        if( sb == NULL ) {
+                fprintf(stderr, "cosmos_stat: sb NULL\n");
+                return -1;
+        }
+
+        if( id == NULL ) {
+                fprintf(stderr, "cosmos_stat: id NULL\n");
+                return -1;
+        }
 
         dc = id->dcel;
+
+        if( dc == NULL ) {
+                fprintf(stderr, "cosmos_stat: dc NULL\n");
+                return -1;
+        }
+
         mod_id = dc->module_id;
 
         mod_af = aframe_by_path_id(id->parent, mod_id);
 
         mod = aframe_get_value_ptr(mod_af);
+        
+        if( mod == NULL ) {
+                fprintf(stderr, "cosmos_stat: mod NULL\n");
+                return -1;
+        }
+
+        if( mod->svc == NULL ) {
+                fprintf(stderr, "cosmos_stat: mod->svc NULL\n");
+                return -1;
+        }
+
+        if( mod->svc->stat == NULL ) {
+                fprintf(stderr, "cosmos_stat: mod->svc->stat NULL\n");
+                return -1;
+        }
 
         mod->svc->stat(cm, id, dc->addr, sb);
 
@@ -96,7 +132,13 @@ cosmos_id_t cosmos_ln(struct cosmos *cm, cosmos_id_t id, cosmos_id_t par, char *
 }
 
 
-
+/**
+  Makes a node in the access_frame tree.
+  Does not populate node with anything.
+  Build a blank access tree if you prefer.
+  To point tree nodes to data,
+  populate the access frame's dcel.
+*/
 
 cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t mode, dev_t dev)
 {
@@ -115,8 +157,19 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
         struct access_frame *targ;
 
         br = par->branch;
+        if( br == NULL )
+        {
+                HIERR("cosmos_mknod: err: br NULL");
+                return NULL;
+        }
 
         key = cosmos_put_string(cm, name);
+        if( key == 0)
+        {
+                HIERR("cosmos_mknod: err: cosmos_put_string returned 0");
+                return NULL;
+        }
+
         targ = (struct access_frame *)btree_get(br, (bkey_t)key);
 
         if( targ != NULL )
@@ -126,6 +179,13 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
         }
 
         targ = aframe_new();
+
+        if( targ == NULL )
+        {
+                HIERR("cosmos_mknod: err: aframe_new returned NULL.");
+                return NULL;
+        }
+
         btree_put(br, (bkey_t)key, (bval_t)targ);
 
         targ->st_dev = dev;
@@ -143,7 +203,7 @@ cosmos_id_t cosmos_mknod(struct cosmos *cm, cosmos_id_t par, char *name, mode_t 
 
 cosmos_id_t cosmos_mkpath(struct cosmos *cm, cosmos_id_t par, char *pathstr, mode_t mode, dev_t dev)
 {
-        printf("cosmos_mknod_path\n");
+        printf("cosmos_mkpath\n");
 
         char *path, *cur, *last;
         mode_t mode2;
