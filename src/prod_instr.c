@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
+#include "hierr.h"
 #include "prod_instr.h"
 
 
 struct prod_instr *prod_instr_new()
 {
-        prod_instr *pi;
+        struct prod_instr *pi;
 
         pi = malloc(sizeof(*pi));
         memset(pi,0,sizeof(*pi));
