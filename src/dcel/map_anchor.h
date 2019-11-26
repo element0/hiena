@@ -10,7 +10,7 @@
 
 
 #include <stdlib.h>
-#include "btrees.h"
+#include "../btrees.h"
 #include "frag.h"
 
 struct hiena_mapcel;

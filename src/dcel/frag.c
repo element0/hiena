@@ -6,8 +6,8 @@
 #include <string.h>
 
 #include "frag.h"
-#include "hierr.h"
-#include "btrees.h"
+#include "../hierr.h"
+#include "../btrees.h"
 
 
 struct hiena_frag *new_frag()

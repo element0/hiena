@@ -10,6 +10,9 @@ typedef uint64_t cosmos_strid_t;
 
 /** 
  * this copies the input string and stores a pointer to the copy.  the caller is responsible for freeing the original.
+
+returns 0 on error.
+
  */
 cosmos_strid_t cosmos_put_string(struct cosmos *, char *);
 

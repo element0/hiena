@@ -29,40 +29,61 @@
 #include "types.h"
 
 struct prod_instr;
+
 #include "frag.h"
 #include "mapcel.h"
 #include "btree_cpp.h"
 #include "ptr_stack.h"
 
 
-
+/**
+ * Domain Cell or Dirent Cell.
+ * A primative for holding basic metadata about a data set.
+ */
 struct hiena_dcel {
+
         /**
          * The producer of the dcel. Includes `module` name
          * and command line arguments. May include multiple
          * instructions.
+	 *
+	 * Run the prod_instr to generate the dcel.
+	 * The module referenced within prod_instr provides
+	 * a service API for stream IO.
          */
         struct prod_instr *prod_instr;
+
         /**
          * Memory buffer. This can be byte for byte,
-         * or can be fragmented. The `mfrag` leaves in the
+         * or can be fragmented.
+	 *
+	 * The `mfrag` leaves in the
          * `fragmap` point to locations in the buffer.
-         * So the actual buffer could contain data in any
+         * The actual buffer could contain data in any
          * order.
          */
         void *buffer;
+
         /**
          * A tree of fragments (`frag.h`)
          * which tracks media fragments (`mfrag.h`).
          */
         struct hiena_frag *fragmap;
+
         /**
          * Nesting fields within the domain,
          * identified by `mapper` modules.
          */
         struct hiena_mapcel *map;
 
+	/**
+	 * Meta properties (or "attributes").
+	 */
         btree_t *prop_index;
+
+	/**
+	 * Children/Directory Entries. Defines a directory.
+	 */
         btree_t *child_index;
 
 

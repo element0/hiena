@@ -1,4 +1,32 @@
 
+2019-11-27  0442
+2019-11-26  0554
+2019-11-25  0812
+
+WIP - bind address to dcel
+Note: shouldn't this be performed by a production function?
+Files:
+  - cosmos/cosmos_bind.c
+  - dcel.{c,h}
+
+BROKEN - mfrag
+Fixing: removing svc and addr from mfrag
+Files:
+  - mfrag.{c,h}
+
+RESTRUCTURE
+Question: Can we modularize the btrees?
+Files:
+  - dcel/{dcel*,frag*,mfrag*,ptr_stack*}
+  - dir-btrees/ Can we move the btrees here?
+
+WIP - production instruction
+Todo: use prod_args.h instead of prod_sequence.
+Files
+  - prod_instr.h
+  - prod_args.h
+
+
 2019-04-15
 
 WIP

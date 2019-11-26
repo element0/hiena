@@ -14,7 +14,7 @@
 #include "../modules/file/file_builtin.h"
 #include "../modules/lookup/light/lookup_builtin.h"
 #include "../access_frame.h"
-#include "../aframe_path.h"
+// #include "../aframe_path.h"
 #include "cosmos_db.h"
 #include "cosmos_config.h"
 #include "cosmos_bind.h"
@@ -218,7 +218,7 @@ strnlen(cm->lookupmodname, PATH_MAX)+ 1);
 
         snprintf(buf, len, "%s/%s/%s", cm->metadirname, cm->modrelpath, cm->lookupmodname );
 
-        mod = aframe_mkflatpath(cm, userhostroot, buf);
+        mod = cosmos_mkpath(cm, userhostroot, buf, S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
 
         aframe_set_value_ptr(mod, lookmod);
 
@@ -263,7 +263,7 @@ strnlen(cm->svcmodname, PATH_MAX)+ 1);
         buf = malloc(len);
         snprintf(buf, len, "%s/%s/%s", cm->metadirname, cm->modrelpath, cm->svcmodname );
 
-        mod = aframe_mkflatpath(cm, root, buf);
+        mod = cosmos_mkpath(cm, root, buf, S_IFREG | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH, 0);
 
         aframe_set_value_ptr(mod, svcmod);
 

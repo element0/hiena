@@ -4,10 +4,11 @@
 
 
 
-#include "mfrag.h"
-#include "hierr.h"
 #include <stdlib.h>
 #include <string.h>
+#include "mfrag.h"
+#include "hierr.h"
+
 
 struct hiena_mfrag *mfrag_new()
 {
@@ -15,6 +16,11 @@ struct hiena_mfrag *mfrag_new()
         return mf;
 }
 
+
+/**
+ * 2019-11-27
+ * deprecated buffer
+ */
 struct hiena_mfrag *mfrag_dup( struct hiena_mfrag *mf )
 {
         if( mf == NULL )
@@ -22,8 +28,8 @@ struct hiena_mfrag *mfrag_dup( struct hiena_mfrag *mf )
 
 
         struct hiena_mfrag *m2;
-        void *buf;
-        HIMFRAG_BUFSIZE_T len;
+//        void *buf;
+//        HIMFRAG_BUFSIZE_T len;
 
 
         m2 = malloc( sizeof(*mf) );
@@ -32,6 +38,7 @@ struct hiena_mfrag *mfrag_dup( struct hiena_mfrag *mf )
 
         m2 = memcpy( m2, mf, sizeof(*mf) );
 
+	/*
         if( mf->buf != NULL )
         {
                 len = mf->len;
@@ -44,13 +51,15 @@ struct hiena_mfrag *mfrag_dup( struct hiena_mfrag *mf )
                         memcpy( buf, mf->buf, len );
                 }
         }
+	*/
 
 
         return m2;
-
+/*
 abort_badbuf:
         free( m2 );
         return NULL;
+*/
 }
 
 void mfrag_cleanup( struct hiena_mfrag *mf )
@@ -101,7 +110,7 @@ int mfrag_set_boundtail( struct hiena_mfrag *f, HIMFRAG_BOUND_T bt )
         return 0;
 }
 
-
+/*
 int mfrag_set_svc( struct hiena_mfrag *f, struct hiena_svc *svc )
 {
         if( f == NULL )
@@ -120,6 +129,7 @@ int mfrag_set_addr( struct hiena_mfrag *mf, void *sa )
         mf->addr = sa;
         return 0;
 }
+*/
 
 HIMFRAG_BOUND_T mfrag_get_length( struct hiena_mfrag *mf )
 {
