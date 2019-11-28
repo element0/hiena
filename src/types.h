@@ -3,6 +3,7 @@
 
 
 #include <sys/types.h>
+#include <stdint.h>
 
 typedef uint64_t genno_t;
 

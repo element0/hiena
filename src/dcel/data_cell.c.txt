@@ -1,0 +1,49 @@
+
+dcel_t *dc_source() {
+
+        new dcel(
+            server: url.protocol,
+            addr: url.addr,
+        )
+        return dcel
+}
+
+/* requires m merge_server, dcel_list */
+dcel_t *dc_merge() {
+        new dcel(
+            server: merge_server,
+            addr: dcel_list,
+        )
+        return dcel
+}
+
+
+/* requires cosmosexec(), cosmos_executable,
+ * args, buf, buffer_server
+ *
+ */
+
+dcel_t *dc_process();
+
+    process () {
+        new dcel(
+            init: exec( fn, args, buf )
+            server: buffer_server,
+            addr: buf
+        )
+        return dcel
+    }
+
+dcel_t *dc_mapper(dcel_t *);
+    map () {
+        run_mapper( mapper, dcel )
+        modified dcel's map
+        return input dcel
+    }
+
+dc_filehandle *dc_open();
+
+
+    open () {
+        return handle
+    }

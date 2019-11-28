@@ -6,6 +6,8 @@
 /** @file dcel.h
  *
  * CHANGE LOG
+ * 2019-11-28 Fixed
+ * - changed `fragmap` to `frag`
  *
  * 2019-03-17 Update
  * - added `bufid`. moved from `mfrag.h`
@@ -26,13 +28,14 @@
  *
  */
 
-#include "types.h"
+#include "../types.h"
 
 struct prod_instr;
+struct cosmos;
 
 #include "frag.h"
 #include "mapcel.h"
-#include "btree_cpp.h"
+#include "../btree_cpp.h"
 #include "ptr_stack.h"
 
 
@@ -58,7 +61,7 @@ struct hiena_dcel {
          * or can be fragmented.
 	 *
 	 * The `mfrag` leaves in the
-         * `fragmap` point to locations in the buffer.
+         * `frag` point to locations in the buffer.
          * The actual buffer could contain data in any
          * order.
          */
@@ -68,7 +71,7 @@ struct hiena_dcel {
          * A tree of fragments (`frag.h`)
          * which tracks media fragments (`mfrag.h`).
          */
-        struct hiena_frag *fragmap;
+        struct hiena_frag *frag;
 
         /**
          * Nesting fields within the domain,

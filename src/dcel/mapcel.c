@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mapcel.h"
+#include "../btree_cpp.h"
 #include "hierr.h"
 
 struct hiena_mapcel *mapcel_new(char *ruleid, size_t len)
@@ -33,17 +34,19 @@ int mapcel_cleanup( struct hiena_mapcel *mc )
         }
 
         cn = mc->children;
-        d = mc->dir;
 
         if( cn != NULL )
         {
                 btree_cleanup( cn );
         }
 
+        /* DEPRECATED
+	d = mc->dir;
         if( d != NULL )
         {
                 mapcel_dir_cleanup( d );
         }
+	*/
 
 
         free(mc);
@@ -68,7 +71,7 @@ int mapcel_add ( struct hiena_mapcel *par, struct hiena_mapcel *chi )
         key = (void *)ha;
         val = (void *)chi;
 
-        btree_put( cn, key, val );
+        btree_put( cn, (bval_t)key, (bval_t)val );
         if( par->head_anchor == NULL )
                 par->head_anchor = ha;
         par->tail_anchor = chi->tail_anchor;
