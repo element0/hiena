@@ -1,10 +1,16 @@
 
+2019-11-29  0536
 2019-11-28  0535 2144
 2019-11-27  0442
 2019-11-26  0554
 2019-11-25  0812
 
-WIP data_cell.h
+WIP - Focus on implementing Dcels through data_cell API
+  - data_cell.h
+
+WIP - Isolate project components.
+  - data cell library
+  - cosmos library
 
 WIP - bind address to dcel
 Note: shouldn't this be performed by a production function?
