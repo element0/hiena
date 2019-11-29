@@ -6,6 +6,9 @@
 /** @file dcel.h
  *
  * CHANGE LOG
+ * 2019-11-30 Update
+ * - added `service`
+ *
  * 2019-11-28 Fixed
  * - changed `fragmap` to `frag`
  *
@@ -55,6 +58,12 @@ struct hiena_dcel {
 	 * a service API for stream IO.
          */
         struct prod_instr *prod_instr;
+
+	/**
+	 * Service module.
+	 */
+
+	void *service;
 
         /**
          * Memory buffer. This can be byte for byte,
