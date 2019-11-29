@@ -16,7 +16,7 @@ typedef struct hiena_dcel dcel_t;
  * for io, combined, mapped or processed.
  */
 
-dcel_t *dcel_source();
+dcel_t *dcel_source(char *);
 
 
 /**

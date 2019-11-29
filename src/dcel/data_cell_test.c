@@ -1,6 +1,7 @@
-#include "dcel.h"
 #include <stdio.h>
 #include <error.h>
+#include "dcel.h"
+#include "data_cell.h"
 
 #define DCEL_ERR_INIT \
     int er;
@@ -10,14 +11,16 @@
 
 int main() {
 
-    DCEL_ERR_INIT
+    DCEL_ERR_INIT;
 
     struct hiena_dcel *dc =  NULL;
-    if(( dc = dcel_new(NULL) )== NULL )
+    if(( dc = dcel_source(NULL) )== NULL )
     {
-        DCEL_ERR( "err new_dcel()" );
+        DCEL_ERR( "err main:dcel_source() returned NULL" );
         goto cleanup;
     }
+
+    fprintf(stderr,"data_cell_test: OK");
 
 cleanup:
     dcel_cleanup( dc );

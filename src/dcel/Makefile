@@ -37,8 +37,15 @@ all: out-dirs install-dirs tests utils
 devdirs:  out-dirs
 
 
+data-cell:
+	gcc $(dbugopts) -fPIC -c data_cell.c -o $(out-o)/data_cell.o
 
-dcel:   ptr-stack frag
+data-cell-test:
+	gcc $(dbugopts) $(out-o)/{dcel,frag,ptr_stack,btree_cpp,mfrag,data_cell}.o data_cell_test.c -o $(out-test-bin)/data-cell-test -lstdc++
+
+
+
+dcel:   
 	gcc $(dbugopts) -fPIC -c dcel.c -o $(out-o)/dcel.o
 
 dcel-svc:
@@ -52,6 +59,9 @@ dcel-dirsvc:
 
 dcel-mapsvc:
 	gcc $(dbugopts) -c dcel_mapsvc.c -o $(out-o)/dcel_mapsvc.o
+
+dcel-test: dcel frag ptr-stack mfrag #btree_cpp
+	gcc $(dbugopts) $(out-o)/{dcel,frag,ptr_stack,btree_cpp,mfrag}.o dcel_test.c -o $(out-test-bin)/dcel-test -lstdc++
 
 
 
