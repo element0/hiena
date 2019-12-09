@@ -3,20 +3,26 @@
 #include "dcel.h"
 #include "../hierr.h"
 
-typedef struct hiena_dcel dcel_t;
+typedef struct hiena_dcel * dvar;
 
-        /* new dcel(
-            server: url.protocol,
-            addr: url.addr,
-        ) */
-dcel_t *dcel_source(char *url) {
-    dcel_t *dc = NULL;
+dcel_t *dcel_source(char *s) {
+    dvar dc = NULL;
         
     if(( dc = dcel_new(NULL) )== NULL )
     {
         HIERR( "dcel_source: new_dcel() returned NULL" );
         goto cleanup;
     }
+
+    dvar url = dvar_string(s);
+
+    cosmosid url_mapper = cosmosid_string(cm, "url");
+
+    dvar_scan(cm, url_mapper, url);
+
+    dvar service = dvar_prop( url, "protocol" );
+    dvar_prop( url, "addr" );
+
     return dc;
 
 cleanup:

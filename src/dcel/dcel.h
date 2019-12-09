@@ -6,6 +6,10 @@
 /** @file dcel.h
  *
  * CHANGE LOG
+ *
+ * 2019-12-10 Update
+ * - changing `service` to `service_id`
+ *
  * 2019-11-30 Update
  * - added `service`
  *
@@ -61,9 +65,16 @@ struct hiena_dcel {
 
 	/**
 	 * Service module.
+	 *
+	 * Replace service module ptr with service id.
 	 */
+	uintptr_t service_id;
 
-	void *service;
+	/**
+	 * Address
+	 */
+	void *addr;
+	size_t addr_len;
 
         /**
          * Memory buffer. This can be byte for byte,
@@ -75,6 +86,7 @@ struct hiena_dcel {
          * order.
          */
         void *buffer;
+	size_t buffer_len;
 
         /**
          * A tree of fragments (`frag.h`)
@@ -107,7 +119,7 @@ struct hiena_dcel {
         genno_t par_gen_no;
 
 
-        /* undo stack */
+        /* undo stack */re
         ptr_stack_t undo;
 };
 
