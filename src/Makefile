@@ -205,8 +205,18 @@ lookup-light: hash access-frame btree_cpp cosmos-db cosmos-fs dcel dcel-child fr
 	gcc $(dbugopts) -fPIC -shared $(out-o)/{hash.o,access_frame.o,btree_cpp.o,dcel.o,dcel_child.o,frag.o,ptr_stack.o,mfrag.o} $(out-o)/cosmos_{db,fs}.o modules/lookup/light/lookup_light.c -o $(out-lib)/modules/lookup-light.so -lstdc++
 
 
+cosm-lookup:
+	gcc $(debugopts) -fPIC -c cosmos/cosm_lookup.c -o $(out-o)/cosm_lookup.o
 
-libcosmos:  devdirs libhiena access-frame cosmos-config cosmos-db cosmos-fs cosmos-module cosmos-init cosmos-bind cosmos-lookup
+cosm-lookup-util:
+	gcc $(debugopts) util/cosm-lookup.c -o $(out-bin)/cosm-lookup -lcosmos
+
+
+libcosmos: cosm-lookup
+	gcc $(dbugopts) -fPIC -shared $(out-o)/cosm_lookup.o -o $(out-lib)/libcosmos.so
+
+
+libcosmos-old:  devdirs libhiena access-frame cosmos-config cosmos-db cosmos-fs cosmos-module cosmos-init cosmos-bind cosmos-lookup
 	gcc $(dbugopts) -fPIC -shared $(out-o)/access_frame.o $(out-o)/cosmos_{db,fs,config,lookup,module,init,bind}.o -o $(out-lib)/libcosmos.so -L$(out-lib) -lhiena -ldl
 
 
