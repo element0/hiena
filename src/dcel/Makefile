@@ -11,7 +11,7 @@ out-test-bin = $(code-root)/out/test-bin
 install-lib = ~/.cosm/lib/cosmos
 install-lib-modules = $(install-lib)/modules
 
-src-modules = ./modules
+src-modules = $(code-root)/src/modules
 
 dbugopts = -g
 warnopts = -Wall

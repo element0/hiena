@@ -47,8 +47,8 @@ struct cosmos;
 
 
 /**
- * Domain Cell or Dirent Cell.
- * A primative for holding basic metadata about a data set.
+ * D{omain,irent,ata} Cell
+ * A branchable primative for holding generic metadata about a dataset.
  */
 struct hiena_dcel {
 
@@ -86,7 +86,7 @@ struct hiena_dcel {
          * order.
          */
         void *buffer;
-	size_t buffer_len;
+        size_t buffer_len;
 
         /**
          * A tree of fragments (`frag.h`)
@@ -119,7 +119,7 @@ struct hiena_dcel {
         genno_t par_gen_no;
 
 
-        /* undo stack */re
+        /* undo stack */
         ptr_stack_t undo;
 };
 

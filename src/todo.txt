@@ -1,13 +1,38 @@
 
+
+2020-02-15 1721
+
+WIP util/hiena
+
+
+2020-01-18  0700
+
+TODO
+  - generate object lib and header
+  - antlr mapper to call DCel mapper API
+
+DONE - cosm-type-gen _Cosm/Types/<type>
+  desc: generates _Cosm/Types/<type>/bin/mapper
+  files:
+      - _Cosm/Types/Cosmos/Cosm/type/_class_properties/*
+      - _Cosm/bin/cosm-{lookup,type-gen}
+
+DONE - antlr4 mapper can output start stop byte indexes for terminals and nonterminals
+
+
+2020-01-08  0618
+
+DONE - mv cosm-path cosm-lookup
+
 2019-12-10  0533 1907
 2019-11-29  0536
 2019-11-28  0535 2144
 2019-11-27  0442
 2019-11-26  0554
 2019-11-25  0812
+2020-01-18  0700
 
-
-WIP - test_mapper.c
+TODO - test_mapper.c
   - dcel_assign_string()
   - dcel_read()
   - typemodule url :: mapper()
