@@ -7,6 +7,15 @@
  *
  * CHANGE LOG
  *
+ * 2019-12-10 Update
+ * - changing `service` to `service_id`
+ *
+ * 2019-11-30 Update
+ * - added `service`
+ *
+ * 2019-11-28 Fixed
+ * - changed `fragmap` to `frag`
+ *
  * 2019-03-17 Update
  * - added `bufid`. moved from `mfrag.h`
  * - changed `buffer` to `fragmap`
@@ -26,19 +35,20 @@
  *
  */
 
-#include "types.h"
+#include "../types.h"
 
 struct prod_instr;
+struct cosmos;
 
 #include "frag.h"
 #include "mapcel.h"
-#include "btree_cpp.h"
+#include "../btree_cpp.h"
 #include "ptr_stack.h"
 
 
 /**
- * Domain Cell or Dirent Cell.
- * A primative for holding basic metadata about a data set.
+ * D{omain,irent,ata} Cell
+ * A branchable primative for holding generic metadata about a dataset.
  */
 struct hiena_dcel {
 
@@ -53,22 +63,36 @@ struct hiena_dcel {
          */
         struct prod_instr *prod_instr;
 
+	/**
+	 * Service module.
+	 *
+	 * Replace service module ptr with service id.
+	 */
+	uintptr_t service_id;
+
+	/**
+	 * Address
+	 */
+	void *addr;
+	size_t addr_len;
+
         /**
          * Memory buffer. This can be byte for byte,
          * or can be fragmented.
 	 *
 	 * The `mfrag` leaves in the
-         * `fragmap` point to locations in the buffer.
+         * `frag` point to locations in the buffer.
          * The actual buffer could contain data in any
          * order.
          */
         void *buffer;
+        size_t buffer_len;
 
         /**
          * A tree of fragments (`frag.h`)
          * which tracks media fragments (`mfrag.h`).
          */
-        struct hiena_frag *fragmap;
+        struct hiena_frag *frag;
 
         /**
          * Nesting fields within the domain,

@@ -1,30 +1,86 @@
 
+
+2020-02-15 1721
+
+WIP util/hiena
+
+
+2020-01-18  0700
+
+TODO
+  - generate object lib and header
+  - antlr mapper to call DCel mapper API
+
+DONE - cosm-type-gen _Cosm/Types/<type>
+  desc: generates _Cosm/Types/<type>/bin/mapper
+  files:
+      - _Cosm/Types/Cosmos/Cosm/type/_class_properties/*
+      - _Cosm/bin/cosm-{lookup,type-gen}
+
+DONE - antlr4 mapper can output start stop byte indexes for terminals and nonterminals
+
+
+2020-01-08  0618
+
+DONE - mv cosm-path cosm-lookup
+
+2019-12-10  0533 1907
+2019-11-29  0536
+2019-11-28  0535 2144
 2019-11-27  0442
 2019-11-26  0554
 2019-11-25  0812
+2020-01-18  0700
+
+TODO - test_mapper.c
+  - dcel_assign_string()
+  - dcel_read()
+  - typemodule url :: mapper()
+
+WIP - isolate dcel opaque type by removing dependency on cosmos stringdb.
+
+
+WIP - Isolate project components.
+  - data cell library
+  - cosmos library
+  - type modules
+  - virtual function library
+
+WIP - Provide Dcels through data_cell API
+  - data_cell.h
 
 WIP - bind address to dcel
 Note: shouldn't this be performed by a production function?
+Followup: yes. should be performed by a `source()` function. take a look at Data Cell API (2019-11-27).
 Files:
   - cosmos/cosmos_bind.c
   - dcel.{c,h}
+  - iPhone dev/Design/data cell API.md
 
-BROKEN - mfrag
+
+WIP - production instruction
+Todo: use prod_args.h instead of prod_sequence.
+Followup: can we simplify any of this? see "data cell API.md"
+Files
+  - prod_instr.h
+  - prod_args.h
+  - iPhone dev/Design/data cell API.md
+
+
+FIXED 
 Fixing: removing svc and addr from mfrag
 Files:
   - mfrag.{c,h}
 
-RESTRUCTURE
+IGNORE
 Question: Can we modularize the btrees?
+Followup: Yes, but leave where they are for now. Don't know dependencies.
 Files:
   - dcel/{dcel*,frag*,mfrag*,ptr_stack*}
+  - btree_cpp.{c,h}
   - dir-btrees/ Can we move the btrees here?
+  - unknown dependencies on btree_cpp.{c,h}
 
-WIP - production instruction
-Todo: use prod_args.h instead of prod_sequence.
-Files
-  - prod_instr.h
-  - prod_args.h
 
 
 2019-04-15

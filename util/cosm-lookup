@@ -62,28 +62,9 @@ fi
 
 while [ "$dir" != "/" ]
 do
-<<<<<<< HEAD
-    targetpath="$dir"/_cosm"$subpath"
-
-<<<<<<< HEAD
-    if [ -e `echo $targetpath` ]
-=======
-    if [ -e "$targetpath" ]
-    then
-        echo $targetpath
-        exit
-    fi
-
-
-    targetpath="$dir"/.cosm"$subpath"
-
-    if [ -e "$targetpath" ]
->>>>>>> 9bc25bc4f23ea9c3560e37572b7009db7512403f
-=======
     target=$(echo "$dir"/$CONFNAME_RE/"$subpath")
 
     if [ -e "$target" ]
->>>>>>> b1b7341ff17da5d3ff7aa3bf6422e41cb768cf2f
     then
         echo $target
         exit
