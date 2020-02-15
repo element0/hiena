@@ -1,10 +1,16 @@
 
-2019-12-10  0533
+2019-12-10  0533 1907
 2019-11-29  0536
 2019-11-28  0535 2144
 2019-11-27  0442
 2019-11-26  0554
 2019-11-25  0812
+
+
+WIP - test_mapper.c
+  - dcel_assign_string()
+  - dcel_read()
+  - typemodule url :: mapper()
 
 WIP - isolate dcel opaque type by removing dependency on cosmos stringdb.
 
