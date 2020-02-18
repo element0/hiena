@@ -3,6 +3,12 @@
 2020-02-15 1721
 
 WIP util/hiena
+- use cosm_lookup() READY
+- use url mapper
+- use cosmos_string_db under dcel hood to transparently replace `string`
+   ex: dcel (string s) : aCosmosString(s) { }
+         cosmosString (string s) { hash_id = cosmosStringDb.put(s) }
+
 
 
 2020-01-18  0700
