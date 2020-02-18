@@ -28,7 +28,7 @@ http://www.cse.yorku.ca/~oz/hash.html
 
 
         /* dboy tweak */
-        if( str == '\0' )
+        if( *str == '\0' )
                 return hash;
         
 

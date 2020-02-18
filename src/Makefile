@@ -6,8 +6,10 @@ out-lib = ../out/lib
 out-modules = $(out-lib)/modules
 out-test-bin = ../out/test-bin
 
-install-lib = ~/.cosm/lib/cosmos
+install-lib = /usr/local/lib
 install-lib-modules = $(install-lib)/modules
+
+install-bin = /usr/local/bin
 
 src-modules = ./modules
 
@@ -35,8 +37,9 @@ all: out-dirs install-dirs tests utils
 devdirs:  out-dirs
 
 
-install:  prep-install libhiena
-	mv $(out-lib)/libhiena.so $(install-lib)/.
+install:  libcosmos cosm-lookup-util
+	sudo mv $(out-lib)/libcosmos.so $(install-lib)/.
+	sudo mv $(out-bin)/cosm-lookup $(install-bin)/.
 
 prep-install:  install-dirs
 
@@ -207,6 +210,7 @@ lookup-light: hash access-frame btree_cpp cosmos-db cosmos-fs dcel dcel-child fr
 
 cosm-lookup:
 	gcc $(debugopts) -fPIC -c cosmos/cosm_lookup.c -o $(out-o)/cosm_lookup.o
+
 
 cosm-lookup-util:
 	gcc $(debugopts) util/cosm-lookup.c -o $(out-bin)/cosm-lookup -lcosmos

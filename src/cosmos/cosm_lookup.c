@@ -31,7 +31,7 @@
 
 
 
-int cosm_lookup(char *subpath)
+char *cosm_lookup(char *subpath)
 {
 	char  *dir;
 	size_t dir_len;
@@ -39,6 +39,8 @@ int cosm_lookup(char *subpath)
 	size_t globstr_len;
 	glob_t pglob;
 	char *target;
+	char *retstr;
+	size_t retstr_len;
 
 	dir_len = PATH_MAX;
 	dir = malloc(sizeof(char)*dir_len);
@@ -68,7 +70,9 @@ int cosm_lookup(char *subpath)
 
 		if(target != NULL) // todo: check if exits
 		{
-			printf("%s\n", target);
+			retstr_len = strnlen(target, PATH_MAX)+1;
+			retstr = malloc(sizeof(char)*retstr_len);
+			strncpy(retstr, target, retstr_len);
 			globfree(&pglob);
 			break;
 
@@ -79,7 +83,6 @@ int cosm_lookup(char *subpath)
 
 	free(dir);
 	free(globstr);
-	return 0;
-
+	return retstr;
 }
 
