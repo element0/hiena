@@ -11,37 +11,100 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
-#include "antlr4-runtime.h"
-
-#include "cosmos.h"  // string db, global cosmos
-
-#include "cosmosLexer.h"
-#include "cosmosParser.h"
-
-using namespace antlr4;
+#include <list>
 using namespace std;
+
+#include "../cosmos/cosm_lookup.h" // requires 'libcosmos'
+
+// #include "cosmos.h"  // string db, global cosmos
+// #include "cosmosLexer.h"
+// #include "cosmosParser.h"
+// #include "antlr4-runtime.h"
+// using namespace antlr4;
+
+class cosmosType;
+
+class conformanceTree : public list<cosmosType> {
+  public:
+    conformanceTree findSubtreeWithType( cosmosType type );
+};
+
+class cosmosSystemObject {
+  public:
+    conformanceTree typeTree;
+    map<string, cosmosType> typeModules;
+
+
+    conformanceTree typeTree = source.cosmos.typeTree;
+};
+
+
+class dcelService : public string {
+  public:
+    string getMIMEType( string address );
+    iostream openStream();
+};
+
+class cosmosType {
+  public:
+    string MIMEType;
+    string moduleFilePath;
+
+    // conformance tree
+    list<cosmosType> parents;
+    list<cosmosType> children;
+
+    void locateModule();
+    void loadModule();
+};
+
+
+class dcel {
+  public:
+    cosmosSystemObject cosmos;
+
+    dcelService service;
+    string address;
+
+    list<cosmosType> types;
+
+    list<dcel> children;
+
+    cosmosType loadTypeModule(string type_name);
+
+    dcel ( string serviceStr, string addrStr )
+	    : service( serviceStr ),
+	      address( addrStr ),
+	      type( cosmosService::getMIMEType( addrStr ) {};
+};
+
+class hienaMap {
+};
 
 
 dcel hiena(dcel source) {
 
-    cosmosType type { source.service.getMIMEType( source.address ) };
 
-    conformanceSubtree = conformanceTree.findSubtreeWithType( type );
+    conformanceTree subtree = source.getTypes();
+	    // typeTree.findSubtreeWithType( type );
     
     /* map a single layer of hierarchy
         with multiple grammars
      */
-    for ( type : conformanceSubtree ) {
-        map = type.mapper( source );
+
+    hienaMap *map;
+   
+    for ( auto curType : subtree ) {
+        map = curType.mapper( source );
         if ( map != NULL )
             source.map += map;
-    }
+    };
 
     /* recursive */
-    for ( child : source.children ) {
+
+    for ( auto child : source.children ) {
         hiena( child );
-    }
+    };
 
     return target;
 }
@@ -69,7 +132,7 @@ int main(int argc, char *argv[]) {
 }
 
 
-
+/*
 void mapper(dcel) {
     cosmosStream urlStream(dcel.open());
 
@@ -86,5 +149,6 @@ void mapper(dcel) {
 		urlStream.close();
 
 	}
-      / * return a map as part of the dcel */
+      /* return a map as part of the dcel */
 }
+*/
