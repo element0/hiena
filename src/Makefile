@@ -37,9 +37,11 @@ all: out-dirs install-dirs tests utils
 devdirs:  out-dirs
 
 
-install:  libcosmos cosm-lookup-util
-	sudo mv $(out-lib)/libcosmos.so $(install-lib)/.
+install:  install-libcosmos cosm-lookup-util
 	sudo mv $(out-bin)/cosm-lookup $(install-bin)/.
+
+install-libcosmos: libcosmos
+	sudo mv $(out-lib)/libcosmos.so $(install-lib)/.
 
 prep-install:  install-dirs
 

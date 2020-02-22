@@ -2,7 +2,7 @@
  *
  * Cosmos Project
  * hiena utility
- * 2020-02-15 rh
+ * 2020-02-20 rh
  *
  * CLI entry point tool for hierarchy analysis.
  */
@@ -12,6 +12,7 @@
 #include <fstream>
 #include <string>
 #include <list>
+#include <map>
 using namespace std;
 
 #include "../cosmos/cosm_lookup.h" // requires 'libcosmos'
@@ -24,31 +25,54 @@ using namespace std;
 
 class cosmosType;
 
+template <typename T>
+class accessTree {
+    private:
+    public:
+        T *pointer;
+        list<accessTree> parents;
+        list<accessTree> children;
+
+    accessTree(T *p)
+    {
+        pointer = p;
+    }
+};
+
+template <typename T>
+class inheritanceTree : public accessTree<T> {
+    public:
+        // override sequence getter methods
+};
+
 class conformanceTree : public list<cosmosType> {
   public:
     conformanceTree findSubtreeWithType( cosmosType type );
 };
 
-class cosmosSystemObject {
+
+class cosmosService : public string {
   public:
-    conformanceTree typeTree;
-    map<string, cosmosType> typeModules;
-
-
-    conformanceTree typeTree = source.cosmos.typeTree;
-};
-
-
-class dcelService : public string {
-  public:
-    string getMIMEType( string address );
+    cosmosService( string address ) {
+        // construct here
+    }
+    string getMIMEType( string address ) {
+        // custom module implements this
+    }
     iostream openStream();
 };
+
+class hienaMap {
+};
+
+class dcel;
 
 class cosmosType {
   public:
     string MIMEType;
     string moduleFilePath;
+
+    hienaMap *mapper(dcel &source) {}
 
     // conformance tree
     list<cosmosType> parents;
@@ -56,75 +80,102 @@ class cosmosType {
 
     void locateModule();
     void loadModule();
+    cosmosType( string cosmos_typename ) {
+        // load module
+    }
+};
+
+
+class cosmosSystemObject {
+  public:
+    conformanceTree typeTree;
+    map<string, cosmosType> typeModules;
+    map<string, cosmosService> serviceModules;
+
+    int init() {
+        cout<<"cosmosSystemObject::init()"<<endl;
+        return 0;
+    }
+
+    cosmosService getServiceModule( string serviceStr ) {
+    }
+
 };
 
 
 class dcel {
   public:
-    cosmosSystemObject cosmos;
+    static cosmosSystemObject cosmos;
 
-    dcelService service;
+    cosmosService service;
     string address;
+    cosmosType type;
 
     list<cosmosType> types;
-
     list<dcel> children;
+
+    int initCosmos() {
+        cosmos.init();
+    }
 
     cosmosType loadTypeModule(string type_name);
 
-    dcel ( string serviceStr, string addrStr )
+    dcel( string stringBacking )
+          : service("std::string")
+            address(stringBacking) {
+    }
+
+    dcel( string serviceStr, string addrStr )
 	    : service( serviceStr ),
 	      address( addrStr ),
-	      type( cosmosService::getMIMEType( addrStr ) {};
+            type( service.getMIMEType( addrStr ))
+    {
+        service = cosmos.getServiceModule( serviceStr );
+    }
+
+    conformanceTree getTypes() {};
 };
 
-class hienaMap {
-};
 
 
-dcel hiena(dcel source) {
+
+void hiena(dcel &source) {
 
 
-    conformanceTree subtree = source.getTypes();
-	    // typeTree.findSubtreeWithType( type );
-    
     /* map a single layer of hierarchy
         with multiple grammars
      */
-
     hienaMap *map;
-   
-    for ( auto curType : subtree ) {
+    for ( auto curType : source.getTypes() ) {
         map = curType.mapper( source );
         if ( map != NULL )
-            source.map += map;
+            // source.map += map;
+            ;
     };
 
-    /* recursive */
+    /* recursive mapping */
 
     for ( auto child : source.children ) {
         hiena( child );
     };
-
-    return target;
 }
 
 
 int main(int argc, char *argv[]) {
 
     /* initialize global cosmos object */
-    /* (some systemwide globals are stored
+    /* (systemwide globals are stored
         in the dcel class static vars.)
      */
+    dcel::initCosmos();
 
-    cosmos_init();
-
-    dcel url { argv[1] };
+    dcel url{ argv[1] };
 
     /* overloaded op to type array:
         "url" will be located by cosmos_lookup()
      */
-    url.type += "url";
+    // url.type += "url";
+    url.
 
     dcel source { url.field("scheme"), url.field("address") };
 
