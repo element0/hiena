@@ -54,7 +54,7 @@ btrees:
 	gcc $(dbugopts) -c btrees.c -o $(out-o)/btrees.o
 
 btree_cpp:
-	g++ $(dbugopts) -fPIC -c -std=c++0x btree_cpp.cc -o $(out-o)/btree_cpp.o
+	g++ $(dbugopts) -fPIC -c -std=c++11 btree_cpp.cc -o $(out-o)/btree_cpp.o
 
 
 cosmos-bind:
@@ -494,7 +494,7 @@ test-prod-fns: prod-fns libhiena
 
 
 util-hiena:
-	gcc $(dbugopts) util/hiena.cpp -o $(out-bin)/hiena -lcosmos
+	g++ $(dbugopts) -std=c++11 util/hiena.cpp -o $(out-bin)/hiena -lcosmos
 
 
 util-hiena-ls: hiena-obs svc-obs slib scanner scanner-hdl

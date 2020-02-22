@@ -71,6 +71,7 @@ class cosmosType {
   public:
     string MIMEType;
     string moduleFilePath;
+    string type_name;
 
     hienaMap *mapper(dcel &source) {}
 
@@ -80,7 +81,8 @@ class cosmosType {
 
     void locateModule();
     void loadModule();
-    cosmosType( string cosmos_typename ) {
+
+    cosmosType( string cosmos_typename = "" ) {
         // load module
     }
 };
@@ -92,14 +94,17 @@ class cosmosSystemObject {
     map<string, cosmosType> typeModules;
     map<string, cosmosService> serviceModules;
 
-    int init() {
-        cout<<"cosmosSystemObject::init()"<<endl;
-        return 0;
+
+    cosmosSystemObject() {
+        cout<<"cosmosSystemObject constructor called."<<endl;
     }
 
     cosmosService getServiceModule( string serviceStr ) {
     }
 
+    string testStr() {
+        return "cosmosSystemObject::testStr()";
+    }
 };
 
 
@@ -114,26 +119,32 @@ class dcel {
     list<cosmosType> types;
     list<dcel> children;
 
-    int initCosmos() {
-        cosmos.init();
-    }
 
-    cosmosType loadTypeModule(string type_name);
 
     dcel( string stringBacking )
-          : service("std::string")
-            address(stringBacking) {
+          : service("std::string"),
+            address(stringBacking)
+    {
     }
 
     dcel( string serviceStr, string addrStr )
 	    : service( serviceStr ),
 	      address( addrStr ),
-            type( service.getMIMEType( addrStr ))
+              type( service.getMIMEType( addrStr ) )
     {
-        service = cosmos.getServiceModule( serviceStr );
+        // service = cosmosSystemObject::getServiceModule( serviceStr );
     }
 
+    cosmosType loadTypeModule(string type_name) {};
     conformanceTree getTypes() {};
+
+    void addType( string type_name ) {
+        type.type_name = type_name;
+    };
+
+    string field( string fieldName ) {
+	    return "field placeholder";
+    };
 };
 
 
@@ -146,20 +157,26 @@ void hiena(dcel &source) {
         with multiple grammars
      */
     hienaMap *map;
+
+    /* fix dcel::types
     for ( auto curType : source.getTypes() ) {
         map = curType.mapper( source );
         if ( map != NULL )
             // source.map += map;
             ;
     };
+    */
 
     /* recursive mapping */
 
+    /* implement dcel::children
     for ( auto child : source.children ) {
         hiena( child );
     };
+    */
 }
 
+cosmosSystemObject cosmos;
 
 int main(int argc, char *argv[]) {
 
@@ -167,15 +184,18 @@ int main(int argc, char *argv[]) {
     /* (systemwide globals are stored
         in the dcel class static vars.)
      */
-    dcel::initCosmos();
 
-    dcel url{ argv[1] };
+    dcel url { argv[1] };
+
+    // dcel::cosmos is being "optimized out" 
+    // and the following says dcel::cosmos is undefined.
+    // can we make cosmosSystemObject cosmos a global?
+    string testStr = cosmos.testStr();
 
     /* overloaded op to type array:
         "url" will be located by cosmos_lookup()
      */
-    // url.type += "url";
-    url.
+    url.addType( "url" );
 
     dcel source { url.field("scheme"), url.field("address") };
 
@@ -200,6 +220,6 @@ void mapper(dcel) {
 		urlStream.close();
 
 	}
-      /* return a map as part of the dcel */
+      // return a map as part of the dcel
 }
 */
