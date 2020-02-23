@@ -15,7 +15,9 @@
 #include <map>
 using namespace std;
 
-#include "../cosmos/cosm_lookup.h" // requires 'libcosmos'
+extern "C" {
+	#include "../cosmos/cosm_lookup.h" // requires 'libcosmos'
+}
 
 // #include "cosmos.h"  // string db, global cosmos
 // #include "cosmosLexer.h"
@@ -57,7 +59,8 @@ class cosmosService : public string {
         // construct here
     }
     string getMIMEType( string address ) {
-        // custom module implements this
+	string tmpString { address };
+        return tmpString;
     }
     iostream openStream();
 };
@@ -70,7 +73,7 @@ class dcel;
 class cosmosType {
   public:
     string MIMEType;
-    string moduleFilePath;
+    char *moduleFilePath;
     string type_name;
 
     hienaMap *mapper(dcel &source) {}
@@ -82,8 +85,11 @@ class cosmosType {
     void locateModule();
     void loadModule();
 
-    cosmosType( string cosmos_typename = "" ) {
-        // load module
+    cosmosType( string cosmos_typename = "" )
+	    : type_name(cosmos_typename),
+	      MIMEType(cosmos_typename)
+    {
+	    moduleFilePath = cosm_lookup( cosmos_typename.c_str() );
     }
 };
 
@@ -116,7 +122,7 @@ class dcel {
     string address;
     cosmosType type;
 
-    list<cosmosType> types;
+    list<cosmosType*> types;
     list<dcel> children;
 
 
@@ -138,12 +144,17 @@ class dcel {
     cosmosType loadTypeModule(string type_name) {};
     conformanceTree getTypes() {};
 
-    void addType( string type_name ) {
+    void setType( string type_name ) {
         type.type_name = type_name;
     };
 
+    void addType( string type_name ) {
+        types.push_back( new cosmosType( type_name ) );
+    };
+
     string field( string fieldName ) {
-	    return "field placeholder";
+	    string tmpString { fieldName };
+	    return tmpString;
     };
 };
 
@@ -187,17 +198,18 @@ int main(int argc, char *argv[]) {
 
     dcel url { argv[1] };
 
-    // dcel::cosmos is being "optimized out" 
-    // and the following says dcel::cosmos is undefined.
-    // can we make cosmosSystemObject cosmos a global?
-    string testStr = cosmos.testStr();
-
     /* overloaded op to type array:
         "url" will be located by cosmos_lookup()
      */
+    url.setType( "url" );
     url.addType( "url" );
 
-    dcel source { url.field("scheme"), url.field("address") };
+    cout<<url.type.moduleFilePath<<endl;
+
+
+    string scheme_field = url.field("scheme");
+
+    dcel source { scheme_field, scheme_field };
 
     hiena( source );
 }

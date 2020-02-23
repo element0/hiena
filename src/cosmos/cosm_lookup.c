@@ -31,7 +31,7 @@
 
 
 
-char *cosm_lookup(char *subpath)
+char *cosm_lookup(const char *subpath)
 {
 	char  *dir;
 	size_t dir_len;
