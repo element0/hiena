@@ -494,7 +494,7 @@ test-prod-fns: prod-fns libhiena
 
 
 util-hiena:
-	g++ $(dbugopts) -std=c++11 util/hiena.cpp -o $(out-bin)/hiena -lcosmos
+	g++ $(dbugopts) -std=c++11 util/hiena.cpp -o $(out-bin)/hiena -lcosmos -ldl
 
 
 util-hiena-ls: hiena-obs svc-obs slib scanner scanner-hdl

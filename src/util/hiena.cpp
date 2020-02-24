@@ -16,7 +16,8 @@
 using namespace std;
 
 extern "C" {
-	#include "../cosmos/cosm_lookup.h" // requires 'libcosmos'
+#include "../cosmos/cosm_lookup.h" // requires 'libcosmos'
+#include <dlfcn.h>
 }
 
 // #include "cosmos.h"  // string db, global cosmos
@@ -55,14 +56,16 @@ class conformanceTree : public list<cosmosType> {
 
 class cosmosService : public string {
   public:
-    cosmosService( string address ) {
-        // construct here
-    }
+    string name;
+
     string getMIMEType( string address ) {
-	string tmpString { address };
-        return tmpString;
+        return address;
     }
     iostream openStream();
+
+    cosmosService( string address ) : name( address )
+    {
+    }
 };
 
 class hienaMap {
@@ -73,23 +76,40 @@ class dcel;
 class cosmosType {
   public:
     string MIMEType;
-    char *moduleFilePath;
     string type_name;
 
-    hienaMap *mapper(dcel &source) {}
-
+    string moduleBasePath;
+    string moduleMapperPath;
+    void *mapper_dl;
+    
     // conformance tree
     list<cosmosType> parents;
     list<cosmosType> children;
 
-    void locateModule();
-    void loadModule();
+    // module-defined elements
+    hienaMap *(*mapper)(dcel &source) {};
 
+
+    // module management
+    void loadModule() {
+	    string moduleTypePath = "Types/" + type_name;
+	    moduleBasePath = cosm_lookup( moduleTypePath.c_str() );
+	    moduleMapperPath = moduleBasePath + "/lib/mapper.so";
+	    mapper_dl = dlopen( moduleMapperPath.c_str(), RTLD_NOW );
+    }
+
+    void set_type_name( string cosmos_typename = "" )
+    {
+	    type_name = cosmos_typename;
+	    loadModule();
+    }
+
+    // constructors
     cosmosType( string cosmos_typename = "" )
 	    : type_name(cosmos_typename),
 	      MIMEType(cosmos_typename)
     {
-	    moduleFilePath = cosm_lookup( cosmos_typename.c_str() );
+	    loadModule();
     }
 };
 
@@ -141,15 +161,13 @@ class dcel {
         // service = cosmosSystemObject::getServiceModule( serviceStr );
     }
 
-    cosmosType loadTypeModule(string type_name) {};
-    conformanceTree getTypes() {};
-
-    void setType( string type_name ) {
-        type.type_name = type_name;
-    };
 
     void addType( string type_name ) {
         types.push_back( new cosmosType( type_name ) );
+    };
+
+    void setType( string type_name ) {
+        type.set_type_name( type_name );
     };
 
     string field( string fieldName ) {
@@ -187,29 +205,28 @@ void hiena(dcel &source) {
     */
 }
 
+
+/* initialize global cosmos object */
+
 cosmosSystemObject cosmos;
+
+
 
 int main(int argc, char *argv[]) {
 
-    /* initialize global cosmos object */
-    /* (systemwide globals are stored
-        in the dcel class static vars.)
-     */
 
     dcel url { argv[1] };
 
-    /* overloaded op to type array:
+    /*
         "url" will be located by cosmos_lookup()
      */
     url.setType( "url" );
-    url.addType( "url" );
-
-    cout<<url.type.moduleFilePath<<endl;
 
 
     string scheme_field = url.field("scheme");
+    string address_field = url.field("address");
 
-    dcel source { scheme_field, scheme_field };
+    dcel source { scheme_field, address_field };
 
     hiena( source );
 }
