@@ -91,15 +91,20 @@ class cosmosType {
 
     // module management
     void loadModule() {
-	    string moduleTypePath;
-	    string moduleBasePath;
 
-	    moduleTypePath = "Types/" + type_name;
-	    moduleBasePath = cosm_lookup( moduleTypePath.c_str() );
+	    if( type_name.empty() )
+		    return;
+
+	    string moduleTypePath = "Types/" + type_name;
+	    string moduleBasePath = cosm_lookup( moduleTypePath.c_str() );
 
           if( ! moduleBasePath.empty() ) {
 	        moduleMapperPath = moduleBasePath + "/lib/mapper.so";
 	        mapper_dl = dlopen( moduleMapperPath.c_str(), RTLD_NOW );
+		string err = dlerror();
+		if( ! err.empty() ) {
+			cout<<"error:"<<err<<endl;
+		}
           } else {
               mapper_dl = NULL;
           }

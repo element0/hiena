@@ -17,9 +17,11 @@ int main(int argc, char *argv[])
 
 	result = cosm_lookup(subpath);
 
-	printf("%s\n", result);
 
-	free(result);
+	if(result!=NULL) {
+		printf("%s\n", result);
+		free(result);
+	}
 
 	return 0;
 }

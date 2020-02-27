@@ -215,7 +215,7 @@ cosm-lookup:
 
 
 cosm-lookup-util:
-	gcc $(debugopts) util/cosm-lookup.c -o $(out-bin)/cosm-lookup -lcosmos
+	gcc $(dbugopts) util/cosm-lookup.c -o $(out-bin)/cosm-lookup -lcosmos
 
 
 libcosmos: cosm-lookup

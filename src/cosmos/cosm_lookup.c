@@ -33,33 +33,29 @@
 
 char *cosm_lookup(const char *subpath)
 {
-	char  *dir;
-	size_t dir_len;
-	char  *globstr;
+	size_t dir_len		= PATH_MAX;
+	char  *startdir 	= malloc(sizeof(char)*dir_len);
+	char  *globstr		= malloc(sizeof(char)*dir_len);
 	size_t globstr_len;
 	glob_t pglob;
+	char *dir;
 	char *target;
-	char *retstr;
-	size_t retstr_len;
+	char *retstr 		= NULL;
+	size_t retstr_len 	= 0;
 
-	dir_len = PATH_MAX;
-	dir = malloc(sizeof(char)*dir_len);
-
-	if (getcwd(dir, dir_len)==NULL) {
+	if (getcwd(startdir, dir_len)==NULL) {
 		fprintf(stderr,"cosm_lookup: cwd NULL, abort.");
 		exit(-1);
 	}
 
-	globstr = malloc(sizeof(char)*PATH_MAX);
+	dir = startdir;
 
 	while ( strncmp(dir,"/",2) != 0 )
 	{
-		target = NULL;
 		globstr_len = strlen(dir)
 			+ strlen(CONFNAME_RE)
 			+ strlen(subpath)+3;
 
-		/* target = */
 		snprintf(globstr, globstr_len, "%s/%s/%s",
 				dir, CONFNAME_RE, subpath); 
 
@@ -67,8 +63,10 @@ char *cosm_lookup(const char *subpath)
 
 		if(pglob.gl_pathc != 0)
 			target = pglob.gl_pathv[0];
+		else
+			target = NULL;
 
-		if(target != NULL) // todo: check if exits
+		if(target != NULL)
 		{
 			retstr_len = strnlen(target, PATH_MAX)+1;
 			retstr = malloc(sizeof(char)*retstr_len);
@@ -81,7 +79,7 @@ char *cosm_lookup(const char *subpath)
 		dir = dirname(dir);
 	}
 
-	free(dir);
+	free(startdir);
 	free(globstr);
 	return retstr;
 }
