@@ -78,7 +78,6 @@ class cosmosType {
     string MIMEType;
     string type_name;
 
-    string moduleBasePath;
     string moduleMapperPath;
     void *mapper_dl;
     
@@ -92,10 +91,18 @@ class cosmosType {
 
     // module management
     void loadModule() {
-	    string moduleTypePath = "Types/" + type_name;
+	    string moduleTypePath;
+	    string moduleBasePath;
+
+	    moduleTypePath = "Types/" + type_name;
 	    moduleBasePath = cosm_lookup( moduleTypePath.c_str() );
-	    moduleMapperPath = moduleBasePath + "/lib/mapper.so";
-	    mapper_dl = dlopen( moduleMapperPath.c_str(), RTLD_NOW );
+
+          if( ! moduleBasePath.empty() ) {
+	        moduleMapperPath = moduleBasePath + "/lib/mapper.so";
+	        mapper_dl = dlopen( moduleMapperPath.c_str(), RTLD_NOW );
+          } else {
+              mapper_dl = NULL;
+          }
     }
 
     void set_type_name( string cosmos_typename = "" )
@@ -214,7 +221,9 @@ cosmosSystemObject cosmos;
 
 int main(int argc, char *argv[]) {
 
-
+    if ( argc < 2 )
+        return 0;
+    
     dcel url { argv[1] };
 
     /*
@@ -229,6 +238,8 @@ int main(int argc, char *argv[]) {
     dcel source { scheme_field, address_field };
 
     hiena( source );
+
+    return 0;
 }
 
 
