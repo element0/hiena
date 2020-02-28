@@ -61,16 +61,14 @@ class cosmosService : public string {
     string getMIMEType( string address ) {
         return address;
     }
+
     iostream openStream();
 
-    cosmosService( string address ) : name( address )
-    {
-    }
+    cosmosService( string address ) : name( address ) {}
 };
 
-class hienaMap {
-};
 
+class hienaMap;
 class dcel;
 
 class cosmosType {
@@ -99,12 +97,11 @@ class cosmosType {
 		    return;
 
 	    string moduleSoRelpath = "Types/" + type_name + "/lib/mapper.so";
-	    string moduleMapperPath = cosm_lookup( moduleSoRelpath.c_str() );
-
-          if( ! moduleMapperPath.empty() ) {
-	        mapper_dl = dlopen( moduleMapperPath.c_str(), RTLD_NOW );
-		string err = dlerror();
-		if( ! err.empty() ) {
+	    const char *moduleMapperPath = cosm_lookup( moduleSoRelpath.c_str() );
+	    if( moduleMapperPath != NULL ) {
+	        mapper_dl = dlopen( moduleMapperPath, RTLD_NOW );
+		const char *err = dlerror();
+		if( err != NULL ) {
 			cout<<"error:"<<err<<endl;
 			mapper_dl = NULL;
 		}

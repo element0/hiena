@@ -42,6 +42,7 @@ install:  install-libcosmos cosm-lookup-util
 
 install-libcosmos: libcosmos
 	sudo mv $(out-lib)/libcosmos.so $(install-lib)/.
+	sudo ldconfig
 
 prep-install:  install-dirs
 
