@@ -80,6 +80,9 @@ class cosmosType {
 
     string moduleMapperPath;
     void *mapper_dl;
+
+    int (*mapper_fn)();
+    
     
     // conformance tree
     list<cosmosType> parents;
@@ -95,16 +98,19 @@ class cosmosType {
 	    if( type_name.empty() )
 		    return;
 
-	    string moduleTypePath = "Types/" + type_name;
-	    string moduleBasePath = cosm_lookup( moduleTypePath.c_str() );
+	    string moduleSoRelpath = "Types/" + type_name + "/lib/mapper.so";
+	    string moduleMapperPath = cosm_lookup( moduleSoRelpath.c_str() );
 
-          if( ! moduleBasePath.empty() ) {
-	        moduleMapperPath = moduleBasePath + "/lib/mapper.so";
+          if( ! moduleMapperPath.empty() ) {
 	        mapper_dl = dlopen( moduleMapperPath.c_str(), RTLD_NOW );
 		string err = dlerror();
 		if( ! err.empty() ) {
 			cout<<"error:"<<err<<endl;
+			mapper_dl = NULL;
 		}
+		mapper_fn = (int (*)())dlsym( mapper_dl, "mapper" );
+		mapper_fn();
+
           } else {
               mapper_dl = NULL;
           }
