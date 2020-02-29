@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <list>
 #include <map>
@@ -62,7 +63,12 @@ class cosmosService : public string {
         return address;
     }
 
-    iostream openStream();
+    istringstream & open( string address ) {
+        if (name == "std::string") {
+	    istringstream *s = new istringstream(address);
+	    return *s;
+	}
+    }
 
     cosmosService( string address ) : name( address ) {}
 };
@@ -79,7 +85,7 @@ class cosmosType {
     string moduleMapperPath;
     void *mapper_dl;
 
-    int (*mapper_fn)();
+    int (*mapper_fn)(istream &);
     
     
     // conformance tree
@@ -105,9 +111,7 @@ class cosmosType {
 			cout<<"error:"<<err<<endl;
 			mapper_dl = NULL;
 		}
-		mapper_fn = (int (*)())dlsym( mapper_dl, "mapper" );
-		mapper_fn();
-
+		mapper_fn = (int (*)(istream &))dlsym( mapper_dl, "mapper" );
           } else {
               mapper_dl = NULL;
           }
@@ -185,6 +189,12 @@ class dcel {
         type.set_type_name( type_name );
     };
 
+    void makeMap() {
+	istringstream & stream = service.open( address );
+	type.mapper_fn((istream &)stream);
+    }
+
+
     string field( string fieldName ) {
 	    string tmpString { fieldName };
 	    return tmpString;
@@ -239,6 +249,8 @@ int main(int argc, char *argv[]) {
      */
     url.setType( "url" );
 
+    // test
+    url.makeMap();
 
     string scheme_field = url.field("scheme");
     string address_field = url.field("address");
