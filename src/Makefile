@@ -6,10 +6,12 @@ out-lib = ../out/lib
 out-modules = $(out-lib)/modules
 out-test-bin = ../out/test-bin
 
-install-lib = /usr/local/lib
-install-lib-modules = $(install-lib)/modules
-
 install-bin = /usr/local/bin
+install-lib = /usr/local/lib
+install-lib-modules = $(install-lib)/cosmos/modules
+install-include = /usr/local/include/cosmos
+
+
 
 src-modules = ./modules
 
@@ -27,7 +29,10 @@ out-dirs:
 	mkdir -p $(out-test-bin)
 
 install-dirs:
-	mkdir -p $(install-lib)
+	sudo mkdir -p $(install-lib)
+	sudo mkdir -p $(install-include)
+
+install-dirs-old:
 	mkdir -p $(install-lib-modules)
 
 
@@ -37,11 +42,13 @@ all: out-dirs install-dirs tests utils
 devdirs:  out-dirs
 
 
-install:  install-libcosmos cosm-lookup-util
+install:  install-dirs install-libcosmos cosm-lookup-util
 	sudo mv $(out-bin)/cosm-lookup $(install-bin)/.
 
 install-libcosmos: libcosmos
 	sudo mv $(out-lib)/libcosmos.so $(install-lib)/.
+	sudo cp cosmos/cosm_lookup.h $(install-include)/.
+	sudo cp cosmos/dcel.h $(install-include)/.
 	sudo ldconfig
 
 prep-install:  install-dirs
