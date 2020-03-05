@@ -1,0 +1,24 @@
+template <typename T>
+class accessTree {
+    private:
+    public:
+        T *pointer;
+        list<accessTree> parents;
+        list<accessTree> children;
+
+    accessTree(T *p)
+    {
+        pointer = p;
+    }
+};
+
+template <typename T>
+class inheritanceTree : public accessTree<T> {
+    public:
+        // override sequence getter methods
+};
+
+class conformanceTree : public list<cosmosType> {
+  public:
+    conformanceTree findSubtreeWithType( cosmosType type );
+};

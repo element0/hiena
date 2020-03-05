@@ -24,43 +24,12 @@ extern "C" {
 #include "dcel.h"
 
 
-
-string cosmosService::getMIMEType( string address ) {
-	return address;
-}
-
-istringstream & cosmosService::open( string address ) {
-	if (name == "std::string") {
-	    istringstream *s = new istringstream(address);
-	    return *s;
-	}
-}
-
-cosmosService::cosmosService( string address ) : name( address ) {}
+namespace Cosmos {
 
 
+    /* --- cosmosType */
 
-class cosmosType {
-  public:
-    string MIMEType;
-    string type_name;
-
-    string moduleMapperPath;
-    void *mapper_dl;
-
-    int (*mapper_fn)(istream &);
-    
-    
-    // conformance tree
-    list<cosmosType> parents;
-    list<cosmosType> children;
-
-    // module-defined elements
-    hienaMap *(*mapper)(dcel &source) {};
-
-
-    // module management
-    void loadModule() {
+    void cosmosType::loadModule() {
 
 	    if( type_name.empty() )
 		    return;
@@ -74,71 +43,70 @@ class cosmosType {
 			cout<<"error:"<<err<<endl;
 			mapper_dl = NULL;
 		}
-		mapper_fn = (int (*)(istream &))dlsym( mapper_dl, "mapper" );
+		mapper_fn = (dcel *(*)(istream &))dlsym( mapper_dl, "mapper" );
           } else {
               mapper_dl = NULL;
           }
     }
 
-    void set_type_name( string cosmos_typename = "" )
-    {
+    void cosmosType::set_type_name( string cosmos_typename = "" ) {
 	    type_name = cosmos_typename;
 	    loadModule();
     }
 
-    // constructors
-    cosmosType( string cosmos_typename = "" )
+    cosmosType::cosmosType( string cosmos_typename = "" )
 	    : type_name(cosmos_typename),
 	      MIMEType(cosmos_typename)
     {
 	    loadModule();
     }
-};
 
 
-class cosmosSystemObject {
-  public:
-    conformanceTree typeTree;
-    map<string, cosmosType> typeModules;
-    map<string, cosmosService> serviceModules;
 
 
-    cosmosSystemObject() {
+    /*--- cosmosService */
+
+    string cosmosService::getMIMEType( string address ) {
+	return address;
+    }
+
+    istringstream & cosmosService::open( string address ) {
+	if (name == "std::string") {
+	    istringstream *s = new istringstream(address);
+	    return *s;
+        }
+    }
+
+    cosmosService::cosmosService( string address ) : name( address ) {}
+
+
+
+
+
+    /*--- cosmosSystemObject */
+
+    cosmosSystemObject::cosmosSystemObject() {
         cout<<"cosmosSystemObject constructor called."<<endl;
     }
 
-    cosmosService getServiceModule( string serviceStr ) {
+    cosmosService cosmosSystemObject::getServiceModule( string serviceStr ) {
     }
 
-    string testStr() {
+    string cosmosSystemObject::testStr() {
         return "cosmosSystemObject::testStr()";
     }
-};
-
-class dcel {
-  public:
-    static cosmosSystemObject cosmos;
-
-    cosmosService service;
-    string address;
-    cosmosType type;
-
-    list<cosmosType*> types;
-    list<dcel> children;
-    list<dcel> fields;
-
-    /// map
-    string name;
 
 
 
-    dcel( string stringBacking )
+
+    /*--- dcel */
+
+    dcel::dcel( string stringBacking = "" )
           : service("std::string"),
             address(stringBacking)
-    {
-    }
+    {}
 
-    dcel( string serviceStr, string addrStr )
+    dcel::dcel( string serviceStr, string addrStr )
 	    : service( serviceStr ),
 	      address( addrStr ),
               type( service.getMIMEType( addrStr ) )
@@ -146,23 +114,53 @@ class dcel {
         // service = cosmosSystemObject::getServiceModule( serviceStr );
     }
 
+    dcel::dcel( dcel *source )
+	    : service( "" ),
+	      address( "" ),
+            dcelBacking( source )
+    {
+    }
 
-    void addType( string type_name ) {
+    void dcel::addType( string type_name ) {
         types.push_back( new cosmosType( type_name ) );
-    };
+    }
 
-    void setType( string type_name ) {
+    void dcel::setType( string type_name ) {
         type.set_type_name( type_name );
-    };
+    }
 
-    void makeMap() {
+    void dcel::makeMap() {
 	istringstream & stream = service.open( address );
 	type.mapper_fn((istream &)stream);
     }
 
 
-    string field( string fieldName ) {
+    /* return contents of field as a string
+     */
+    string dcel::field( string fieldName ) {
 	    string tmpString { fieldName };
 	    return tmpString;
-    };
-};
+    }
+
+    dcel *dcel::addField() {
+        return new dcel("");
+    }
+
+    dcel *dcel::addField(string name, int start, int stop) {
+        dcel *newField = new dcel(this);
+        fields.insert(pair<string,dcel *>(name,newField));
+        newField->start = start;
+        newField->stop = stop;
+        return newField;
+    }
+
+    dcel *dcel::enter() {
+        return new dcel("");
+    }
+
+    dcel *dcel::exit() {
+        return new dcel("");
+    }
+
+
+}

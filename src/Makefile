@@ -120,6 +120,9 @@ cosmos-vm-localhost: cosmos-vm-core cosmos-server-core cosmos-server-msg
 	gcc $(dbugopts) -fPIC $(out-o)/{cosmos_vm_core.o,cosmos-server-core.o,cosmos-server-msg.o} -o $(out-bin)/cosmos_vm_localhost
 
 
+dcel-cpp:
+	gcc $(dbugopts) -fPIC -std=c++11 -c cosmos/dcel.cpp -o $(out-o)/dcel_cpp.o
+
 
 dcel:   ptr-stack frag
 	gcc $(dbugopts) -fPIC -c dcel.c -o $(out-o)/dcel.o
@@ -226,8 +229,8 @@ cosm-lookup-util:
 	gcc $(dbugopts) util/cosm-lookup.c -o $(out-bin)/cosm-lookup -lcosmos
 
 
-libcosmos: cosm-lookup
-	gcc $(dbugopts) -fPIC -shared $(out-o)/cosm_lookup.o -o $(out-lib)/libcosmos.so
+libcosmos: cosm-lookup dcel-cpp
+	gcc $(dbugopts) -fPIC -shared $(out-o)/{cosm_lookup,dcel_cpp}.o -o $(out-lib)/libcosmos.so -lstdc++ -ldl
 
 
 libcosmos-old:  devdirs libhiena access-frame cosmos-config cosmos-db cosmos-fs cosmos-module cosmos-init cosmos-bind cosmos-lookup
