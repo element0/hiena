@@ -61,9 +61,6 @@ void hiena(dcel &source) {
 }
 
 
-/* initialize global cosmos object */
-
-cosmosSystemObject cosmos;
 
 
 
@@ -80,16 +77,16 @@ int main(int argc, char *argv[]) {
 
     if ( argc > 2 ) {
         char *lookup_field = argv[3];
-        string return_field = url.field( lookup_field );
+        string *return_field = url.field( lookup_field );
 
         cout << return_field << endl;
         return 0;
     }
 
-    string scheme_field = url.field("scheme");
-    string address_field = url.field("address");
+    string *scheme_field = url.field("scheme");
+    string *address_field = url.field("address");
 
-    dcel source( scheme_field, address_field );
+    dcel source( *scheme_field, *address_field );
 
     hiena( source );
 

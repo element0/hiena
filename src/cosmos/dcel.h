@@ -55,6 +55,7 @@ class cosmosService {
 
     string getMIMEType( string address );
     istringstream & open( string address );
+    ostringstream & asOstringstream( string address );
 };
 
 
@@ -62,26 +63,25 @@ class cosmosService {
 class cosmosSystemObject {
   public:
     cosmosType typeTree;
-    map<string, cosmosType> typeModules;
-    map<string, cosmosService> serviceModules;
+    map<string, cosmosType *> typeModules;
+    map<string, cosmosService *> serviceModules;
 
     cosmosSystemObject();
-    cosmosService getServiceModule( string );
-    string testStr();
+    cosmosService * getService( string );
+    cosmosType* getType( string );
 };
 
 
 class dcel {
   public:
-    // static cosmosSystemObject cosmos;
-
-    cosmosService service;
+    cosmosService *service;
     string address;
-    cosmosType type;
+    cosmosType *type;
 
-    // alternative as if:
+    // alternative:
     // service="Cosmos::dcel", address=dcelPointer
-    dcel *dcelBacking;
+    // remove this. just 
+    dcel *dcelBacking = NULL;
 
     list<cosmosType*> types;
     list<dcel> children;
@@ -91,11 +91,14 @@ class dcel {
     // string name;
     int start;
     int stop;
+    dcel *superField;
     dcel *addField();
     dcel *addField(string,int,int);
     dcel *enter();
     dcel *exit();
-    string field( string fieldName );
+    string *field( string fieldName );
+
+    string *str();
 
     dcel( string );
     dcel( string serviceStr, string addrStr );

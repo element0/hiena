@@ -3,6 +3,9 @@
 2020-02-15 1721
 
 WIP util/hiena
+- use service modules and pointers to cosmosService objects
+- hold services and types in cosmosSystemObject
+- fix dcel::field and dcel::str
 - use cosm_lookup() READY
 - use url mapper
 - use cosmos_string_db under dcel hood to transparently replace `string`
