@@ -70,26 +70,29 @@ int main(int argc, char *argv[]) {
         return 0;
     
     dcel url( argv[1] );
-
-    /* "url" will be located by cosmos_lookup() */
     url.setType( "url" );
     url.makeMap();
 
+
     if ( argc > 2 ) {
-        char *lookup_field = argv[3];
+        char *lookup_field = argv[2];
         string *return_field = url.field( lookup_field );
 
-        cout << return_field << endl;
+	if(return_field != NULL)
+	    cout << *return_field << endl;
         return 0;
     }
 
+    string *hello_test = url.field("ID");
+    cout << *hello_test << endl;
+
+
+/*
     string *scheme_field = url.field("scheme");
     string *address_field = url.field("address");
-
-    dcel source( *scheme_field, *address_field );
-
+    // dcel source( *scheme_field, *address_field );
     hiena( source );
-
+*/
     return 0;
 }
 

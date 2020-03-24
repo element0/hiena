@@ -16,63 +16,115 @@
 #include <string>
 #include <list>
 #include <map>
+#include <stack>
 
 using namespace std;
 
 extern "C" {
 #include "cosm_lookup.h" // requires 'libcosmos'
 #include <dlfcn.h>
+#include "curl/curl.h"
 }
 
 namespace Cosmos {
 
+
 class hienaMap;
 class dcel;
 
-class cosmosType {
+
+class cosmosModule {
+  public:
+    string name;
+    void *module_dl;
+};
+
+
+
+class cosmosType : public cosmosModule {
   public:
     string MIMEType;
-    string type_name;
-
-    string moduleMapperPath;
-    void *mapper_dl;
-    dcel *(*mapper_fn)(istream &);
-
     list<cosmosType> superTypes;
     list<cosmosType> subTypes;
 
-    cosmosType( string );
 
-    void loadModule();
-    void set_type_name( string );
+    // module init
+    void moduleInit();
+
+    // module ops
+    dcel *(*mapper_fn)(istream &);
+
+    cosmosType( string typeName );
+    cosmosType( void *dl );
 };
 
-class cosmosService {
+
+class cosmosService : public cosmosModule {
   public:
-    string name;
+    string getMIMEType( string address );
+
+    // module function pointers
+    void *(*fopen)(const char *url, const char *operation);
+    int (*fclose)( void *file);
+    int (*feof)(void *file);
+    size_t (*fread)(void *ptr, size_t size, size_t nmemb, void *file);
+    char *(*fgets)(char *ptr, size_t size, void *file);
+    void (*rewind)(void *file);
+
+    // cpp io interface
+    ostringstream & asOstringstream( string address );
+    istringstream & open( string address );
 
     cosmosService( string address );
-
-    string getMIMEType( string address );
-    istringstream & open( string address );
-    ostringstream & asOstringstream( string address );
 };
 
 
+
+/** cosmosSystemObject
+ *
+ *  - global config of cosmos system.
+ *  - global cache of all cosms encountered
+ *    by cosm_lookup.
+ *  
+ *    cache is file-system-like. each cached
+ *    asset is mapped by filepath.
+ *    convenience indices map filepaths to
+ *    asset types.
+ *
+ *    eg:
+ *    {
+ *      "~/_Cosm/Types/url/lib/mapper.so",
+ *      dylib ptr
+ *    }
+ *
+ */  
 
 class cosmosSystemObject {
   public:
+    // config
+    string metadir_re;
+    string typedir_name;
+    string servicedir_name;
+
     cosmosType typeTree;
     map<string, cosmosType *> typeModules;
     map<string, cosmosService *> serviceModules;
+    map<string, cosmosModule *> modules;
 
     cosmosSystemObject();
+    void * loadModule( string );
+    cosmosModule * getModule( string );
     cosmosService * getService( string );
-    cosmosType* getType( string );
+    cosmosType * getType( string );
 };
 
 
+
+
 class dcel {
+  private:
+    void fieldWalk( stack<dcel *> *, multimap<string, dcel *> *, string );
+
   public:
     cosmosService *service;
     string address;
@@ -96,9 +148,11 @@ class dcel {
     dcel *addField(string,int,int);
     dcel *enter();
     dcel *exit();
+    multimap<string, dcel *> *fieldMatch( string fieldName );
     string *field( string fieldName );
 
     string *str();
+    string *str(int startpos, int stoppos);
 
     dcel( string );
     dcel( string serviceStr, string addrStr );

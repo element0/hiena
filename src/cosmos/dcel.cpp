@@ -13,16 +13,15 @@
 #include <string>
 #include <list>
 #include <map>
-
-using namespace std;
+#include <stack>
+#include "dcel.h"
 
 extern "C" {
 #include "cosm_lookup.h" // requires 'libcosmos'
 #include <dlfcn.h>
 }
 
-#include "dcel.h"
-
+using namespace std;
 
 namespace Cosmos {
 
@@ -34,55 +33,43 @@ namespace Cosmos {
     cosmosSystemObject cosmos;
 
 
+    /********************/
+    /* --- cosmosModule */
+    /********************/
+
+    // abstract type
+
+
 
     /******************/
     /* --- cosmosType */
     /******************/
 
-    void cosmosType::loadModule() {
-
-	if( type_name.empty() )
-		return;
-
-	string moduleSoRelpath = "Types/" + type_name + "/lib/mapper.so";
-	const char *moduleMapperPath = cosm_lookup( moduleSoRelpath.c_str() );
-	if( moduleMapperPath != NULL ) {
-	    mapper_dl = dlopen( moduleMapperPath, RTLD_NOW );
-	    const char *err = dlerror();
-	    if( err != NULL ) {
-		cout<<"error:"<<err<<endl;
-		mapper_dl = NULL;
-		mapper_fn = NULL;
-	    } else {
-		mapper_fn = (dcel *(*)(istream &))dlsym( mapper_dl, "mapper" );
-	    }
-	    cosmos.typeModules[moduleMapperPath] = this;
-	} else {
-	    mapper_dl = NULL;
-	}
-    }
-
-    void cosmosType::set_type_name( string cosmos_typename = "" ) {
-	    type_name = cosmos_typename;
-	    loadModule();
-    }
 
     cosmosType::cosmosType( string cosmos_typename = "" )
-	    : type_name(cosmos_typename),
-	      MIMEType(cosmos_typename)
-    {
-	    loadModule();
+	    : MIMEType{ cosmos_typename } {
+	name = cosmos_typename;
+    }
+
+    void cosmosType::moduleInit() {
+	if( module_dl == NULL ) {
+	    return;
+	}
+
+	mapper_fn = (dcel *(*)(istream &))dlsym( module_dl, "mapper" );
+
     }
 
 
 
-
-    /*--- cosmosService */
+    /*********************/
+    /* --- cosmosService */
+    /*********************/
 
     string cosmosService::getMIMEType( string address ) {
-	return address;
+	return "not implemented";
     }
-
+    
     istringstream & cosmosService::open( string address ) {
 	if (name == "std::string") {
 	    istringstream *s = new istringstream(address);
@@ -97,7 +84,10 @@ namespace Cosmos {
         }
     }
 
-    cosmosService::cosmosService( string newName ) : name( newName ) {}
+    cosmosService::cosmosService( string newName ) {
+	name = newName;
+	module_dl = NULL;
+    }
 
 
 
@@ -106,66 +96,137 @@ namespace Cosmos {
     /*--- cosmosSystemObject */
     /*************************/
 
+
+    void *cosmosSystemObject::loadModule( string moduleSOFullPath ) {
+
+        if( moduleSOFullPath.empty() )
+            return NULL;
+
+        void *module_dl = dlopen( moduleSOFullPath.c_str(), RTLD_NOW );
+
+        const char *err = dlerror();
+
+        if( err != NULL ) {
+            cerr<<"error:"<<err<<endl;
+            module_dl = NULL;
+        }
+
+        return module_dl;
+    }
+
+
+
+
+
+    cosmosService * cosmosSystemObject::getService(string svc) {
+
+        if( svc.empty() )
+            return NULL;
+
+        string moduleSoRelpath = servicedir_name + "/" + svc + "/lib/service.so";
+
+        const char *moduleSoFullPath = cosm_lookup( moduleSoRelpath.c_str() );
+
+        cosmosService *res;
+	const char *moduleID = moduleSoFullPath;
+        if( moduleID == NULL )
+	    moduleID = svc.c_str();
+
+	auto it = serviceModules.find( moduleID );
+        if( it != serviceModules.end() ) {
+            res = it->second;
+            return res;
+        } else if( moduleSoFullPath == NULL ) {
+	    return NULL;
+	}
+
+        res = new cosmosService( svc );
+
+        res->module_dl = loadModule( moduleSoFullPath );
+
+        serviceModules[moduleSoFullPath] = res;
+	modules[moduleSoFullPath] = res;
+
+        return res;
+    }
+
+
+    cosmosType * cosmosSystemObject::getType( string typ ) {
+
+        if( typ.empty() )
+            return NULL;
+
+        cosmosType *res;
+
+        string moduleSoRelpath = typedir_name + "/" + typ + "/lib/mapper.so";
+
+        const char *moduleSoFullPath = cosm_lookup( moduleSoRelpath.c_str() );
+
+        if( moduleSoFullPath == NULL )
+            return NULL;
+
+        auto it = typeModules.find( moduleSoFullPath );
+        if( it != typeModules.end() ) {
+            res = it->second;
+            return res;
+        }
+
+	res = new cosmosType( typ );
+        res->module_dl = loadModule( moduleSoFullPath );
+
+	res->moduleInit();
+
+        typeModules[moduleSoFullPath] = res;
+	modules[moduleSoFullPath] = res;
+
+        return res;
+    }
+
+
     cosmosSystemObject::cosmosSystemObject() {
-        cout<<"cosmosSystemObject constructor called."<<endl;
+        metadir_re = "[._][Cc]osm";
+        typedir_name = "Types";
+        servicedir_name = "Services";
+
+	// BUILTINS
+
+	auto builtinStdString = new cosmosService( "std::string" );
+
+	serviceModules["std::string"] = builtinStdString;
     }
-
-    cosmosService *cosmosSystemObject::getService( string serviceStr ) {
-        return serviceModules[serviceStr] = new cosmosService(serviceStr);
-    }
-
-    cosmosType *cosmosSystemObject::getType( string typeStr ) {
-	return typeModules[typeStr] = new cosmosType(typeStr);
-    }
-
-
-
 
 
     /***********/
     /*--- dcel */
     /***********/
 
+
     dcel::dcel( string stringBacking = "" ) {
-	service = cosmos.getService("std::string");
-	address = stringBacking;
-    }
-
-    dcel::dcel( string serviceStr, string addrStr ) {
-        service = cosmos.getService( serviceStr );
-        address = addrStr;
+        service = cosmos.getService("std::string");
+        address = stringBacking;
     }
 
 
-    // delete this
-    dcel::dcel( dcel *source ) {
-	// remove
-        dcelBacking = source->dcelBacking;
+
+    dcel::dcel( string svc, string addr ) {
+        service = cosmos.getService( svc );
+        address = addr;
     }
 
 
 
     void dcel::addType( string type_name ) {
-        types.push_back( new cosmosType( type_name ) );
+        types.push_back( cosmos.getType( type_name ));
     }
+
 
 
     void dcel::setType( string type_name ) {
-	type = cosmos.getType( type_name );
+        type = cosmos.getType( type_name );
     }
 
-    void dcel::makeMap() {
-	istringstream & stream = service->open( address );
 
-       // the map needs to have its dcelBacking
-       // pointed to 'this.'
-	dcel *map = type->mapper_fn((istream &)stream);
 
-	// delete this
-        map->dcelBacking = this;
-	
-	fields = map->fields;
-    }
 
 
     string *dcel::str() {
@@ -176,34 +237,58 @@ namespace Cosmos {
     }
 
 
-    /* return contents of field as a string
-     */
-    string *dcel::field( string fieldName ) {
+    string *dcel::str(int startpos, int stoppos) {
+        int len = stoppos - startpos + 1;
 
-        // no need dcelBacking, just find field and use 'this' as backing.
+        istringstream & stream = service->open( address );
+        stream.seekg(startpos);
 
-        multimap<string, dcel *>::iterator it = fields.find(fieldName);
+        char *buffer = new char[len+1];
+        stream.read(buffer, len);
+        buffer[len] = '\0';
 
-	// how do we judge if not found?
-	/*
-        if( it.end ) {
-            return NULL;
-        }
-	*/
-
-        dcel *target = it->second;
-
-        string *value = target->str();
-
-        // copy string out
-        // tbd
-
-        if( target == NULL ) {
-            return NULL;
-        }
-
-	return new string("temp output");
+        string *result = new string(buffer);
+        return result;
     }
+
+
+    void dcel::fieldWalk( stack<dcel *> *level, multimap<string, dcel *> *result, string searchExpr ) {
+        for (auto field : level->top()->fields ) {
+            if(field.first == searchExpr )
+                result->insert(field);
+
+            level->push( field.second );
+            fieldWalk( level, result, searchExpr );
+            level->pop();
+        }
+    }
+
+    
+    multimap<string, dcel *> *dcel::fieldMatch( string fieldName ) {
+        multimap<string, dcel *> *result = new multimap<string, dcel *>();
+        stack<dcel *> level;
+        level.push( this );
+	
+        while ( ! level.empty() ) {
+            fieldWalk( &level, result, fieldName );
+            level.pop();
+        }
+
+        return result;
+    }
+
+
+    string *dcel::field( string fieldName ) {
+	multimap<string, dcel *> *matchlist = fieldMatch( fieldName );
+        if(!matchlist->empty()) {
+	    dcel *field = matchlist->begin()->second;
+	    string *result = str(field->start, field->stop);
+	    return result;
+	}
+	return NULL;
+    }
+
+
 
     dcel *dcel::addField() {
         return new dcel("");
@@ -231,7 +316,17 @@ namespace Cosmos {
     }
 
 
+    void dcel::makeMap() {
 
+	istringstream & stream = service->open( address );
+
+	dcel *map = type->mapper_fn((istream &)stream);
+
+	// delete this
+        map->dcelBacking = this;
+	
+	fields.insert(pair<string,dcel *>(type->name, map));
+    }
 }
 
 
