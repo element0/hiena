@@ -49,7 +49,7 @@ class cosmosType : public cosmosModule {
 
 
     // module init
-    void moduleInit();
+    void initModule();
 
     // module ops
     dcel *(*mapper_fn)(istream &);
@@ -63,17 +63,12 @@ class cosmosService : public cosmosModule {
   public:
     string getMIMEType( string address );
 
-    // module function pointers
-    void *(*fopen)(const char *url, const char *operation);
-    int (*fclose)( void *file);
-    int (*feof)(void *file);
-    size_t (*fread)(void *ptr, size_t size, size_t nmemb, void *file);
-    char *(*fgets)(char *ptr, size_t size, void *file);
-    void (*rewind)(void *file);
+    struct cosmos_service_func_block *ops;
 
-    // cpp io interface
     ostringstream & asOstringstream( string address );
     istringstream & open( string address );
+
+    void initModule();
 
     cosmosService( string address );
 };

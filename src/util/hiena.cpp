@@ -78,12 +78,13 @@ int main(int argc, char *argv[]) {
         char *lookup_field = argv[2];
         string *return_field = url.field( lookup_field );
 
-	if(return_field != NULL)
-	    cout << *return_field << endl;
+        if(return_field != NULL)
+            cout << *return_field << endl;
+
         return 0;
     }
 
-    string *hello_test = url.field("ID");
+    string *hello_test = url.field("uri");
     cout << *hello_test << endl;
 
 

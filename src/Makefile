@@ -48,6 +48,7 @@ install:  install-dirs install-libcosmos cosm-lookup-util
 install-libcosmos: libcosmos
 	sudo mv $(out-lib)/libcosmos.so $(install-lib)/.
 	sudo cp cosmos/cosm_lookup.h $(install-include)/.
+	sudo cp cosmos/cosmos_service_func_block.h $(install-include)/.
 	sudo cp cosmos/dcel.h $(install-include)/.
 	sudo ldconfig
 

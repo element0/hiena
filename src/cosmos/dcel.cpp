@@ -18,7 +18,9 @@
 
 extern "C" {
 #include "cosm_lookup.h" // requires 'libcosmos'
+#include "cosmos_service_func_block.h"
 #include <dlfcn.h>
+
 }
 
 using namespace std;
@@ -51,7 +53,7 @@ namespace Cosmos {
 	name = cosmos_typename;
     }
 
-    void cosmosType::moduleInit() {
+    void cosmosType::initModule() {
 	if( module_dl == NULL ) {
 	    return;
 	}
@@ -90,6 +92,18 @@ namespace Cosmos {
     }
 
 
+    void cosmosService::initModule() {
+
+        if( module_dl == NULL ) {
+            ops = NULL;
+            return;
+        }
+
+        ops = (cosmos_service_func_block *)dlsym( module_dl, "cosmos_service_funcs" );
+
+    }
+
+
 
 
     /*************************/
@@ -105,7 +119,6 @@ namespace Cosmos {
         void *module_dl = dlopen( moduleSOFullPath.c_str(), RTLD_NOW );
 
         const char *err = dlerror();
-
         if( err != NULL ) {
             cerr<<"error:"<<err<<endl;
             module_dl = NULL;
@@ -132,20 +145,22 @@ namespace Cosmos {
         if( moduleID == NULL )
 	    moduleID = svc.c_str();
 
-	auto it = serviceModules.find( moduleID );
+        auto it = serviceModules.find( moduleID );
         if( it != serviceModules.end() ) {
             res = it->second;
             return res;
-        } else if( moduleSoFullPath == NULL ) {
-	    return NULL;
-	}
+        } else if( moduleSoFullPath == NULL ){
+            return NULL;
+        }
 
         res = new cosmosService( svc );
 
         res->module_dl = loadModule( moduleSoFullPath );
 
+        res->initModule();
+
         serviceModules[moduleSoFullPath] = res;
-	modules[moduleSoFullPath] = res;
+        modules[moduleSoFullPath] = res;
 
         return res;
     }
@@ -174,7 +189,7 @@ namespace Cosmos {
 	res = new cosmosType( typ );
         res->module_dl = loadModule( moduleSoFullPath );
 
-	res->moduleInit();
+	res->initModule();
 
         typeModules[moduleSoFullPath] = res;
 	modules[moduleSoFullPath] = res;

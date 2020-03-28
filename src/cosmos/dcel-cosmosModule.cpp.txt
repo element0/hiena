@@ -1,0 +1,24 @@
+    /******************/
+    /* --- cosmosModule */
+    /******************/
+
+    void *cosmosModule::loadModule(string moduleSoRelpath, string moduleSymbol) {
+	if( module_name.empty() )
+		return NULL;
+	const char *moduleAbsolutePath = cosm_lookup( moduleSoRelpath.c_str() );
+	if( moduleAbsolutePath != NULL ) {
+	    mapper_dl = dlopen( moduleAbsolutePath, RTLD_NOW );
+	    const char *err = dlerror();
+	    if( err != NULL ) {
+		cout<<"cosmosModule::loadModule error:"<<err<<endl;
+		module_dl = NULL;
+		module_fn = NULL;
+	    } else {
+		module_fn = (dcel *(*)(istream &))dlsym( module_dl, moduleSymbol.c_str() );
+	    }
+	    cosmos.modules[moduleAbsolutePath] = this;
+	} else {
+	    module_dl = NULL;
+	}
+      return module_dl;
+    }
