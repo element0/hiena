@@ -13,18 +13,19 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <streambuf>
 #include <string>
 #include <list>
 #include <map>
 #include <stack>
 
-using namespace std;
-
 extern "C" {
-#include "cosm_lookup.h" // requires 'libcosmos'
+#include "cosm_lookup.h"
 #include <dlfcn.h>
-#include "curl/curl.h"
+#include "cosmos_service_func_block.h"
 }
+
+using namespace std;
 
 namespace Cosmos {
 
@@ -52,11 +53,12 @@ class cosmosType : public cosmosModule {
     void initModule();
 
     // module ops
-    dcel *(*mapper_fn)(istream &);
+    dcel *(*mapper_fn)(istream *);
 
     cosmosType( string typeName );
     cosmosType( void *dl );
 };
+
 
 
 class cosmosService : public cosmosModule {
@@ -66,13 +68,38 @@ class cosmosService : public cosmosModule {
     struct cosmos_service_func_block *ops;
 
     ostringstream & asOstringstream( string address );
-    istringstream & open( string address );
+    istream * open( string address );
+    istream * open( dcel * );
+
+    void close( istream * );
 
     void initModule();
 
     cosmosService( string address );
 };
 
+
+
+class dcel_streambuf : public std::streambuf {
+  public:
+            dcel_streambuf(dcel *);
+           ~dcel_streambuf();
+    void * handle;
+
+  private:
+    virtual int_type underflow() override;
+    virtual int_type uflow() override;
+    virtual int_type pbackfail(int_type ch) override;
+    virtual std::streamsize showmanyc() override;
+    virtual streampos seekpos( streampos sp, ios_base::openmode which) override;
+
+    const char * begin_;
+    const char * end_;
+    const char * current_;
+
+    cosmosService * svc;
+    dcel * source;
+};
 
 
 /** cosmosSystemObject
@@ -147,7 +174,7 @@ class dcel {
     string *field( string fieldName );
 
     string *str();
-    string *str(int startpos, int stoppos);
+    string *str(size_t startpos, size_t stoppos);
 
     dcel( string );
     dcel( string serviceStr, string addrStr );

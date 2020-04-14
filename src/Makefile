@@ -1,4 +1,5 @@
 SHELL = /bin/bash
+COSMNAME = _Cosm
 
 out-o = ../out/o
 out-bin = ../out/bin
@@ -10,7 +11,7 @@ install-bin = /usr/local/bin
 install-lib = /usr/local/lib
 install-lib-modules = $(install-lib)/cosmos/modules
 install-include = /usr/local/include/cosmos
-
+install-cosm = ~/$(COSMNAME)
 
 
 src-modules = ./modules
@@ -42,7 +43,7 @@ all: out-dirs install-dirs tests utils
 devdirs:  out-dirs
 
 
-install:  install-dirs install-libcosmos cosm-lookup-util
+install:  install-dirs install-libcosmos cosm-lookup-util install-services
 	sudo mv $(out-bin)/cosm-lookup $(install-bin)/.
 
 install-libcosmos: libcosmos
@@ -51,6 +52,10 @@ install-libcosmos: libcosmos
 	sudo cp cosmos/cosmos_service_func_block.h $(install-include)/.
 	sudo cp cosmos/dcel.h $(install-include)/.
 	sudo ldconfig
+
+install-services:
+	sudo cp -a modules/Services/* $(install-cosm)/Services/.
+
 
 prep-install:  install-dirs
 

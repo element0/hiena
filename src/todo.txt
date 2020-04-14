@@ -1,4 +1,4 @@
-
+2020-04-09 2145
 2020-03-25 0621
 2020-03-21 1600
 2020-03-11 0806
@@ -6,18 +6,17 @@
 WIP util/hiena
 
 - use curl fopen service sftp
-- wrap cosmos_lookup in cosmos object
-- use service modules and pointers to cosmosService objects
-    - API for service access from URL input
+- use libcurl fopen service http READY
+- use service modules and pointers to cosmosService objects READY
+- use cosm_lookup() READY
+- hold services and types in cosmosSystemObject READY
+- use url mapper READY
 
+- wrap cosmos_lookup in cosmos object
 - use cosmos_string_db under dcel hood to transparently replace `string`
    ex: dcel (string s) : aCosmosString(s) { }
          cosmosString (string s) { hash_id = cosmosStringDb.put(s) }
 
-- use cosm_lookup() READY
-- hold services and types in cosmosSystemObject READY
-
-- use url mapper WORKING
 
 
 2020-01-18  0700

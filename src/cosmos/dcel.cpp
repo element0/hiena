@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <streambuf>
 #include <string>
 #include <list>
 #include <map>
@@ -17,10 +18,9 @@
 #include "dcel.h"
 
 extern "C" {
-#include "cosm_lookup.h" // requires 'libcosmos'
-#include "cosmos_service_func_block.h"
+#include "cosm_lookup.h"
 #include <dlfcn.h>
-
+#include "cosmos_service_func_block.h"
 }
 
 using namespace std;
@@ -58,8 +58,91 @@ namespace Cosmos {
 	    return;
 	}
 
-	mapper_fn = (dcel *(*)(istream &))dlsym( module_dl, "mapper" );
+	mapper_fn = (dcel *(*)(istream *))dlsym( module_dl, "mapper" );
 
+    }
+
+
+    /*************************/
+    /* --- dcel_streambuf    */
+    /*************************/
+
+
+    dcel_streambuf::dcel_streambuf(dcel *dc)
+    : source( dc ) {
+
+        const char *address = dc->address.c_str();
+        auto openfn = dc->service->ops->fopen;
+        handle = openfn( address, "r" );
+    }
+
+
+    dcel_streambuf::~dcel_streambuf() {
+
+        if(source && source->service && source->service->ops ) {
+            auto closefn = source->service->ops->fclose;
+            closefn( handle );
+        }
+    }
+
+    int dcel_streambuf::underflow()  {
+
+        auto readfn = source->service->ops->fread;
+        char c[2];
+        size_t n;
+
+        c[1] = '\0';
+
+        n = readfn( &c, 1, 1, handle );
+        if(n) {
+            // cout << c;
+            return (int)c[0];
+        }
+
+        // cout << "dcel_streambuf::underflow() called" << endl;
+
+        return EOF;
+    }
+
+
+    int dcel_streambuf::uflow()  {
+
+        int i = 1;
+        // cout << "dcel_streambuf::uflow() called." << endl;
+
+        return EOF;
+    }
+
+
+    int dcel_streambuf::pbackfail(int ch)  {
+
+        // cout << "dcel_streambuf::pbackfail() called." << endl;
+
+        return 0;
+    }
+
+    std::streamsize dcel_streambuf::showmanyc()  {
+
+        // cout << "dcel_streambuf::showmanyc() called." << endl;
+
+        return 0;
+    }
+
+
+
+    streampos dcel_streambuf::seekpos( streampos sp, ios_base::openmode which) {
+
+        // cout << "dcel_streambuf::seekpos( " << sp << " ) called." << endl;
+
+        auto seekofn = source->service->ops->fseeko;
+
+        off_t pos = sp;
+
+        streampos ret = seekofn( handle, sp, SEEK_SET );
+
+        // cout << "dcel_streambuf::seekpos(): seekofn() returned: " << ret << endl;
+        
+        return ret;
     }
 
 
@@ -69,26 +152,55 @@ namespace Cosmos {
     /*********************/
 
     string cosmosService::getMIMEType( string address ) {
-	return "not implemented";
+        return "not implemented";
     }
     
-    istringstream & cosmosService::open( string address ) {
-	if (name == "std::string") {
-	    istringstream *s = new istringstream(address);
-	    return *s;
+    istream * cosmosService::open( string address ) {
+        if (name == "std::string") {
+            istringstream *iss = new istringstream(address);
+            return (istream *)iss;
         }
     }
 
+
+
+    istream * cosmosService::open( dcel *dc ) {
+        if (ops == NULL)
+            return NULL;
+
+        istream * is = new istream(new dcel_streambuf(dc));
+
+        return is;
+    }
+
+
+
+    void cosmosService::close( istream *is ) {
+        if(!is)
+            return;
+
+        dcel_streambuf *dsb = (dcel_streambuf *)is->rdbuf();
+
+        if( dsb && dsb->handle ) {
+            if( ops ) {
+                ops->fclose(dsb->handle);
+            }
+        }
+
+        delete is;
+    }
+
+
     ostringstream & cosmosService::asOstringstream(string address) {
         if (name == "std::string") {
-	    ostringstream *s = new ostringstream(address);
-	    return *s;
+            ostringstream *s = new ostringstream(address);
+            return *s;
         }
     }
 
     cosmosService::cosmosService( string newName ) {
-	name = newName;
-	module_dl = NULL;
+        name = newName;
+        module_dl = NULL;
     }
 
 
@@ -99,7 +211,7 @@ namespace Cosmos {
             return;
         }
 
-        ops = (cosmos_service_func_block *)dlsym( module_dl, "cosmos_service_funcs" );
+        ops = (cosmos_service_func_block *)dlsym( module_dl, "cosmos_service_ops" );
 
     }
 
@@ -186,13 +298,13 @@ namespace Cosmos {
             return res;
         }
 
-	res = new cosmosType( typ );
+        res = new cosmosType( typ );
         res->module_dl = loadModule( moduleSoFullPath );
 
-	res->initModule();
+        res->initModule();
 
         typeModules[moduleSoFullPath] = res;
-	modules[moduleSoFullPath] = res;
+        modules[moduleSoFullPath] = res;
 
         return res;
     }
@@ -249,20 +361,43 @@ namespace Cosmos {
             auto value = new string(address);
             return value;
         }
+        return NULL;
     }
 
 
-    string *dcel::str(int startpos, int stoppos) {
-        int len = stoppos - startpos + 1;
+    string *dcel::str(size_t startpos, size_t stoppos) {
+        istream *stream;
 
-        istringstream & stream = service->open( address );
-        stream.seekg(startpos);
+        size_t len = stoppos - startpos + 1;
+
+        if( service->name == "std::string" ) {
+            stream = service->open( address );
+        } else {
+            stream = service->open( this );
+        }
+
+        stream->seekg(startpos);
+
+        // working...
+
+
+        string whole((istreambuf_iterator<char>(*stream)), istreambuf_iterator<char>());
+        
+        string *result = new string(whole, startpos, len);
+        /*
 
         char *buffer = new char[len+1];
-        stream.read(buffer, len);
-        buffer[len] = '\0';
+        string *result;
+        if(stream->read(buffer, len)) {
+            buffer[len] = '\0';
+            result = new string(buffer);
+        }else{
+            delete buffer;
+            result = NULL;
+        }
+        */
 
-        string *result = new string(buffer);
+        service->close( stream );
         return result;
     }
 
@@ -293,14 +428,25 @@ namespace Cosmos {
     }
 
 
+
+
     string *dcel::field( string fieldName ) {
-	multimap<string, dcel *> *matchlist = fieldMatch( fieldName );
+
+        multimap<string, dcel *> *matchlist = fieldMatch( fieldName );
         if(!matchlist->empty()) {
-	    dcel *field = matchlist->begin()->second;
-	    string *result = str(field->start, field->stop);
-	    return result;
-	}
-	return NULL;
+            dcel *field = matchlist->begin()->second;
+
+            // cout << "dcel::field(string): field->start: " << field->start << endl;
+            // cout << "dcel::field(string): field->stop: " << field->stop << endl;
+
+            string *result = str(field->start, field->stop);
+  
+            // if(result == NULL)
+                // cout << "dcel::field(string): couldn't read field." << endl;
+
+            return result;
+        }
+        return NULL;
     }
 
 
@@ -331,16 +477,25 @@ namespace Cosmos {
     }
 
 
+
     void dcel::makeMap() {
 
-	istringstream & stream = service->open( address );
+        istream * stream;
 
-	dcel *map = type->mapper_fn((istream &)stream);
+        if( service->name == "std::string" )
+            stream = (istream *)service->open( address );
+        else
+            stream = (istream *)service->open(this);
 
-	// delete this
+        dcel *map = type->mapper_fn(stream);
+
+        // delete this
         map->dcelBacking = this;
 	
-	fields.insert(pair<string,dcel *>(type->name, map));
+        fields.insert(pair<string,dcel *>(type->name, map));
+
+        service->close( stream );
+
     }
 }
 

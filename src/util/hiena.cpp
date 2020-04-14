@@ -74,18 +74,29 @@ int main(int argc, char *argv[]) {
     url.makeMap();
 
 
+    string *uristring = url.field("uri");
+
+    dcel base( "url", *uristring );
+
+    string *urischeme = url.field("scheme");
+    if(*urischeme == "http") {
+        base.setType("HTML");
+        base.makeMap();
+    }
+    if(*urischeme == "sftp") {
+        base.setType("HTML");
+        base.makeMap();
+    }
+
     if ( argc > 2 ) {
         char *lookup_field = argv[2];
-        string *return_field = url.field( lookup_field );
+        string *return_field = base.field( lookup_field );
 
         if(return_field != NULL)
             cout << *return_field << endl;
-
+       
         return 0;
     }
-
-    string *hello_test = url.field("uri");
-    cout << *hello_test << endl;
 
 
 /*
