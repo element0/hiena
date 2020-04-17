@@ -357,11 +357,27 @@ namespace Cosmos {
 
 
     string *dcel::str() {
+        /*
         if( service->name == "std::string" ) {
             auto value = new string(address);
             return value;
         }
         return NULL;
+        */
+        istream *stream;
+
+        if( service->name == "std::string" ) {
+            stream = service->open( address );
+        } else {
+            stream = service->open( this );
+        }
+
+        string whole((istreambuf_iterator<char>(*stream)), istreambuf_iterator<char>());
+        
+        string *result = new string(whole);
+
+        service->close( stream );
+        return result;
     }
 
 
@@ -378,24 +394,9 @@ namespace Cosmos {
 
         stream->seekg(startpos);
 
-        // working...
-
-
         string whole((istreambuf_iterator<char>(*stream)), istreambuf_iterator<char>());
         
         string *result = new string(whole, startpos, len);
-        /*
-
-        char *buffer = new char[len+1];
-        string *result;
-        if(stream->read(buffer, len)) {
-            buffer[len] = '\0';
-            result = new string(buffer);
-        }else{
-            delete buffer;
-            result = NULL;
-        }
-        */
 
         service->close( stream );
         return result;
@@ -431,7 +432,10 @@ namespace Cosmos {
 
 
     string *dcel::field( string fieldName ) {
-
+        
+        if( fields.empty() ) {
+            makeMap();
+        }
         multimap<string, dcel *> *matchlist = fieldMatch( fieldName );
         if(!matchlist->empty()) {
             dcel *field = matchlist->begin()->second;
@@ -457,7 +461,7 @@ namespace Cosmos {
 
     dcel *dcel::addField(string name, int start, int stop) {
         dcel *newField = new dcel();
-        newField->dcelBacking = dcelBacking;
+        // newField->dcelBacking = dcelBacking;
         newField->start = start;
         newField->stop = stop;
 
@@ -490,7 +494,7 @@ namespace Cosmos {
         dcel *map = type->mapper_fn(stream);
 
         // delete this
-        map->dcelBacking = this;
+        // map->dcelBacking = this;
 	
         fields.insert(pair<string,dcel *>(type->name, map));
 

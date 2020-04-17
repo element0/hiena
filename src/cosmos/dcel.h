@@ -146,44 +146,52 @@ class cosmosSystemObject {
 class dcel {
   private:
     void fieldWalk( stack<dcel *> *, multimap<string, dcel *> *, string );
+    multimap<string, dcel *> *fieldMatch( string fieldName );
 
   public:
     cosmosService *service;
     string address;
     cosmosType *type;
-
-    // alternative:
-    // service="Cosmos::dcel", address=dcelPointer
-    // remove this. just 
-    dcel *dcelBacking = NULL;
-
     list<cosmosType*> types;
-    list<dcel> children;
-    multimap<string,dcel *> fields;
 
-    // map field
-    // string name;
+    // dir:
+    list<dcel> children;
+
+    // map:
+    multimap<string,dcel *> fields;
     int start;
     int stop;
     dcel *superField;
+
+    // remove this:
+    // dcel *dcelBacking = NULL;
+
+    //--- methods ---
+    //
+
+    // accessors:
+    void setService( string svc_name );
+    void setAddress( void *addr );
+    void setType( string type_name );
+    void addType( string type_name );
+    string *field( string fieldName );
+    dcel *child( string childName );
+
+    // mapper methods:
     dcel *addField();
     dcel *addField(string,int,int);
     dcel *enter();
     dcel *exit();
-    multimap<string, dcel *> *fieldMatch( string fieldName );
-    string *field( string fieldName );
+    void makeMap();
 
+    // get contents as:
     string *str();
     string *str(size_t startpos, size_t stoppos);
 
-    dcel( string );
-    dcel( string serviceStr, string addrStr );
-    dcel( dcel *source );
-
-    void addType( string type_name );
-    void setType( string type_name );
-    void makeMap() ;
-
+    // constructors:
+            dcel( string );
+            dcel( string serviceStr, string addrStr );
+            dcel( dcel *source );
 };
 
 }

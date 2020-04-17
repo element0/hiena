@@ -5,6 +5,8 @@
 
 WIP util/hiena
 
+note: this works: curl -k sftp://localhost/ --user uname: --pubkey .ssh/id_rsa.pub
+
 - use curl fopen service sftp
 - use libcurl fopen service http READY
 - use service modules and pointers to cosmosService objects READY

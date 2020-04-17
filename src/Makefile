@@ -509,6 +509,9 @@ test-prod-fns: prod-fns libhiena
 	gcc $(dbugopts) $(out-o)/prod_fns.o test_prod_fns.c -o $(out-test-bin)/prod_fns_test -L$(out-lib) -lhiena 
 
 
+util-fudge:
+	g++ $(dbugopts) -std=c++11 util/fudge.cpp -o $(out-bin)/fudge -lcosmos -ldl
+
 
 util-hiena:
 	g++ $(dbugopts) -std=c++11 util/hiena.cpp -o $(out-bin)/hiena -lcosmos -ldl
