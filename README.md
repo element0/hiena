@@ -3,6 +3,9 @@ Cosmos and Hiena	{#mainpage}
 
 ![Travis CI Status](https://api.travis-ci.org/element0/hiena.svg?branch=iphdev)
 
+## Update ##
+
+October 2022: This is now a python library used by Laydbug.io. Dev continues in a private repo.
 
 
 ## Description ##
